@@ -9,9 +9,7 @@
     {
       "plugin": "@nx/js/typescript",
       "options": {
-        "typecheck": {
-          "targetName": "typecheck"
-        },
+        "typecheck": { "targetName": "typecheck" },
         "build": {
           "targetName": "build",
           "configName": "tsconfig.lib.json",
@@ -21,6 +19,6 @@
       }
     }
   ],
-  "nxCloudId": "6ad1ea18725561385c85cf6b",
+  "nxCloudId": "6ad1eb99cfb4a55667ac0649",
   "analytics": false
 }
