@@ -75,9 +75,6 @@ Ergebnis: StockMovement vom Typ `IN` + physische Bestände am Lagerort. Der aktu
 | `Type` | war die **Verpackungsart** (Dose, Flasche, Glas …) | heißt neu `PackagingType`, Attribut der ProductVariant. |
 | Bestandsgranularität | **Charge mit Menge** | `StockLot` = Variante + Lagerort + Menge + optional MHD/Pfand. Teilentnahmen reduzieren die Menge über `StockMovement`. Öffnungsdatum pro Charge. |
 | Einkaufsliste | **abgeleitet + manuell** | Bedarf wird aus Bestand vs. `min`/`max` berechnet (keine Kopie). Dazu manuelle Einträge und Abhaken beim Einkauf. |
-
-## 8. Noch offen (für Schritt 4/5)
-
-- Einheiten: Zählen in Stück reicht für den ersten Slice? Oder Menge mit Einheit (g, ml) direkt einplanen?
-- Öffnen einer Charge mit Menge > 1: wird ein Stück abgespalten (neue Charge mit Menge 1, geöffnet)?
-- Muss `ProductVariant.title` global eindeutig bleiben (Legacy-Constraint), oder reicht EAN als Eindeutigkeitsmerkmal?
+| Einheiten | **Bestandseinheit je Produkt** | `Product.unit` (Stück, g, ml …) gilt für `min`, `max` und alle Chargen-Mengen. `ProductVariant.content` = Inhalt einer Packung in dieser Einheit (z. B. 1000 g). „2 Packungen einbuchen“ ergibt 2000 g. Teilentnahmen in der Produkteinheit möglich. |
+| Öffnen | **keine Abspaltung** | `openedAt` gilt für die ganze Charge. |
+| Identität Variante | **eigene ID, EAN nur Suchmerkmal** | EAN optional und nicht eindeutig (gleiche EAN bei PET/Dose, Instore-Codes, Fehleingaben). Scan liefert 0 / 1 / n Treffer → anlegen / übernehmen / auswählen. Eindeutig innerhalb eines Produkts: Marke + Größe + Verpackungsart. Titel nicht mehr global eindeutig. |
