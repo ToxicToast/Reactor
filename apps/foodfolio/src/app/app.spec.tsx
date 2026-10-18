@@ -1,26 +1,17 @@
-import { render } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 
 import App from './app';
 
 describe('App', () => {
-  it('should render successfully', () => {
-    const { baseElement } = render(
-      <BrowserRouter>
+  it('renders the shell heading', () => {
+    render(
+      <MemoryRouter>
         <App />
-      </BrowserRouter>,
-    );
-    expect(baseElement).toBeTruthy();
-  });
-
-  it('should have a greeting as the title', () => {
-    const { getAllByText } = render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>,
+      </MemoryRouter>,
     );
     expect(
-      getAllByText(new RegExp('Welcome @toxictoast/foodfolio', 'gi')).length > 0,
+      screen.getByRole('heading', { level: 1, name: 'Foodfolio' }),
     ).toBeTruthy();
   });
 });
