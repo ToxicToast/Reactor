@@ -1,0 +1,14 @@
+{
+  "name": "@toxictoast/foodfolio-e2e",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "tags": [
+      "scope:app",
+      "type:e2e"
+    ],
+    "implicitDependencies": [
+      "@toxictoast/foodfolio"
+    ]
+  }
+}

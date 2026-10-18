@@ -21,3 +21,32 @@
 - The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
 
 <!-- nx configuration end-->
+
+# Architecture (DDD + Onion, Nx Modular Monolith)
+
+- `apps/` holds only thin executable shells (bootstrap, routing, providers, DI). All business logic and implementations live in `libs/`.
+- Directory layout is fixed: `libs/<context>/{domain,application,infrastructure-client,infrastructure-server}`, `libs/<context>-ui/<feature>`, `libs/platform/<module>`, `libs/shared/kernel`. Do not change it without asking.
+- Domain and application are framework-free TypeScript (no React, Redux, Keycloak, Axios, NestJS). Infrastructure implements ports from inner layers; inner layers never import infrastructure.
+- Redux Toolkit is state/integration only, never the home of business logic. Keycloak only via adapters behind abstract auth/permission interfaces.
+- Foodfolio is household inventory management (like Grocy), NOT a recipe system. Analyze legacy code in `C:\Users\thoma\Documents\Coding\Stream\CLEANUP\OLD\azkaban-v3` before designing new domain models; it is a reference, not an architecture template.
+
+## Naming
+
+- npm scope `@toxictoast`. Package name = Nx project name = import path.
+- Flat, context-prefixed names: `libs/foodfolio/domain` → `@toxictoast/foodfolio-domain`, `libs/foodfolio-ui/stock-entry` → `@toxictoast/foodfolio-ui-stock-entry`, `libs/platform/http` → `@toxictoast/platform-http`.
+- Every lib exposes only `src/index.ts` via `package.json#exports`; no deep imports.
+
+## Tags (enforced in root `eslint.config.mjs` by `@nx/enforce-module-boundaries`)
+
+Every project gets one tag per dimension, set in its `package.json` under `nx.tags`:
+
+| Dimension | Values |
+|-----------|--------|
+| `scope:`   | `foodfolio`, `blog`, `platform`, `shared`, `app` |
+| `type:`    | `domain`, `application`, `infrastructure`, `feature`, `ui`, `contracts`, `kernel`, `app`, `e2e` |
+| `runtime:` | `browser`, `server`, `universal` |
+
+- Contexts may only use their own scope plus `platform` and `shared`. A new bounded context needs its own `scope:` constraint in `eslint.config.mjs`.
+- `type:feature` (React feature under `<context>-ui/`) must not import other features; shared UI goes into a `type:ui` lib.
+- `type:domain`, `type:application`, `type:contracts`, `type:kernel` allow no external npm imports at all.
+- `type:app` must not import `type:domain` directly; shells go through application/feature APIs.

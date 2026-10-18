@@ -1,0 +1,12 @@
+{
+  "name": "@toxictoast/foodfolio",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "tags": [
+      "scope:app",
+      "type:app",
+      "runtime:browser"
+    ]
+  }
+}
