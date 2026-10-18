@@ -28,7 +28,7 @@
 - Directory layout is fixed: `libs/<context>/{domain,application,infrastructure-client,infrastructure-server}`, `libs/<context>-ui/<feature>`, `libs/platform/<module>`, `libs/shared/kernel`. Do not change it without asking.
 - Domain and application are framework-free TypeScript (no React, Redux, Keycloak, Axios, NestJS). Infrastructure implements ports from inner layers; inner layers never import infrastructure.
 - Redux Toolkit is state/integration only, never the home of business logic. Keycloak only via adapters behind abstract auth/permission interfaces.
-- Foodfolio is household inventory management (like Grocy), NOT a recipe system. Analyze legacy code in `C:\Users\thoma\Documents\Coding\Stream\CLEANUP\OLD\azkaban-v3` before designing new domain models; it is a reference, not an architecture template.
+- Foodfolio is household inventory management (like Grocy), NOT a recipe system. Analyze legacy code in `C:\Users\thoma\Documents\Coding\Stream\CLEANUP\OLD\azkaban-v3` before designing new domain models; it is a reference, not an architecture template. The analysis and agreed domain decisions live in `docs/foodfolio/legacy-analysis-azkaban-v3.md`; read it before touching Foodfolio domain code.
 
 ## Naming
 
