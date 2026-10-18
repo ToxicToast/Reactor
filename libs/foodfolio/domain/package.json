@@ -20,5 +20,7 @@
       "runtime:universal"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "@toxictoast/shared-kernel": "^0.0.1"
+  }
 }

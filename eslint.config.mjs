@@ -130,7 +130,10 @@ export default [
             },
             {
               sourceTag: 'runtime:browser',
-              onlyDependOnLibsWithTags: ['runtime:browser', 'runtime:universal'],
+              onlyDependOnLibsWithTags: [
+                'runtime:browser',
+                'runtime:universal',
+              ],
               bannedExternalImports: ['@nestjs/*'],
             },
             {

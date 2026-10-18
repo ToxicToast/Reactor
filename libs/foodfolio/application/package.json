@@ -20,5 +20,8 @@
       "runtime:universal"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "@toxictoast/foodfolio-domain": "^0.0.1",
+    "@toxictoast/shared-kernel": "^0.0.1"
+  }
 }
