@@ -4,19 +4,10 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/foodfolio-e2e"
+      "path": "./apps/gateway-e2e"
     },
     {
-      "path": "./apps/foodfolio"
-    },
-    {
-      "path": "./libs/foodfolio/domain"
-    },
-    {
-      "path": "./libs/foodfolio/application"
-    },
-    {
-      "path": "./libs/shared/kernel"
+      "path": "./apps/gateway"
     }
   ],
   "compilerOptions": {}
