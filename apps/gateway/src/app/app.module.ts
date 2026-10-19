@@ -23,7 +23,7 @@ import { SpotifyModule } from './spotify/spotify.module';
     TwitchModule,
     WarcraftModule,
     WebhookModule,
-    YoutubeModule
+    YoutubeModule,
   ],
 })
 export class AppModule {}
