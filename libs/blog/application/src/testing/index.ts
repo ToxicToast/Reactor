@@ -6,3 +6,5 @@ export * from './in-memory-media.repository.js';
 export * from './media-anemic.fixture.js';
 export * from './in-memory-post.repository.js';
 export * from './post-anemic.fixture.js';
+export * from './in-memory-comment.repository.js';
+export * from './comment-anemic.fixture.js';
