@@ -1,0 +1,40 @@
+name: Check Format and Linting
+
+on:
+  workflow_call:
+    inputs:
+      max-parallel:
+        required: true
+        type: string
+      node-version:
+        required: true
+        type: string
+
+jobs:
+  linting:
+    runs-on: ubuntu-24.04
+    name: 'Check Format and Linting'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: nrwl/nx-set-shas@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🚀 Check Format
+        run: npx nx format:check
+
+      - name: 🚀 Lint Apps
+        run: npx nx affected -t lint --parallel=${{ inputs.max-parallel }}
+
+      - name: 🚀 Typecheck Apps
+        run: npx nx affected -t typecheck --parallel=${{ inputs.max-parallel }}

@@ -1,0 +1,53 @@
+name: Publish Docker Images
+
+on:
+  workflow_call:
+    inputs:
+      max-parallel:
+        required: true
+        type: string
+      node-version:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+
+jobs:
+  docker:
+    runs-on: ubuntu-24.04
+    name: 'Publish Docker Images'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: nrwl/nx-set-shas@v4
+
+      - name: 📦 Set Registry
+        run: echo "REGISTRY=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
+
+      - name: 📦 Login into GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🏗 Build Docker Images
+        run: npx nx affected -t docker-build --parallel=${{ inputs.max-parallel }} --VERSION=${{ inputs.version }} --REGISTRY=${{ env.REGISTRY }}
+
+      - name: 🏗 Push Docker Images
+        run: npx nx affected -t docker-push --parallel=${{ inputs.max-parallel }} --VERSION=${{ inputs.version }} --REGISTRY=${{ env.REGISTRY }}

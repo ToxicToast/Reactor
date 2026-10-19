@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    branches: [release]
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    name: 'Release'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🪐 Major version for each merge
+        id: tagger
+        uses: anothrNick/github-tag-action@1.71.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DEFAULT_BUMP: major
+          PRE_RELEASE: false
+
+      - name: 🪐 Output Tag
+        run: echo "${{ steps.tagger.outputs.new_tag }}"
+
+      - name: API Alerts Notify
+        uses: apialerts/notify-action@v2
+        with:
+          api_key: ${{ secrets.API_ALERTS_KEY }}
+          message: '🚢 Release - New Major Version Released (${{ steps.tagger.outputs.new_tag }})'
+          tags: 'Azkaban,Release'
+          link: 'https://shortener.toxictoast.de/api/v1/redirect/HhVQo71i'
+          channel: 'cicd'

@@ -1,0 +1,102 @@
+name: Versioning
+
+on:
+  push:
+    branches: [main]
+
+env:
+  NODE_VERSION: 24
+  MAX_PARALLEL: 3
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    name: 'Prepare Version'
+    outputs:
+      version: ${{ steps.taggerDryRun.outputs.new_tag }}
+      node_version: ${{ env.NODE_VERSION }}
+      max_parallel: ${{ env.MAX_PARALLEL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🪐 Minor version for each merge (Dry Run)
+        id: taggerDryRun
+        uses: anothrNick/github-tag-action@1.71.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DEFAULT_BUMP: minor
+          PRE_RELEASE: true
+          DRY_RUN: true
+
+      - name: 🪐 Output Tag
+        run: echo "${{ steps.taggerDryRun.outputs.new_tag }}"
+
+  linting:
+    needs: [prepare]
+    uses: ./.github/workflows/linting.yml
+    with:
+      max-parallel: ${{ needs.prepare.outputs.max_parallel }}
+      node-version: ${{ needs.prepare.outputs.node_version }}
+    secrets: inherit
+
+  testing:
+    needs: [prepare]
+    uses: ./.github/workflows/testing.yml
+    with:
+      max-parallel: ${{ needs.prepare.outputs.max_parallel }}
+      node-version: ${{ needs.prepare.outputs.node_version }}
+    secrets: inherit
+
+  building:
+    needs: [prepare]
+    uses: ./.github/workflows/build.yml
+    with:
+      max-parallel: ${{ needs.prepare.outputs.max_parallel }}
+      node-version: ${{ needs.prepare.outputs.node_version }}
+    secrets: inherit
+
+  docker:
+    needs: [prepare, linting, testing, building]
+    uses: ./.github/workflows/docker.yml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      max-parallel: ${{ needs.prepare.outputs.max_parallel }}
+      node-version: ${{ needs.prepare.outputs.node_version }}
+      version: ${{ needs.prepare.outputs.version }}
+    secrets: inherit
+
+  notify:
+    needs: [docker]
+    runs-on: ubuntu-24.04
+    name: 'Notify'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🪐 Minor version for each merge
+        id: tagger
+        uses: anothrNick/github-tag-action@1.71.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DEFAULT_BUMP: minor
+          PRE_RELEASE: true
+
+      - name: API Alerts Notify
+        uses: apialerts/notify-action@v2
+        with:
+          api_key: ${{ secrets.API_ALERTS_KEY }}
+          message: '🚢 Main - New Minor Version Released (${{ steps.tagger.outputs.new_tag }})'
+          tags: 'Azkaban,Main'
+          link: 'https://shortener.toxictoast.de/api/v1/redirect/HhVQo71i'
+          channel: 'cicd'
