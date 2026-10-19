@@ -63,7 +63,12 @@
           "passWithNoTests": true
         }
       }
-    }
+    },
+    "tags": [
+      "scope:gateway",
+      "type:app",
+      "kind:edge"
+    ]
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

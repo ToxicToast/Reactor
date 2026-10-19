@@ -1,0 +1,27 @@
+{
+  "name": "@toxictoast/blog-service-e2e",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "blog-service-e2e",
+    "implicitDependencies": [
+      "blog-service"
+    ],
+    "targets": {
+      "e2e": {
+        "executor": "@nx/jest:jest",
+        "outputs": [
+          "{projectRoot}/test-output/jest/coverage"
+        ],
+        "dependsOn": [
+          "blog-service:build",
+          "blog-service:serve"
+        ],
+        "options": {
+          "jestConfig": "apps/blog-service-e2e/jest.config.cts",
+          "passWithNoTests": true
+        }
+      }
+    }
+  }
+}

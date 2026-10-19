@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AiModule } from './ai/ai.module';
 import { BlogModule } from './blog/blog.module';
 import { DiscordModule } from './discord/discord.module';
 import { FoodfolioModule } from './foodfolio/foodfolio.module';
@@ -10,15 +9,16 @@ import { YoutubeModule } from './youtube/youtube.module';
 import { AuthModule } from './auth/auth.module';
 import { WebhookModule } from './webhook/webhook.module';
 import { SseModule } from './sse/sse.module';
+import { SpotifyModule } from './spotify/spotify.module';
 
 @Module({
   imports: [
-    AiModule,
     AuthModule,
     BlogModule,
     DiscordModule,
     FoodfolioModule,
     InstagramModule,
+    SpotifyModule,
     SseModule,
     TwitchModule,
     WarcraftModule,
