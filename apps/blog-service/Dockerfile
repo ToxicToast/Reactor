@@ -6,7 +6,8 @@ WORKDIR /app
 RUN addgroup --system blog && adduser --system -G blog blog
 
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+COPY workspace_modules ./workspace_modules
+RUN npm install --omit=dev --no-audit --no-fund && npm cache clean --force
 
 COPY --chown=blog:blog . .
 
