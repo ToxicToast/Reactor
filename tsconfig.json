@@ -38,6 +38,15 @@
     },
     {
       "path": "./libs/shared/messaging"
+    },
+    {
+      "path": "./libs/shared/system"
+    },
+    {
+      "path": "./libs/shared/grpc"
+    },
+    {
+      "path": "./libs/shared/nest"
     }
   ],
   "compilerOptions": {}

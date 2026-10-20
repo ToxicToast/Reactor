@@ -22,6 +22,7 @@
   "dependencies": {
     "@toxictoast/shared-kernel": "*",
     "@toxictoast/shared-application": "*",
+    "@toxictoast/shared-system": "*",
     "typeorm": "^1.1.2"
   }
 }

@@ -16,7 +16,26 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src/**/*.ts"],
-  "references": [],
+  "references": [
+    {
+      "path": "../../contracts/grpc/tsconfig.lib.json"
+    },
+    {
+      "path": "../application/tsconfig.lib.json"
+    },
+    {
+      "path": "../domain/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/grpc/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/kernel/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/application/tsconfig.lib.json"
+    }
+  ],
   "exclude": [
     "jest.config.ts",
     "jest.config.cts",

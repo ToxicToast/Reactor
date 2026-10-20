@@ -52,6 +52,7 @@ export default [
                 'type:domain',
                 'type:application',
                 'type:contracts',
+                'type:api',
               ],
             },
             {

@@ -35,3 +35,6 @@ jobs:
 
       - name: 🚀 e2e Apps
         run: npx nx affected -t e2e --parallel=${{ inputs.max-parallel }}
+
+      - name: 🚀 Integration Apps
+        run: npx nx affected -t integration --parallel=${{ inputs.max-parallel }}

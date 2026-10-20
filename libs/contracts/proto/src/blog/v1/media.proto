@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package blog.v1;
+
+service MediaService {
+  rpc RequestMediaUpload(RequestMediaUploadRequest) returns (RequestMediaUploadResponse);
+  rpc ConfirmMediaUpload(ConfirmMediaUploadRequest) returns (ConfirmMediaUploadResponse);
+  rpc UpdateMediaAltText(UpdateMediaAltTextRequest) returns (UpdateMediaAltTextResponse);
+  rpc DeleteMedia(DeleteMediaRequest) returns (DeleteMediaResponse);
+  rpc RestoreMedia(RestoreMediaRequest) returns (RestoreMediaResponse);
+  rpc GetMedia(GetMediaRequest) returns (GetMediaResponse);
+  rpc GetMediaUrl(GetMediaUrlRequest) returns (GetMediaUrlResponse);
+  rpc ListMedia(ListMediaRequest) returns (ListMediaResponse);
+}
+
+enum MediaStatus {
+  MEDIA_STATUS_UNSPECIFIED = 0;
+  MEDIA_STATUS_PENDING = 1;
+  MEDIA_STATUS_READY = 2;
+}
+
+message Media {
+  string id = 1;
+  string object_key = 2;
+  string filename = 3;
+  string mime_type = 4;
+  int32 size = 5;
+  optional string alt_text = 6;
+  MediaStatus status = 7;
+  string created_at = 8;
+  optional string updated_at = 9;
+  optional string deleted_at = 10;
+}
+
+message RequestMediaUploadRequest {
+  string filename = 1;
+  string mime_type = 2;
+  int32 size = 3;
+  optional string alt_text = 4;
+}
+
+message RequestMediaUploadResponse {
+  Media media = 1;
+  string upload_url = 2;
+}
+
+message ConfirmMediaUploadRequest {
+  string id = 1;
+}
+
+message ConfirmMediaUploadResponse {
+  Media media = 1;
+}
+
+message UpdateMediaAltTextRequest {
+  string id = 1;
+  optional string alt_text = 2;
+}
+
+message UpdateMediaAltTextResponse {
+  Media media = 1;
+}
+
+message DeleteMediaRequest {
+  string id = 1;
+}
+
+message DeleteMediaResponse {
+  Media media = 1;
+}
+
+message RestoreMediaRequest {
+  string id = 1;
+}
+
+message RestoreMediaResponse {
+  Media media = 1;
+}
+
+message GetMediaRequest {
+  string id = 1;
+  bool with_deleted = 2;
+}
+
+message GetMediaResponse {
+  Media media = 1;
+}
+
+message GetMediaUrlRequest {
+  string id = 1;
+}
+
+message GetMediaUrlResponse {
+  string url = 1;
+  int32 expires_in = 2;
+}
+
+message ListMediaRequest {
+  optional MediaStatus status = 1;
+  optional int32 limit = 2;
+  optional int32 offset = 3;
+  bool with_deleted = 4;
+}
+
+message ListMediaResponse {
+  repeated Media media = 1;
+}

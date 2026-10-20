@@ -17,7 +17,16 @@
     "tags": [
       "scope:shared",
       "type:infrastructure"
-    ]
+    ],
+    "targets": {
+      "integration": {}
+    }
   },
-  "dependencies": {}
+  "dependencies": {
+    "@toxictoast/shared-kernel": "*",
+    "@toxictoast/shared-persistence": "*",
+    "@toxictoast/shared-system": "*",
+    "@platformatic/kafka": "^2.14.0",
+    "typeorm": "^1.1.2"
+  }
 }

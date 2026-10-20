@@ -18,7 +18,27 @@
     "tags": [
       "scope:contracts",
       "type:contracts"
-    ]
+    ],
+    "targets": {
+      "generate": {
+        "command": "buf generate",
+        "options": {
+          "cwd": "libs/contracts/proto"
+        }
+      },
+      "lint-proto": {
+        "command": "buf lint",
+        "options": {
+          "cwd": "libs/contracts/proto"
+        }
+      },
+      "breaking": {
+        "command": "buf breaking --against '../../../.git#branch=main,subdir=libs/contracts/proto'",
+        "options": {
+          "cwd": "libs/contracts/proto"
+        }
+      }
+    }
   },
   "dependencies": {}
 }

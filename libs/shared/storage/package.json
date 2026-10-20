@@ -19,5 +19,11 @@
       "type:infrastructure"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "@toxictoast/shared-kernel": "*",
+    "@toxictoast/shared-application": "*",
+    "@toxictoast/shared-system": "*",
+    "@aws-sdk/client-s3": "^3.1153.0",
+    "@aws-sdk/s3-request-presigner": "^3.1153.0"
+  }
 }

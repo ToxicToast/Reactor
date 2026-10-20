@@ -21,6 +21,7 @@ import {
   TEST_NOW,
 } from '../../testing/index.js';
 import { CreateCommentUseCase } from './create-comment.usecase.js';
+import { ModerationRequestService } from '../../services/index.js';
 
 const DATA: CommentData = {
   post_id: 'post-1' as PostId,
@@ -36,6 +37,7 @@ describe('CreateCommentUseCase', () => {
   let useCase: CreateCommentUseCase;
 
   beforeEach(async () => {
+    const ctx = createTestContext();
     comments = new InMemoryCommentRepository();
     posts = new InMemoryPostRepository();
     outbox = new InMemoryOutbox();
@@ -43,6 +45,7 @@ describe('CreateCommentUseCase', () => {
       new CommentFactory(createTestContext()),
       comments,
       posts,
+      new ModerationRequestService(ctx),
       new DomainPersistence(outbox, new ImmediateUnitOfWork()),
     );
 
@@ -50,13 +53,26 @@ describe('CreateCommentUseCase', () => {
     await posts.save(postAnemic('post-2', { status: PostStatus.PUBLISHED }));
   });
 
-  it('creates a pending comment and writes the event', async () => {
+  it('creates a pending comment and requests moderation', async () => {
     const result = await useCase.execute(DATA);
 
     expect(result.isSuccess).toBe(true);
     expect(result.value.status).toBe(CommentStatus.PENDING);
     expect(comments.items.size).toBe(1);
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['create']);
+    expect(
+      outbox.events.map((e) => `${e.event_namespace}.${e.event_name}`),
+    ).toEqual(['blog.comment.create', 'moderation.requested']);
+    expect(outbox.events[1].payload).toMatchObject({
+      subject_type: 'blog.comment',
+      subject_id: result.value.id,
+      content: 'Für den Imperator!',
+    });
+  });
+
+  it('requests no moderation when the comment is rejected', async () => {
+    await useCase.execute({ ...DATA, content: '   ' });
+
+    expect(outbox.events).toHaveLength(0);
   });
 
   it('creates a reply to an approved comment', async () => {

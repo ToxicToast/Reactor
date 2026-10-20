@@ -3,6 +3,6 @@ import baseConfig from '../../../eslint.config.mjs';
 export default [
   ...baseConfig,
   {
-    ignores: ['**/out-tsc'],
+    ignores: ['**/out-tsc', 'src/generated/**'],
   },
 ];

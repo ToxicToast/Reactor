@@ -19,5 +19,17 @@
       "type:api"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "@toxictoast/shared-kernel": "*",
+    "@toxictoast/shared-grpc": "*",
+    "@toxictoast/blog-domain": "*",
+    "@toxictoast/blog-application": "*",
+    "@toxictoast/contracts-grpc": "*",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/microservices": "^11.2.7",
+    "@grpc/grpc-js": "^1.14.6"
+  },
+  "devDependencies": {
+    "@toxictoast/shared-application": "*"
+  }
 }

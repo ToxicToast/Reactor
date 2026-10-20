@@ -3,3 +3,4 @@ export * from './classes/index.js';
 export * from './interfaces/index.js';
 export * from './schemas/index.js';
 export * from './services/index.js';
+export * from './functions/index.js';

@@ -28,12 +28,7 @@
       "migration-revert": {
         "command": "tsx --env-file=libs/blog/infrastructure/.env node_modules/typeorm/cli.js migration:revert -d libs/blog/infrastructure/typeorm.data-source.ts"
       },
-      "integration": {
-        "executor": "@nx/jest:jest",
-        "options": {
-          "jestConfig": "libs/blog/infrastructure/jest.integration.config.cts"
-        }
-      }
+      "integration": {}
     }
   },
   "dependencies": {
@@ -41,5 +36,9 @@
     "@toxictoast/shared-persistence": "*",
     "@toxictoast/blog-domain": "*",
     "typeorm": "^1.1.2"
+  },
+  "devDependencies": {
+    "@toxictoast/blog-application": "*",
+    "@toxictoast/contracts-events": "*"
   }
 }

@@ -16,7 +16,23 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src/**/*.ts"],
-  "references": [],
+  "references": [
+    {
+      "path": "../domain/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/persistence/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/kernel/tsconfig.lib.json"
+    },
+    {
+      "path": "../../contracts/events/tsconfig.lib.json"
+    },
+    {
+      "path": "../application/tsconfig.lib.json"
+    }
+  ],
   "exclude": [
     "jest.config.ts",
     "jest.config.cts",

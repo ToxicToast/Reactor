@@ -12,6 +12,7 @@ import {
   type CommentRepository,
   type PostRepository,
 } from '@toxictoast/blog-domain';
+import { ModerationRequestService } from '../../services/index.js';
 
 export class CreateCommentUseCase implements UseCase<
   CommentData,
@@ -21,6 +22,7 @@ export class CreateCommentUseCase implements UseCase<
     private readonly factory: CommentFactory,
     private readonly repository: CommentRepository,
     private readonly posts: PostRepository,
+    private readonly moderation: ModerationRequestService,
     private readonly persistence: DomainPersistence,
   ) {}
 
@@ -46,6 +48,8 @@ export class CreateCommentUseCase implements UseCase<
       return Result.fail(created.error);
     }
 
-    return this.persistence.persist(created.value, this.repository);
+    const comment = created.value;
+    const request = this.moderation.forComment(comment.toAnemic());
+    return this.persistence.persist(comment, this.repository, [request]);
   }
 }
