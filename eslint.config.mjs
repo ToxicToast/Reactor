@@ -20,6 +20,10 @@ export default [
   {
     files: ['**/*.ts', '**/*.js'],
     rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { varsIgnorePattern: '^_' },
+      ],
       '@nx/enforce-module-boundaries': [
         'error',
         {
@@ -28,13 +32,21 @@ export default [
           depConstraints: [
             // ── Schichten ───────────────────────────────
             {
+              sourceTag: 'type:types',
+              onlyDependOnLibsWithTags: ['type:types'],
+            },
+            {
               sourceTag: 'type:domain',
-              onlyDependOnLibsWithTags: ['type:domain'],
+              onlyDependOnLibsWithTags: ['type:domain', 'type:types'],
               bannedExternalImports: infraPackages,
             },
             {
               sourceTag: 'type:application',
-              onlyDependOnLibsWithTags: ['type:domain', 'type:application'],
+              onlyDependOnLibsWithTags: [
+                'type:domain',
+                'type:application',
+                'type:types',
+              ],
               bannedExternalImports: infraPackages,
             },
             {
@@ -44,6 +56,7 @@ export default [
                 'type:application',
                 'type:infrastructure',
                 'type:contracts',
+                'type:types',
               ],
             },
             {
@@ -53,11 +66,12 @@ export default [
                 'type:application',
                 'type:contracts',
                 'type:api',
+                'type:types',
               ],
             },
             {
               sourceTag: 'type:contracts',
-              onlyDependOnLibsWithTags: ['type:contracts'],
+              onlyDependOnLibsWithTags: ['type:contracts', 'type:types'],
             },
             {
               sourceTag: 'type:app',
@@ -67,29 +81,39 @@ export default [
                 'type:infrastructure',
                 'type:api',
                 'type:contracts',
+                'type:types',
               ],
             },
 
             // ── Service-Grenzen ─────────────────────────
+            {
+              sourceTag: 'scope:types',
+              onlyDependOnLibsWithTags: ['scope:types'],
+            },
             {
               sourceTag: 'scope:blog',
               onlyDependOnLibsWithTags: [
                 'scope:blog',
                 'scope:contracts',
                 'scope:shared',
+                'scope:types',
               ],
             },
             {
               sourceTag: 'scope:gateway',
-              onlyDependOnLibsWithTags: ['scope:contracts', 'scope:shared'],
+              onlyDependOnLibsWithTags: [
+                'scope:contracts',
+                'scope:shared',
+                'scope:types',
+              ],
             },
             {
               sourceTag: 'scope:shared',
-              onlyDependOnLibsWithTags: ['scope:shared'],
+              onlyDependOnLibsWithTags: ['scope:shared', 'scope:types'],
             },
             {
               sourceTag: 'scope:contracts',
-              onlyDependOnLibsWithTags: ['scope:contracts'],
+              onlyDependOnLibsWithTags: ['scope:contracts', 'scope:types'],
             },
           ],
         },

@@ -1,4 +1,4 @@
-import type { Nullable, Optional } from '@toxictoast/shared-kernel';
+import type { Nullable, Optional } from '@toxictoast/shared-types';
 
 export const toIso = (date: Nullable<Date>): Optional<string> => {
   if (date === null) {

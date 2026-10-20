@@ -1,5 +1,5 @@
 import type { Consumer, Message, MessagesStream } from '@platformatic/kafka';
-import type { Nullable, Optional } from '@toxictoast/shared-kernel';
+import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type {
   ConsumedEvent,
   KafkaEventConsumerOptions,

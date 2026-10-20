@@ -20,6 +20,7 @@ import {
 } from '@toxictoast/shared-application';
 import { grpcCode } from '@toxictoast/shared-grpc';
 import { CategoryGrpcController } from './category-grpc.controller.js';
+import type { Optional } from '@toxictoast/shared-types';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
 
@@ -50,7 +51,10 @@ describe('CategoryGrpcController', () => {
     );
   });
 
-  const create = async (title: string, parent_id?: string): Promise<string> => {
+  const create = async (
+    title: string,
+    parent_id?: Optional<string>,
+  ): Promise<string> => {
     const { category } = await controller.createCategory({ title, parent_id });
     return category?.id ?? '';
   };

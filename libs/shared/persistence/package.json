@@ -23,6 +23,7 @@
     "@toxictoast/shared-kernel": "*",
     "@toxictoast/shared-application": "*",
     "@toxictoast/shared-system": "*",
-    "typeorm": "^1.1.2"
+    "typeorm": "^1.1.2",
+    "@toxictoast/shared-types": "*"
   }
 }

@@ -9,7 +9,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { FileStorage, StoredFile } from '@toxictoast/shared-application';
-import type { Nullable } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 
 export class S3FileStorage implements FileStorage {
   constructor(

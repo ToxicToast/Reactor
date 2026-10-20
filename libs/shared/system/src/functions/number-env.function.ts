@@ -1,4 +1,4 @@
-import type { Optional } from '@toxictoast/shared-kernel';
+import type { Optional } from '@toxictoast/shared-types';
 import { optionalEnv } from './optional-env.function.js';
 
 export const numberEnv = (

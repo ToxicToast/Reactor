@@ -20,5 +20,7 @@
       "type:application"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "@toxictoast/shared-types": "*"
+  }
 }

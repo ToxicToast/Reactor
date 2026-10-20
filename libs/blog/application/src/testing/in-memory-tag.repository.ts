@@ -1,4 +1,4 @@
-import type { Nullable, Optional } from '@toxictoast/shared-kernel';
+import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type { TagAnemic, TagId, TagRepository } from '@toxictoast/blog-domain';
 
 export class InMemoryTagRepository implements TagRepository {

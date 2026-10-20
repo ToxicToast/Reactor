@@ -1,4 +1,5 @@
-import type { Id, Nullable, Optional } from '@toxictoast/shared-kernel';
+import type { Nullable, Optional } from '@toxictoast/shared-types';
+import type { Id } from '@toxictoast/shared-kernel';
 import { parseId } from './parse-id.function.js';
 
 export const parseOptionalId = <T extends string>(

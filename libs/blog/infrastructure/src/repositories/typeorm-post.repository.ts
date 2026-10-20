@@ -6,7 +6,7 @@ import type {
   PostStatus,
   TagId,
 } from '@toxictoast/blog-domain';
-import type { Nullable, Optional } from '@toxictoast/shared-kernel';
+import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type { TransactionContext } from '@toxictoast/shared-persistence';
 import type { DataSource, EntityManager, SelectQueryBuilder } from 'typeorm';
 import type { PostRecord, PostRow } from '../interfaces/index.js';

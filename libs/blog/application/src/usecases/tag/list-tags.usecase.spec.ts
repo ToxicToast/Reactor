@@ -1,10 +1,11 @@
 import type { TagAnemic, TagId } from '@toxictoast/blog-domain';
+import type { Nullable } from '@toxictoast/shared-types';
 import { InMemoryTagRepository } from '../../testing/index.js';
 import { ListTagsUseCase } from './list-tags.usecase.js';
 
 const NOW = new Date('2026-10-19T12:00:00Z');
 
-const tagAnemic = (id: string, deletedAt: Date | null = null): TagAnemic => {
+const tagAnemic = (id: string, deletedAt: Nullable<Date> = null): TagAnemic => {
   return {
     id: id as TagId,
     title: id,

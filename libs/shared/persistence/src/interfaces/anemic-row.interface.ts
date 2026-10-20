@@ -1,4 +1,4 @@
-import type { Nullable } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 
 export interface AnemicRow {
   id: string;

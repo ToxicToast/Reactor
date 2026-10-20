@@ -1,4 +1,4 @@
-import type { Optional } from '../types/index.js';
+import type { Optional } from '@toxictoast/shared-types';
 import {
   DomainError,
   onErrorValueError,

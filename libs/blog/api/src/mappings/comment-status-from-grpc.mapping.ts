@@ -1,6 +1,6 @@
 import { CommentStatus } from '@toxictoast/blog-domain';
 import { CommentStatus as GrpcCommentStatus } from '@toxictoast/contracts-grpc';
-import type { Nullable } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 
 export const COMMENT_STATUS_FROM_GRPC: Readonly<
   Record<GrpcCommentStatus, Nullable<CommentStatus>>

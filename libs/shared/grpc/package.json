@@ -23,6 +23,7 @@
   "dependencies": {
     "@toxictoast/shared-kernel": "*",
     "@nestjs/microservices": "^11.2.7",
-    "@grpc/grpc-js": "^1.14.6"
+    "@grpc/grpc-js": "^1.14.6",
+    "@toxictoast/shared-types": "*"
   }
 }

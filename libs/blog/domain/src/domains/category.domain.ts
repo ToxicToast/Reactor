@@ -1,7 +1,7 @@
+import type { Nullable } from '@toxictoast/shared-types';
 import {
   BaseDomain,
   ConflictError,
-  type Nullable,
   Result,
   ValidationError,
 } from '@toxictoast/shared-kernel';

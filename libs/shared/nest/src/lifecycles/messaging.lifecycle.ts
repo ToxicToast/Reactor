@@ -5,7 +5,7 @@ import {
   type OnApplicationBootstrap,
 } from '@nestjs/common';
 import type { Producer } from '@platformatic/kafka';
-import type { Nullable } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 import {
   OutboxRelayWorker,
   type KafkaEventConsumer,

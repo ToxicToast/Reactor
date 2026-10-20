@@ -4,7 +4,7 @@ import type {
   CommentModerator as GrpcCommentModerator,
 } from '@toxictoast/contracts-grpc';
 import { toIso } from '@toxictoast/shared-grpc';
-import type { Optional } from '@toxictoast/shared-kernel';
+import type { Optional } from '@toxictoast/shared-types';
 import {
   COMMENT_MODERATOR_TO_GRPC,
   COMMENT_STATUS_TO_GRPC,

@@ -1,9 +1,5 @@
-import {
-  BaseDomain,
-  ConflictError,
-  type Nullable,
-  Result,
-} from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
+import { BaseDomain, ConflictError, Result } from '@toxictoast/shared-kernel';
 import type { MediaAnemic } from '../anemics/index.js';
 import { MediaStatus } from '../enums/index.js';
 import {

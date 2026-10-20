@@ -4,3 +4,4 @@ export * from './interfaces/index.js';
 export * from './enums/index.js';
 export * from './abstracts/index.js';
 export * from './classes/index.js';
+export * from './functions/index.js';

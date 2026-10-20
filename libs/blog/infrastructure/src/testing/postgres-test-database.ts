@@ -2,7 +2,7 @@ import {
   PostgreSqlContainer,
   type StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql';
-import type { Nullable } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 import { TransactionContext } from '@toxictoast/shared-persistence';
 import { DataSource } from 'typeorm';
 import { blogMigrations } from '../migrations/index.js';

@@ -1,11 +1,12 @@
 import { status } from '@grpc/grpc-js';
+import type { Nullable } from '@toxictoast/shared-types';
 import { grpcCode } from '../testing/index.js';
 import { mapEnum } from './map-enum.function.js';
 import { mapOptionalEnum } from './map-optional-enum.function.js';
 
 type Proto = 'COLOR_UNSPECIFIED' | 'COLOR_RED';
 
-const TABLE: Record<Proto, 'red' | null> = {
+const TABLE: Record<Proto, Nullable<'red'>> = {
   COLOR_UNSPECIFIED: null,
   COLOR_RED: 'red',
 };

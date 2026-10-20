@@ -1,4 +1,4 @@
-import type { Chainable } from './chainable.type.js';
+import type { Chainable } from '@toxictoast/shared-types';
 
 declare const brand: unique symbol;
 

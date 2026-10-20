@@ -7,7 +7,7 @@ import type {
   PostStatus,
   TagId,
 } from '@toxictoast/blog-domain';
-import type { Nullable } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 import type { Mapper } from '@toxictoast/shared-persistence';
 import type { PostRecord } from '../interfaces/index.js';
 

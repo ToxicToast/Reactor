@@ -1,4 +1,5 @@
-import type { Anemic, Nullable, Optional } from '@toxictoast/shared-kernel';
+import type { Nullable, Optional } from '@toxictoast/shared-types';
+import type { Anemic } from '@toxictoast/shared-kernel';
 import type {
   DataSource,
   EntitySchema,

@@ -1,4 +1,4 @@
-import type { Optional } from '@toxictoast/shared-kernel';
+import type { Optional } from '@toxictoast/shared-types';
 
 export const optionalEnv = (
   name: string,

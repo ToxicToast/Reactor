@@ -1,4 +1,4 @@
-import type { Nullable, Optional } from '@toxictoast/shared-kernel';
+import type { Nullable, Optional } from '@toxictoast/shared-types';
 import { mapEnum } from './map-enum.function.js';
 
 export const mapOptionalEnum = <TFrom extends string, TTo>(

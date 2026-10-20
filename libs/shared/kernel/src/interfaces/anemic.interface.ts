@@ -1,4 +1,5 @@
-import type { Id, Nullable } from '../types/index.js';
+import type { Nullable } from '@toxictoast/shared-types';
+import type { Id } from '../types/index.js';
 
 export interface Anemic<TId extends Id<string> = Id<string>> {
   readonly id: TId;

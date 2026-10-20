@@ -1,4 +1,5 @@
 import type { DomainContext } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 import { CategoryFactory } from '../factories/index.js';
 import type { CategoryDomain } from './category.domain.js';
 import type { CategoryId } from '../types/index.js';
@@ -15,7 +16,7 @@ describe('CategoryDomain', () => {
 
   const createCategory = (
     title = 'Warhammer',
-    description: string | null = null,
+    description: Nullable<string> = null,
   ): CategoryDomain => {
     const result = factory.createDomain({
       title,

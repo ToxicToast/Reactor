@@ -1,4 +1,4 @@
-import type { Optional } from '@toxictoast/shared-kernel';
+import type { Optional } from '@toxictoast/shared-types';
 import type { EventHandler } from '../types/index.js';
 import type { ConsumedEvent } from './consumed-event.interface.js';
 

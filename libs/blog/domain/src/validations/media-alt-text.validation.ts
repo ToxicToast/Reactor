@@ -1,8 +1,5 @@
-import {
-  type Nullable,
-  Result,
-  ValidationError,
-} from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
+import { Result, ValidationError } from '@toxictoast/shared-kernel';
 
 export class ValidateMediaAltText {
   constructor(

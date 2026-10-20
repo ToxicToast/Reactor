@@ -1,4 +1,4 @@
-import type { Optional } from '@toxictoast/shared-kernel';
+import type { Optional } from '@toxictoast/shared-types';
 import type { TagId } from '@toxictoast/blog-domain';
 
 export interface UpdateTagInput {

@@ -1,5 +1,5 @@
 import type { TagAnemic, TagId, TagRepository } from '@toxictoast/blog-domain';
-import type { Nullable } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 import {
   TypeOrmRepository,
   type TransactionContext,

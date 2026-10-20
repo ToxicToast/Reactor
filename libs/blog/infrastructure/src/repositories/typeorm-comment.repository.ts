@@ -4,7 +4,7 @@ import type {
   CommentStatus,
   PostId,
 } from '@toxictoast/blog-domain';
-import type { Optional } from '@toxictoast/shared-kernel';
+import type { Optional } from '@toxictoast/shared-types';
 import {
   TypeOrmRepository,
   type TransactionContext,

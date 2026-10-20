@@ -1,4 +1,4 @@
-import type { Nullable } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 import type { StoredFile } from './stored-file.interface.js';
 
 export interface FileStorage {

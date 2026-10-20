@@ -28,6 +28,7 @@ export class MessagingModule {
     return {
       module: MessagingModule,
       global: true,
+      imports: options.imports ?? [],
       providers: [
         {
           provide: TOKENS.KAFKA_PRODUCER,

@@ -1,4 +1,5 @@
-import type { Id, Nullable, Optional } from '../types/index.js';
+import type { Nullable, Optional } from '@toxictoast/shared-types';
+import type { Id } from '../types/index.js';
 import type { Anemic } from './anemic.interface.js';
 
 export interface Repository<

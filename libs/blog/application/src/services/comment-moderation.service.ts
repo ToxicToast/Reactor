@@ -1,4 +1,5 @@
-import type { Nullable, Result } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
+import type { Result } from '@toxictoast/shared-kernel';
 import {
   CommentStatus,
   type CommentDomain,

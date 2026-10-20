@@ -1,6 +1,6 @@
 import { PostStatus } from '@toxictoast/blog-domain';
 import { PostStatus as GrpcPostStatus } from '@toxictoast/contracts-grpc';
-import type { Nullable } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 
 export const POST_STATUS_FROM_GRPC: Readonly<
   Record<GrpcPostStatus, Nullable<PostStatus>>

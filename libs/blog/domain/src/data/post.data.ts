@@ -1,5 +1,5 @@
 import type { PostAnemic } from '../anemics/index.js';
-import type { Nullable, Optional } from '@toxictoast/shared-kernel';
+import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type { CategoryId, MediaId, TagId } from '../types/index.js';
 
 export type PostData = Pick<

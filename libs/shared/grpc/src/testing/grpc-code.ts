@@ -1,5 +1,5 @@
 import { RpcException } from '@nestjs/microservices';
-import type { Optional } from '@toxictoast/shared-kernel';
+import type { Optional } from '@toxictoast/shared-types';
 
 export const grpcCode = (
   promise: Promise<unknown>,

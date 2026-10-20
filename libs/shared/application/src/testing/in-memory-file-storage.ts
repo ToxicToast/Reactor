@@ -1,4 +1,4 @@
-import type { Nullable } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 import type { FileStorage, StoredFile } from '../interfaces/index.js';
 
 export class InMemoryFileStorage implements FileStorage {

@@ -1,6 +1,6 @@
+import type { Nullable } from '@toxictoast/shared-types';
 import {
   ConflictError,
-  type Nullable,
   NotFoundError,
   Result,
 } from '@toxictoast/shared-kernel';

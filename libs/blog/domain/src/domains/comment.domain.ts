@@ -1,8 +1,8 @@
+import type { Nullable } from '@toxictoast/shared-types';
 import {
   BaseDomain,
   ConflictError,
   type DomainEventClass,
-  type Nullable,
   Result,
 } from '@toxictoast/shared-kernel';
 import type { CommentAnemic } from '../anemics/index.js';

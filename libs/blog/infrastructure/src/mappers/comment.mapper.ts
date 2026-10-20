@@ -6,7 +6,7 @@ import type {
   CommentStatus,
   PostId,
 } from '@toxictoast/blog-domain';
-import type { Nullable } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 import type { Mapper } from '@toxictoast/shared-persistence';
 import type { CommentRow } from '../interfaces/index.js';
 

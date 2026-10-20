@@ -1,4 +1,4 @@
-import type { Nullable, Optional } from '@toxictoast/shared-kernel';
+import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type { CommentId, CommentStatus, PostId } from '@toxictoast/blog-domain';
 import type { ModerationDecision, ModerationStatus } from '../types/index.js';
 

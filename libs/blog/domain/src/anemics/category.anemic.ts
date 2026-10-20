@@ -1,4 +1,5 @@
-import type { Anemic, Nullable } from '@toxictoast/shared-kernel';
+import type { Anemic } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 import type { CategoryId } from '../types/index.js';
 
 export interface CategoryAnemic extends Anemic<CategoryId> {

@@ -1,8 +1,5 @@
-import type {
-  Chainable,
-  Optional,
-  Repository,
-} from '@toxictoast/shared-kernel';
+import type { Chainable, Optional } from '@toxictoast/shared-types';
+import type { Repository } from '@toxictoast/shared-kernel';
 import type { CommentAnemic } from '../anemics/index.js';
 import type { CommentStatus } from '../enums/index.js';
 import type { PostId } from '../types/index.js';

@@ -1,7 +1,7 @@
+import type { Optional } from '@toxictoast/shared-types';
 import {
   BaseDomain,
   ConflictError,
-  type Optional,
   Result,
   ValidationError,
 } from '@toxictoast/shared-kernel';

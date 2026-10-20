@@ -1,7 +1,7 @@
 import type { ModerationStatus } from '@toxictoast/blog-application';
 import { CommentStatus } from '@toxictoast/blog-domain';
 import { ModerationStatus as GrpcModerationStatus } from '@toxictoast/contracts-grpc';
-import type { Nullable } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 
 export const MODERATION_STATUS_FROM_GRPC: Readonly<
   Record<GrpcModerationStatus, Nullable<ModerationStatus>>

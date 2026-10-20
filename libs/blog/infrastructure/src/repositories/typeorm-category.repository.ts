@@ -3,7 +3,7 @@ import type {
   CategoryId,
   CategoryRepository,
 } from '@toxictoast/blog-domain';
-import type { Nullable } from '@toxictoast/shared-kernel';
+import type { Nullable } from '@toxictoast/shared-types';
 import {
   TypeOrmRepository,
   type TransactionContext,

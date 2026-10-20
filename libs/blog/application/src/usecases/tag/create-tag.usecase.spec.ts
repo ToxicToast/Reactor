@@ -1,3 +1,4 @@
+import type { Nullable } from '@toxictoast/shared-types';
 import type { DomainContext } from '@toxictoast/shared-kernel';
 import {
   DomainPersistence,
@@ -39,7 +40,7 @@ describe('CreateTagUseCase', () => {
 
   const existingTag = (
     slug: string,
-    deletedAt: Date | null = null,
+    deletedAt: Nullable<Date> = null,
   ): TagAnemic => {
     return {
       id: 'existing' as TagId,
