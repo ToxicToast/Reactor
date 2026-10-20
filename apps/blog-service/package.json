@@ -70,6 +70,29 @@
         "options": {
           "passWithNoTests": true
         }
+      },
+      "docker-build": {
+        "dependsOn": [
+          "prune"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "VERSION": "local",
+          "REGISTRY": "ghcr.io/toxictoast",
+          "command": "docker build -f apps/blog-service/Dockerfile -t {args.REGISTRY}/blog-service:{args.VERSION} -t {args.REGISTRY}/blog-service:latest apps/blog-service/dist"
+        }
+      },
+      "docker-push": {
+        "executor": "nx:run-commands",
+        "options": {
+          "VERSION": "local",
+          "REGISTRY": "ghcr.io/toxictoast",
+          "parallel": false,
+          "commands": [
+            "docker push {args.REGISTRY}/blog-service:{args.VERSION}",
+            "docker push {args.REGISTRY}/blog-service:latest"
+          ]
+        }
       }
     }
   },
@@ -89,7 +112,8 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0",
     "tslib": "^2.3.0",
-    "typeorm": "^1.1.2"
+    "typeorm": "^1.1.2",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
     "@nestjs/testing": "^11.0.0"
