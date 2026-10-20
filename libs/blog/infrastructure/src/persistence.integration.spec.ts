@@ -7,6 +7,7 @@ import {
 } from '@toxictoast/shared-persistence';
 import { TypeOrmTagRepository } from './repositories/index.js';
 import { PostgresTestDatabase } from './testing/index.js';
+import { ActorContext } from '@toxictoast/shared-system';
 
 const NOW = new Date('2026-10-20T10:00:00Z');
 
@@ -43,7 +44,7 @@ describe('Blog persistence', () => {
   beforeAll(async () => {
     await database.start();
     uow = new TypeOrmUnitOfWork(database.dataSource, database.context);
-    outbox = new TypeOrmOutbox(database.context);
+    outbox = new TypeOrmOutbox(database.context, new ActorContext());
     tags = new TypeOrmTagRepository(database.dataSource, database.context);
   });
 
@@ -66,13 +67,16 @@ describe('Blog persistence', () => {
     });
 
     const rows = await database.dataSource.query(
-      'SELECT event_name, aggregate_id, payload, published_at FROM outbox',
+      'SELECT event_name, aggregate_id, actor_type, actor_id, actor_ip, payload, published_at FROM outbox',
     );
     expect(await tags.findById(anemic.id)).toEqual(anemic);
     expect(rows).toEqual([
       {
         event_name: 'create',
         aggregate_id: anemic.id,
+        actor_type: 'system',
+        actor_id: null,
+        actor_ip: null,
         payload: { ...anemic, created_at: NOW.toISOString() },
         published_at: null,
       },

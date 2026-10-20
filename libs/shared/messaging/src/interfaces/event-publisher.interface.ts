@@ -1,5 +1,5 @@
-import type { DomainEvent } from '@toxictoast/shared-kernel';
+import type { PublishedEvent } from './published-event.interface.js';
 
 export interface EventPublisher {
-  publish(events: ReadonlyArray<DomainEvent>): Promise<void>;
+  publish(events: ReadonlyArray<PublishedEvent>): Promise<void>;
 }

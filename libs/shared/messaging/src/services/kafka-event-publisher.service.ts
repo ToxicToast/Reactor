@@ -1,13 +1,12 @@
 import type { Producer } from '@platformatic/kafka';
-import type { DomainEvent } from '@toxictoast/shared-kernel';
-import type { EventPublisher } from '../interfaces/index.js';
+import type { EventPublisher, PublishedEvent } from '../interfaces/index.js';
 
 export class KafkaEventPublisher implements EventPublisher {
   constructor(
     private readonly producer: Producer<string, string, string, string>,
   ) {}
 
-  async publish(events: ReadonlyArray<DomainEvent>): Promise<void> {
+  async publish(events: ReadonlyArray<PublishedEvent>): Promise<void> {
     if (events.length === 0) {
       return;
     }

@@ -1,7 +1,11 @@
-import type { Clock, DomainEvent } from '@toxictoast/shared-kernel';
+import type { Clock } from '@toxictoast/shared-kernel';
 import { OutboxSchema, type OutboxRow } from '@toxictoast/shared-persistence';
 import { In, type DataSource, type EntityManager } from 'typeorm';
-import type { EventPublisher, OutboxRelayResult } from '../interfaces/index.js';
+import type {
+  EventPublisher,
+  OutboxRelayResult,
+  PublishedEvent,
+} from '../interfaces/index.js';
 
 export class OutboxRelay {
   constructor(
@@ -50,7 +54,7 @@ export class OutboxRelay {
     return { published: rows.length, failed: 0, error: null };
   }
 
-  private toEvent(row: OutboxRow): DomainEvent {
+  private toEvent(row: OutboxRow): PublishedEvent {
     return {
       event_id: row.event_id,
       event_namespace: row.event_namespace,
@@ -58,6 +62,7 @@ export class OutboxRelay {
       event_version: row.event_version,
       aggregate_id: row.aggregate_id,
       occurred_at: row.occurred_at,
+      actor: { type: row.actor_type, id: row.actor_id, ip: row.actor_ip },
       payload: row.payload,
     };
   }

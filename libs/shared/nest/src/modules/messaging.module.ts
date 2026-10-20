@@ -14,6 +14,7 @@ import {
   type EventPublisher,
 } from '@toxictoast/shared-messaging';
 import {
+  ActorContext,
   booleanEnv,
   describeError,
   numberEnv,
@@ -80,13 +81,14 @@ export class MessagingModule {
         },
         {
           provide: TOKENS.EVENT_CONSUMER,
-          inject: handlers?.inject ?? [],
-          useFactory: (...deps: Array<unknown>) => {
+          inject: [ActorContext, ...(handlers?.inject ?? [])],
+          useFactory: (actors: ActorContext, ...deps: Array<unknown>) => {
             if (!handlers) {
               return null;
             }
             return new KafkaEventConsumer(
               createKafkaConsumer(kafkaConfigFromEnv(), options.groupId),
+              actors,
               {
                 handlers: handlers.useFactory(...deps),
                 onError: (error, event) => {

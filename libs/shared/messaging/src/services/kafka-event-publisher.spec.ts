@@ -1,14 +1,16 @@
 import type { Producer } from '@platformatic/kafka';
-import type { DomainEvent } from '@toxictoast/shared-kernel';
+import { ActorType } from '@toxictoast/shared-system';
+import type { PublishedEvent } from '../interfaces/index.js';
 import { KafkaEventPublisher } from './kafka-event-publisher.service.js';
 
-const EVENT: DomainEvent = {
+const EVENT: PublishedEvent = {
   event_id: '0192f3a0-0000-7000-8000-000000000001',
   event_namespace: 'blog.post',
   event_name: 'publish',
   event_version: 1,
   aggregate_id: '0192f3a0-0000-7000-8000-0000000000aa',
   occurred_at: new Date('2026-10-20T12:00:00Z'),
+  actor: { type: ActorType.USER, id: 'user-1', ip: '203.0.113.7' },
   payload: { title: 'Warhammer' },
 };
 

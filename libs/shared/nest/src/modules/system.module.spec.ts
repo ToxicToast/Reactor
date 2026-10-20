@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import type { Clock, DomainContext } from '@toxictoast/shared-kernel';
 import { TOKENS } from '../constants/index.js';
 import { SystemModule } from './system.module.js';
+import { ActorContext, SYSTEM_ACTOR } from '@toxictoast/shared-system';
 
 const UUID_V7 =
   /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -18,5 +19,13 @@ describe('SystemModule', () => {
     expect(context.id.generate()).toMatch(UUID_V7);
     expect(context.date).toBe(clock);
     expect(Math.abs(clock.now().getTime() - Date.now())).toBeLessThan(1000);
+  });
+
+  it('provides one actor context for the whole app', async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [SystemModule],
+    }).compile();
+
+    expect(moduleRef.get(ActorContext).current()).toBe(SYSTEM_ACTOR);
   });
 });

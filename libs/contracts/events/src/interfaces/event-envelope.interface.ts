@@ -1,3 +1,5 @@
+import type { EventActorV1 } from './event-actor.interface.js';
+
 export interface EventEnvelope<
   TNamespace extends string,
   TName extends string,
@@ -9,5 +11,6 @@ export interface EventEnvelope<
   readonly event_version: number;
   readonly aggregate_id: string;
   readonly occurred_at: string;
+  readonly actor: EventActorV1;
   readonly payload: TPayload;
 }

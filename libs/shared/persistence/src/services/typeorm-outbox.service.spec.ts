@@ -1,4 +1,5 @@
 import type { DomainEvent } from '@toxictoast/shared-kernel';
+import { ActorContext, ActorType, type Actor } from '@toxictoast/shared-system';
 import type { EntityManager } from 'typeorm';
 import { TransactionContext } from '../classes/index.js';
 import { TypeOrmOutbox } from './typeorm-outbox.service.js';
@@ -13,10 +14,13 @@ const EVENT: DomainEvent = {
   payload: { title: 'Warhammer' },
 };
 
+const USER: Actor = { type: ActorType.USER, id: 'user-1', ip: '203.0.113.7' };
+
 describe('TypeOrmOutbox', () => {
   let insert: jest.Mock;
   let manager: EntityManager;
   let context: TransactionContext;
+  let actors: ActorContext;
   let outbox: TypeOrmOutbox;
 
   beforeEach(() => {
@@ -25,14 +29,36 @@ describe('TypeOrmOutbox', () => {
       getRepository: () => ({ insert }),
     } as unknown as EntityManager;
     context = new TransactionContext();
-    outbox = new TypeOrmOutbox(context);
+    actors = new ActorContext();
+    outbox = new TypeOrmOutbox(context, actors);
   });
 
-  it('inserts the events as unpublished rows', async () => {
+  it('inserts the events as unpublished rows with the current actor', async () => {
+    await actors.run(USER, () =>
+      context.run(manager, () => outbox.add([EVENT])),
+    );
+
+    expect(insert).toHaveBeenCalledWith([
+      {
+        ...EVENT,
+        actor_type: 'user',
+        actor_id: 'user-1',
+        actor_ip: '203.0.113.7',
+        published_at: null,
+        attempts: 0,
+      },
+    ]);
+  });
+
+  it('uses the system actor outside of a request', async () => {
     await context.run(manager, () => outbox.add([EVENT]));
 
     expect(insert).toHaveBeenCalledWith([
-      { ...EVENT, published_at: null, attempts: 0 },
+      expect.objectContaining({
+        actor_type: 'system',
+        actor_id: null,
+        actor_ip: null,
+      }),
     ]);
   });
 

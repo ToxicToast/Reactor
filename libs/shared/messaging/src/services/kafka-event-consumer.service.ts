@@ -1,4 +1,10 @@
 import type { Consumer, Message, MessagesStream } from '@platformatic/kafka';
+import {
+  isActor,
+  SYSTEM_ACTOR,
+  type Actor,
+  type ActorContext,
+} from '@toxictoast/shared-system';
 import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type {
   ConsumedEvent,
@@ -16,6 +22,7 @@ export class KafkaEventConsumer {
 
   constructor(
     private readonly consumer: Consumer<string, string, string, string>,
+    private readonly actors: ActorContext,
     private readonly options: KafkaEventConsumerOptions,
   ) {}
 
@@ -68,11 +75,12 @@ export class KafkaEventConsumer {
       return true;
     }
 
+    const actor = this.actorOf(event);
     let delay = this.options.retryDelayMs ?? 1000;
     const maxDelay = this.options.maxRetryDelayMs ?? 30000;
     while (!this.stopping) {
       try {
-        await handler(event);
+        await this.actors.run(actor, () => handler(event));
         return true;
       } catch (error) {
         this.options.onError(error, event);
@@ -81,6 +89,13 @@ export class KafkaEventConsumer {
       }
     }
     return false;
+  }
+
+  private actorOf(event: ConsumedEvent): Actor {
+    if (isActor(event.actor)) {
+      return event.actor;
+    }
+    return SYSTEM_ACTOR;
   }
 
   private parse(message: StringMessage): Optional<ConsumedEvent> {

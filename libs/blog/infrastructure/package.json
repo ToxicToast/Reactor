@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "@toxictoast/blog-application": "*",
-    "@toxictoast/contracts-events": "*"
+    "@toxictoast/contracts-events": "*",
+    "@toxictoast/shared-system": "*"
   }
 }

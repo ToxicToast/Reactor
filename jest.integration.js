@@ -1,5 +1,6 @@
 const { readFileSync } = require('fs');
 const { join } = require('path');
+const preset = require('./jest.preset.js');
 
 module.exports = (projectDir, displayName) => {
   const swcJestConfig = JSON.parse(
@@ -8,9 +9,9 @@ module.exports = (projectDir, displayName) => {
   swcJestConfig.swcrc = false;
 
   return {
+    ...preset,
     displayName,
     rootDir: projectDir,
-    preset: join(__dirname, 'jest.preset.js'),
     testEnvironment: 'node',
     transform: {
       '^.+\\.[tj]s$': ['@swc/jest', swcJestConfig],

@@ -22,7 +22,9 @@ import {
   type BlogTagPayloadV1,
   type ModerationDecidedPayloadV1,
   BlogCommentModerationEvents,
+  type EventActorV1,
 } from '@toxictoast/contracts-events';
+import type { Actor } from '@toxictoast/shared-system';
 
 type JsonValue<T> = T extends Date
   ? string
@@ -91,5 +93,13 @@ describe('Event contracts', () => {
     expect(checks).toHaveLength(1);
     expect(request.event_namespace).toBe(BlogTopics.COMMENT_MODERATION);
     expect(request.event_name).toBe(BlogCommentModerationEvents.REQUESTED);
+  });
+
+  it('match the event actor', () => {
+    const checks: Array<true> = [
+      true as Compatible<Jsonified<Actor>, EventActorV1>,
+    ];
+
+    expect(checks).toHaveLength(1);
   });
 });

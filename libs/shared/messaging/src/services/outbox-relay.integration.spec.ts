@@ -3,10 +3,11 @@ import {
   PostgreSqlContainer,
   type StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql';
-import type { Clock, DomainEvent } from '@toxictoast/shared-kernel';
+import type { Clock } from '@toxictoast/shared-kernel';
 import { OutboxSchema, type OutboxRow } from '@toxictoast/shared-persistence';
+import { ActorType } from '@toxictoast/shared-system';
 import { DataSource } from 'typeorm';
-import type { EventPublisher } from '../interfaces/index.js';
+import type { EventPublisher, PublishedEvent } from '../interfaces/index.js';
 import { OutboxRelay } from './outbox-relay.service.js';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
@@ -19,6 +20,9 @@ const row = (minute: number, overrides: Partial<OutboxRow> = {}): OutboxRow => {
     event_name: 'update',
     event_version: 1,
     aggregate_id: 'post-1',
+    actor_type: ActorType.USER,
+    actor_id: 'user-1',
+    actor_ip: '203.0.113.7',
     payload: { minute },
     occurred_at: new Date(
       `2026-10-20T10:${String(minute).padStart(2, '0')}:00Z`,
@@ -30,9 +34,9 @@ const row = (minute: number, overrides: Partial<OutboxRow> = {}): OutboxRow => {
 };
 
 class RecordingPublisher implements EventPublisher {
-  readonly published: Array<DomainEvent> = [];
+  readonly published: Array<PublishedEvent> = [];
 
-  async publish(events: ReadonlyArray<DomainEvent>): Promise<void> {
+  async publish(events: ReadonlyArray<PublishedEvent>): Promise<void> {
     this.published.push(...events);
   }
 }
@@ -82,6 +86,21 @@ describe('OutboxRelay', () => {
       { minute: 3 },
     ]);
     expect((await load()).every((stored) => stored.published_at)).toBe(true);
+  });
+
+  it('publishes the actor of each event', async () => {
+    const publisher = new RecordingPublisher();
+    await insert(
+      row(1),
+      row(2, { actor_type: ActorType.SYSTEM, actor_id: null, actor_ip: null }),
+    );
+
+    await new OutboxRelay(dataSource, publisher, clock).relay();
+
+    expect(publisher.published.map((event) => event.actor)).toEqual([
+      { type: 'user', id: 'user-1', ip: '203.0.113.7' },
+      { type: 'system', id: null, ip: null },
+    ]);
   });
 
   it('does nothing without unpublished events', async () => {
