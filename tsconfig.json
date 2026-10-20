@@ -50,6 +50,9 @@
     },
     {
       "path": "./libs/shared/types"
+    },
+    {
+      "path": "./apps/blog-service"
     }
   ],
   "compilerOptions": {}

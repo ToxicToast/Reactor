@@ -6,4 +6,5 @@ export interface MessagingModuleOptions {
   readonly groupId: string;
   readonly imports?: Optional<NonNullable<ModuleMetadata['imports']>>;
   readonly handlers?: Optional<EventHandlersProvider>;
+  readonly topics?: Optional<ReadonlyArray<string>>;
 }

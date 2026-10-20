@@ -2,6 +2,7 @@ import { Logger, Module, type DynamicModule } from '@nestjs/common';
 import type { Producer } from '@platformatic/kafka';
 import type { Clock } from '@toxictoast/shared-kernel';
 import {
+  createKafkaAdmin,
   createKafkaConsumer,
   createKafkaProducer,
   KafkaEventConsumer,
@@ -9,13 +10,19 @@ import {
   kafkaConfigFromEnv,
   OutboxRelay,
   OutboxRelayWorker,
+  TopicProvisioner,
   type EventPublisher,
 } from '@toxictoast/shared-messaging';
-import { describeError, numberEnv } from '@toxictoast/shared-system';
+import {
+  booleanEnv,
+  describeError,
+  numberEnv,
+} from '@toxictoast/shared-system';
 import { DataSource } from 'typeorm';
 import { TOKENS } from '../constants/index.js';
 import type { MessagingModuleOptions } from '../interfaces/index.js';
 import { MessagingLifecycle } from '../lifecycles/index.js';
+import { Nullable } from '@toxictoast/shared-types';
 
 type StringProducer = Producer<string, string, string, string>;
 
@@ -88,6 +95,29 @@ export class MessagingModule {
                     : 'unknown event';
                   logger.error(`Handling ${name} failed`, describeError(error));
                 },
+              },
+            );
+          },
+        },
+        {
+          provide: TOKENS.TOPIC_PROVISIONER,
+          inject: [TOKENS.EVENT_CONSUMER],
+          useFactory: (
+            consumer: Nullable<KafkaEventConsumer>,
+          ): Nullable<TopicProvisioner> => {
+            if (!booleanEnv('KAFKA_AUTO_CREATE_TOPICS', true)) {
+              return null;
+            }
+            const topics = [
+              ...(options.topics ?? []),
+              ...(consumer?.topics ?? []),
+            ];
+            return new TopicProvisioner(
+              createKafkaAdmin(kafkaConfigFromEnv()),
+              topics,
+              {
+                partitions: numberEnv('KAFKA_TOPIC_PARTITIONS', 3),
+                replicas: numberEnv('KAFKA_TOPIC_REPLICAS', 1),
               },
             );
           },

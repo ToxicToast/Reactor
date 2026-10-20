@@ -21,6 +21,9 @@
       "path": "../../shared/types/tsconfig.lib.json"
     },
     {
+      "path": "../../contracts/events/tsconfig.lib.json"
+    },
+    {
       "path": "../../contracts/grpc/tsconfig.lib.json"
     },
     {

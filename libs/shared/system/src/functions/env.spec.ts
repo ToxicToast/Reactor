@@ -1,6 +1,7 @@
 import { numberEnv } from './number-env.function.js';
 import { optionalEnv } from './optional-env.function.js';
 import { requiredEnv } from './required-env.function.js';
+import { booleanEnv } from './boolean-env.function.js';
 
 const SOURCE: NodeJS.ProcessEnv = {
   HOST: 'postgres',
@@ -45,5 +46,24 @@ describe('numberEnv', () => {
 
   it('throws for a value that is not an integer', () => {
     expect(() => numberEnv('BROKEN', 5432, SOURCE)).toThrow('integer');
+  });
+});
+
+describe('booleanEnv', () => {
+  it.each([
+    ['true', true],
+    ['false', false],
+  ])('parses %s', (value, expected) => {
+    expect(booleanEnv('FLAG', undefined, { FLAG: value })).toBe(expected);
+  });
+
+  it('returns the fallback for a missing variable', () => {
+    expect(booleanEnv('FLAG', true, {})).toBe(true);
+  });
+
+  it('throws for anything else', () => {
+    expect(() => booleanEnv('FLAG', true, { FLAG: 'yes' })).toThrow(
+      'true or false',
+    );
   });
 });

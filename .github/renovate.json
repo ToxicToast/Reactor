@@ -19,6 +19,11 @@
       "groupName": "devDependencies (major)",
       "matchDepTypes": ["devDependencies", "require-dev"],
       "matchUpdateTypes": ["major"]
+    },
+    {
+      "description": "terminus 12 is ESM-only and breaks Jest; keep 11 until the Nest 12 upgrade",
+      "matchPackageNames": ["@nestjs/terminus"],
+      "allowedVersions": "<12"
     }
   ],
   "separateMinorPatch": true,
