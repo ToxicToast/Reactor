@@ -1,5 +1,9 @@
-import type { DomainEvent } from '@toxictoast/shared-kernel';
-import { ActorContext, ActorType, type Actor } from '@toxictoast/shared-system';
+import {
+  ActorType,
+  type Actor,
+  type DomainEvent,
+} from '@toxictoast/shared-kernel';
+import { ActorContext } from '@toxictoast/shared-system';
 import type { EntityManager } from 'typeorm';
 import { TransactionContext } from '../classes/index.js';
 import { TypeOrmOutbox } from './typeorm-outbox.service.js';

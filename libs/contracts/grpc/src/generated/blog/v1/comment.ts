@@ -47,7 +47,6 @@ export interface Comment {
 export interface CreateCommentRequest {
   post_id: string;
   parent_id?: string | undefined;
-  author_id: string;
   content: string;
 }
 

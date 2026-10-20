@@ -1,4 +1,5 @@
 import { Controller } from '@nestjs/common';
+import { ActorProvider } from '@toxictoast/shared-kernel';
 import {
   ArchivePostUseCase,
   CreatePostUseCase,
@@ -40,6 +41,7 @@ import {
   parseDate,
   parseId,
   parseOptionalId,
+  requireUser,
   unwrap,
 } from '@toxictoast/shared-grpc';
 import { PostGrpcMapper, PostUpdateGrpcMapper } from '../mappers/index.js';
@@ -62,12 +64,13 @@ export class PostGrpcController implements PostServiceController {
     private readonly getPostUseCase: GetPostUseCase,
     private readonly getPublishedPostUseCase: GetPublishedPostUseCase,
     private readonly listPostsUseCase: ListPostsUseCase,
+    private readonly actors: ActorProvider,
   ) {}
 
   async createPost(request: CreatePostRequest): Promise<CreatePostResponse> {
     const post = unwrap(
       await this.createPostUseCase.execute({
-        author_id: parseId(request.author_id, 'author_id'),
+        author_id: requireUser(this.actors.current()),
         title: request.title,
         excerpt: request.excerpt ?? null,
         content: request.content,

@@ -1,8 +1,11 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { SYSTEM_ACTOR } from '../constants/index.js';
-import type { Actor } from '../interfaces/index.js';
+import {
+  ActorProvider,
+  SYSTEM_ACTOR,
+  type Actor,
+} from '@toxictoast/shared-kernel';
 
-export class ActorContext {
+export class ActorContext extends ActorProvider {
   private readonly storage = new AsyncLocalStorage<Actor>();
 
   current(): Actor {

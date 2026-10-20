@@ -1,10 +1,6 @@
 import type { Consumer, Message, MessagesStream } from '@platformatic/kafka';
-import {
-  isActor,
-  SYSTEM_ACTOR,
-  type Actor,
-  type ActorContext,
-} from '@toxictoast/shared-system';
+import { isActor, SYSTEM_ACTOR, type Actor } from '@toxictoast/shared-kernel';
+import type { ActorContext } from '@toxictoast/shared-system';
 import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type {
   ConsumedEvent,

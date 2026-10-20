@@ -1,5 +1,5 @@
 import type { Producer } from '@platformatic/kafka';
-import { ActorType } from '@toxictoast/shared-system';
+import { ActorType } from '@toxictoast/shared-kernel';
 import type { PublishedEvent } from '../interfaces/index.js';
 import { KafkaEventPublisher } from './kafka-event-publisher.service.js';
 

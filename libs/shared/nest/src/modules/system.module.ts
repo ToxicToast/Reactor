@@ -1,6 +1,10 @@
 import { Global, Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import type { Clock, DomainContext } from '@toxictoast/shared-kernel';
+import {
+  ActorProvider,
+  type Clock,
+  type DomainContext,
+} from '@toxictoast/shared-kernel';
 import {
   ActorContext,
   SystemClock,
@@ -21,8 +25,9 @@ import { ActorInterceptor } from '../interceptors/index.js';
       },
     },
     { provide: ActorContext, useValue: new ActorContext() },
+    { provide: ActorProvider, useExisting: ActorContext },
     { provide: APP_INTERCEPTOR, useClass: ActorInterceptor },
   ],
-  exports: [TOKENS.CLOCK, TOKENS.DOMAIN_CONTEXT, ActorContext],
+  exports: [TOKENS.CLOCK, TOKENS.DOMAIN_CONTEXT, ActorContext, ActorProvider],
 })
 export class SystemModule {}

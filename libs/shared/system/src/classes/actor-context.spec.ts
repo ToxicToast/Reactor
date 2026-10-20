@@ -1,6 +1,4 @@
-import { SYSTEM_ACTOR } from '../constants/index.js';
-import { ActorType } from '../enums/index.js';
-import type { Actor } from '../interfaces/index.js';
+import { ActorType, SYSTEM_ACTOR, type Actor } from '@toxictoast/shared-kernel';
 import { ActorContext } from './actor-context.js';
 
 const USER: Actor = { type: ActorType.USER, id: 'user-1', ip: '203.0.113.7' };

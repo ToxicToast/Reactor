@@ -24,7 +24,7 @@ import {
   BlogCommentModerationEvents,
   type EventActorV1,
 } from '@toxictoast/contracts-events';
-import type { Actor } from '@toxictoast/shared-system';
+import type { Actor } from '@toxictoast/shared-kernel';
 
 type JsonValue<T> = T extends Date
   ? string

@@ -1,6 +1,5 @@
 import type { Outbox } from '@toxictoast/shared-application';
-import type { DomainEvent } from '@toxictoast/shared-kernel';
-import type { ActorContext } from '@toxictoast/shared-system';
+import type { ActorProvider, DomainEvent } from '@toxictoast/shared-kernel';
 import type { TransactionContext } from '../classes/index.js';
 import type { OutboxRow } from '../interfaces/index.js';
 import { OutboxSchema } from '../schemas/index.js';
@@ -8,7 +7,7 @@ import { OutboxSchema } from '../schemas/index.js';
 export class TypeOrmOutbox implements Outbox {
   constructor(
     private readonly context: TransactionContext,
-    private readonly actors: ActorContext,
+    private readonly actors: ActorProvider,
   ) {}
 
   async add(events: ReadonlyArray<DomainEvent>): Promise<void> {

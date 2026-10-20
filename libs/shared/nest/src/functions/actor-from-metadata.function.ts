@@ -1,5 +1,5 @@
 import { isIP } from 'node:net';
-import { ActorType, isActorType, type Actor } from '@toxictoast/shared-system';
+import { ActorType, isActorType, type Actor } from '@toxictoast/shared-kernel';
 import type { Nullable } from '@toxictoast/shared-types';
 import { ACTOR_METADATA } from '../constants/index.js';
 import type { GrpcMetadata } from '../interfaces/index.js';

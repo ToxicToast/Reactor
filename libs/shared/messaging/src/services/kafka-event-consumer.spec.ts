@@ -1,9 +1,6 @@
 import type { Consumer } from '@platformatic/kafka';
-import {
-  ActorContext,
-  ActorType,
-  SYSTEM_ACTOR,
-} from '@toxictoast/shared-system';
+import { ActorType, SYSTEM_ACTOR } from '@toxictoast/shared-kernel';
+import { ActorContext } from '@toxictoast/shared-system';
 import type { ConsumedEvent } from '../interfaces/index.js';
 import { KafkaEventConsumer } from './kafka-event-consumer.service.js';
 

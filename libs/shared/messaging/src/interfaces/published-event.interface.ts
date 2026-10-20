@@ -1,5 +1,4 @@
-import type { DomainEvent } from '@toxictoast/shared-kernel';
-import type { Actor } from '@toxictoast/shared-system';
+import type { Actor, DomainEvent } from '@toxictoast/shared-kernel';
 
 export interface PublishedEvent extends DomainEvent {
   readonly actor: Actor;

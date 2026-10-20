@@ -1,4 +1,5 @@
 import { Controller } from '@nestjs/common';
+import { ActorProvider } from '@toxictoast/shared-kernel';
 import {
   CreateCommentUseCase,
   DeleteCommentUseCase,
@@ -33,6 +34,7 @@ import {
   mapEnum,
   parseId,
   parseOptionalId,
+  requireUser,
   unwrap,
 } from '@toxictoast/shared-grpc';
 import { CommentGrpcMapper } from '../mappers/index.js';
@@ -55,6 +57,7 @@ export class CommentGrpcController implements CommentServiceController {
     private readonly getCommentUseCase: GetCommentUseCase,
     private readonly listPostCommentsUseCase: ListPostCommentsUseCase,
     private readonly listCommentsByStatusUseCase: ListCommentsByStatusUseCase,
+    private readonly actors: ActorProvider,
   ) {}
 
   async createComment(
@@ -64,7 +67,7 @@ export class CommentGrpcController implements CommentServiceController {
       await this.createCommentUseCase.execute({
         post_id: parseId(request.post_id, 'post_id'),
         parent_id: parseOptionalId(request.parent_id, 'parent_id'),
-        author_id: parseId(request.author_id, 'author_id'),
+        author_id: requireUser(this.actors.current()),
         content: request.content,
       }),
     );

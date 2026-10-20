@@ -14,7 +14,7 @@ import {
 import { DataSource } from 'typeorm';
 import { TOKENS } from '../constants/index.js';
 import { DataSourceLifecycle } from '../lifecycles/index.js';
-import { ActorContext } from '@toxictoast/shared-system';
+import { ActorProvider } from '@toxictoast/shared-kernel';
 
 @Module({})
 export class PersistenceModule {
@@ -50,10 +50,10 @@ export class PersistenceModule {
         },
         {
           provide: TOKENS.OUTBOX,
-          inject: [TransactionContext, ActorContext],
+          inject: [TransactionContext, ActorProvider],
           useFactory: (
             context: TransactionContext,
-            actors: ActorContext,
+            actors: ActorProvider,
           ): Outbox => {
             return new TypeOrmOutbox(context, actors);
           },

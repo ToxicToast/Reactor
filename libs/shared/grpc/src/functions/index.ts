@@ -8,3 +8,5 @@ export * from './to-iso.function.js';
 export * from './map-enum.function.js';
 export * from './map-optional-enum.function.js';
 export * from './parse-mask.function.js';
+export * from './unauthenticated.function.js';
+export * from './require-user.function.js';

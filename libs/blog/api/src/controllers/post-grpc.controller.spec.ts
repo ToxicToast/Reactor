@@ -32,14 +32,21 @@ import {
   InMemoryOutbox,
 } from '@toxictoast/shared-application';
 import { grpcCode } from '@toxictoast/shared-grpc';
+import {
+  ActorType,
+  type Actor,
+  type ActorProvider,
+} from '@toxictoast/shared-kernel';
 import { PostGrpcController } from './post-grpc.controller.js';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
 const CATEGORY = randomUUID();
 const MEDIA = randomUUID();
 
+const AUTHOR = randomUUID();
+const USER: Actor = { type: ActorType.USER, id: AUTHOR, ip: null };
+
 const CREATE: CreatePostRequest = {
-  author_id: randomUUID(),
   title: 'Warhammer 40k',
   content: 'Es gibt nur Krieg.',
   featured: false,
@@ -67,8 +74,11 @@ const update = (
 
 describe('PostGrpcController', () => {
   let controller: PostGrpcController;
+  let actor: Actor;
 
   beforeEach(async () => {
+    actor = USER;
+    const actors: ActorProvider = { current: () => actor };
     const factory = new PostFactory(createUuidTestContext(NOW));
     const posts = new InMemoryPostRepository();
     const categories = new InMemoryCategoryRepository();
@@ -93,6 +103,7 @@ describe('PostGrpcController', () => {
       new GetPostUseCase(posts),
       new GetPublishedPostUseCase(posts),
       new ListPostsUseCase(posts),
+      actors,
     );
 
     await categories.save(categoryAnemic(CATEGORY));
@@ -209,5 +220,19 @@ describe('PostGrpcController', () => {
 
     expect(published.posts.map((post) => post.id)).toEqual([id]);
     expect(drafts.posts).toEqual([]);
+  });
+
+  it('uses the signed-in user as author', async () => {
+    const { post } = await controller.createPost(CREATE);
+
+    expect(post?.author_id).toBe(AUTHOR);
+  });
+
+  it('rejects posts without a signed-in user', async () => {
+    actor = { type: ActorType.ANONYMOUS, id: null, ip: null };
+
+    expect(await grpcCode(controller.createPost(CREATE))).toBe(
+      status.UNAUTHENTICATED,
+    );
   });
 });

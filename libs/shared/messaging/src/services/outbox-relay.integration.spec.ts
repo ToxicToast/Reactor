@@ -3,9 +3,8 @@ import {
   PostgreSqlContainer,
   type StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql';
-import type { Clock } from '@toxictoast/shared-kernel';
+import { ActorType, type Clock } from '@toxictoast/shared-kernel';
 import { OutboxSchema, type OutboxRow } from '@toxictoast/shared-persistence';
-import { ActorType } from '@toxictoast/shared-system';
 import { DataSource } from 'typeorm';
 import type { EventPublisher, PublishedEvent } from '../interfaces/index.js';
 import { OutboxRelay } from './outbox-relay.service.js';

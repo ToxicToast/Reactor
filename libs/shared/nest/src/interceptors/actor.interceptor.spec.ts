@@ -1,5 +1,6 @@
 import type { CallHandler, ExecutionContext } from '@nestjs/common';
-import { ActorContext, SYSTEM_ACTOR } from '@toxictoast/shared-system';
+import { SYSTEM_ACTOR } from '@toxictoast/shared-kernel';
+import { ActorContext } from '@toxictoast/shared-system';
 import { defer, lastValueFrom } from 'rxjs';
 import type { GrpcMetadata } from '../interfaces/index.js';
 import { ActorInterceptor } from './actor.interceptor.js';

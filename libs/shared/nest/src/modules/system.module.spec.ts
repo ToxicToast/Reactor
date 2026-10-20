@@ -1,8 +1,13 @@
 import { Test } from '@nestjs/testing';
-import type { Clock, DomainContext } from '@toxictoast/shared-kernel';
+import {
+  ActorProvider,
+  SYSTEM_ACTOR,
+  type Clock,
+  type DomainContext,
+} from '@toxictoast/shared-kernel';
 import { TOKENS } from '../constants/index.js';
 import { SystemModule } from './system.module.js';
-import { ActorContext, SYSTEM_ACTOR } from '@toxictoast/shared-system';
+import { ActorContext } from '@toxictoast/shared-system';
 
 const UUID_V7 =
   /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -26,6 +31,9 @@ describe('SystemModule', () => {
       imports: [SystemModule],
     }).compile();
 
-    expect(moduleRef.get(ActorContext).current()).toBe(SYSTEM_ACTOR);
+    const context = moduleRef.get(ActorContext);
+
+    expect(moduleRef.get(ActorProvider)).toBe(context);
+    expect(context.current()).toBe(SYSTEM_ACTOR);
   });
 });

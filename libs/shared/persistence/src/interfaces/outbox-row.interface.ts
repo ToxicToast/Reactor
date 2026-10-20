@@ -1,4 +1,4 @@
-import type { ActorType } from '@toxictoast/shared-system';
+import type { ActorType } from '@toxictoast/shared-kernel';
 import type { Nullable } from '@toxictoast/shared-types';
 
 export interface OutboxRow {

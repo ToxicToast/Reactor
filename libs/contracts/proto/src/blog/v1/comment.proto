@@ -50,9 +50,11 @@ message Comment {
 }
 
 message CreateCommentRequest {
+  reserved 3;
+  reserved "author_id";
+
   string post_id = 1;
   optional string parent_id = 2;
-  string author_id = 3;
   string content = 4;
 }
 

@@ -7,3 +7,4 @@ export * from './domain-event.interface.js';
 export * from './value-object.interface.js';
 export * from './clock.interface.js';
 export * from './domain-context.interface.js';
+export * from './actor.interface.js';

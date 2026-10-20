@@ -43,7 +43,9 @@ message Post {
 }
 
 message CreatePostRequest {
-  string author_id = 1;
+  reserved 1;
+  reserved "author_id";
+
   string title = 2;
   optional string excerpt = 3;
   string content = 4;

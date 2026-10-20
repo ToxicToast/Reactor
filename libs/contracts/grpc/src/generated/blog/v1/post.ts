@@ -36,7 +36,6 @@ export interface Post {
 }
 
 export interface CreatePostRequest {
-  author_id: string;
   title: string;
   excerpt?: string | undefined;
   content: string;

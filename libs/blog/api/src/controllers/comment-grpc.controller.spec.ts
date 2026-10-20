@@ -27,16 +27,25 @@ import {
   InMemoryOutbox,
 } from '@toxictoast/shared-application';
 import { grpcCode } from '@toxictoast/shared-grpc';
+import {
+  ActorType,
+  type Actor,
+  type ActorProvider,
+} from '@toxictoast/shared-kernel';
 import { CommentGrpcController } from './comment-grpc.controller.js';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
 const POST = randomUUID();
 const AUTHOR = randomUUID();
+const USER: Actor = { type: ActorType.USER, id: AUTHOR, ip: null };
 
 describe('CommentGrpcController', () => {
   let controller: CommentGrpcController;
+  let actor: Actor;
 
   beforeEach(async () => {
+    actor = USER;
+    const actors: ActorProvider = { current: () => actor };
     const ctx = createUuidTestContext(NOW);
     const factory = new CommentFactory(ctx);
     const comments = new InMemoryCommentRepository();
@@ -55,6 +64,7 @@ describe('CommentGrpcController', () => {
       new GetCommentUseCase(comments),
       new ListPostCommentsUseCase(comments, posts),
       new ListCommentsByStatusUseCase(comments),
+      actors,
     );
 
     await posts.save(postAnemic(POST, { status: PostStatus.PUBLISHED }));
@@ -63,7 +73,6 @@ describe('CommentGrpcController', () => {
   const create = async (): Promise<string> => {
     const { comment } = await controller.createComment({
       post_id: POST,
-      author_id: AUTHOR,
       content: 'Für den Imperator!',
     });
     return comment?.id ?? '';
@@ -72,7 +81,6 @@ describe('CommentGrpcController', () => {
   it('creates a pending comment without moderation data', async () => {
     const { comment } = await controller.createComment({
       post_id: POST,
-      author_id: AUTHOR,
       content: 'Für den Imperator!',
     });
 
@@ -139,7 +147,6 @@ describe('CommentGrpcController', () => {
   it('maps an invalid post id to INVALID_ARGUMENT', async () => {
     const call = controller.createComment({
       post_id: 'abc',
-      author_id: AUTHOR,
       content: 'Hallo',
     });
 
@@ -149,10 +156,29 @@ describe('CommentGrpcController', () => {
   it('maps comments on an unknown post to NOT_FOUND', async () => {
     const call = controller.createComment({
       post_id: randomUUID(),
-      author_id: AUTHOR,
       content: 'Hallo',
     });
 
     expect(await grpcCode(call)).toBe(status.NOT_FOUND);
+  });
+
+  it('uses the signed-in user as author', async () => {
+    const { comment } = await controller.createComment({
+      post_id: POST,
+      content: 'Für den Imperator!',
+    });
+
+    expect(comment?.author_id).toBe(AUTHOR);
+  });
+
+  it('rejects comments without a signed-in user', async () => {
+    actor = { type: ActorType.ANONYMOUS, id: null, ip: '203.0.113.7' };
+
+    const call = controller.createComment({
+      post_id: POST,
+      content: 'Für den Imperator!',
+    });
+
+    expect(await grpcCode(call)).toBe(status.UNAUTHENTICATED);
   });
 });
