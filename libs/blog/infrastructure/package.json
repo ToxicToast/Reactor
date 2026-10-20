@@ -17,7 +17,29 @@
     "tags": [
       "scope:blog",
       "type:infrastructure"
-    ]
+    ],
+    "targets": {
+      "migration-generate": {
+        "command": "tsx --env-file=libs/blog/infrastructure/.env node_modules/typeorm/cli.js migration:generate -d libs/blog/infrastructure/typeorm.data-source.ts libs/blog/infrastructure/src/migrations/{args.name}"
+      },
+      "migration-run": {
+        "command": "tsx --env-file=libs/blog/infrastructure/.env node_modules/typeorm/cli.js migration:run -d libs/blog/infrastructure/typeorm.data-source.ts"
+      },
+      "migration-revert": {
+        "command": "tsx --env-file=libs/blog/infrastructure/.env node_modules/typeorm/cli.js migration:revert -d libs/blog/infrastructure/typeorm.data-source.ts"
+      },
+      "integration": {
+        "executor": "@nx/jest:jest",
+        "options": {
+          "jestConfig": "libs/blog/infrastructure/jest.integration.config.cts"
+        }
+      }
+    }
   },
-  "dependencies": {}
+  "dependencies": {
+    "@toxictoast/shared-kernel": "*",
+    "@toxictoast/shared-persistence": "*",
+    "@toxictoast/blog-domain": "*",
+    "typeorm": "^1.1.2"
+  }
 }

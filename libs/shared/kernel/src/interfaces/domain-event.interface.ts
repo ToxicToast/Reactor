@@ -1,4 +1,4 @@
-export interface DomainEvent<TPayload = unknown> {
+export interface DomainEvent<TPayload extends object = object> {
   readonly event_id: string;
   readonly event_namespace: string;
   readonly event_name: string;

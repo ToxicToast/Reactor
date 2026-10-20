@@ -19,5 +19,9 @@
       "type:infrastructure"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "@toxictoast/shared-kernel": "*",
+    "@toxictoast/shared-application": "*",
+    "typeorm": "^1.1.2"
+  }
 }

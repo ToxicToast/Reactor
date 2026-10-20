@@ -371,4 +371,14 @@ describe('PostDomain', () => {
       expect(post.toAnemic().status).toBe(PostStatus.ARCHIVED);
     });
   });
+
+  it('removes duplicate categories and tags', () => {
+    const post = createPost({
+      category_ids: ['cat-1', 'cat-2', 'cat-1'] as Array<CategoryId>,
+      tag_ids: ['tag-1', 'tag-1'] as Array<TagId>,
+    });
+
+    expect(post.toAnemic().category_ids).toEqual(['cat-1', 'cat-2']);
+    expect(post.toAnemic().tag_ids).toEqual(['tag-1']);
+  });
 });

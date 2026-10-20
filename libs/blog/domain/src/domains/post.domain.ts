@@ -65,9 +65,11 @@ export class PostDomain extends BaseDomain<PostAnemic> {
     this.state.excerpt = excerpt === undefined ? this.state.excerpt : excerpt;
     this.state.featured = data.featured ?? this.state.featured;
     this.state.category_ids = data.category_ids
-      ? [...data.category_ids]
+      ? [...new Set(data.category_ids)]
       : this.state.category_ids;
-    this.state.tag_ids = data.tag_ids ? [...data.tag_ids] : this.state.tag_ids;
+    this.state.tag_ids = data.tag_ids
+      ? [...new Set(data.tag_ids)]
+      : this.state.tag_ids;
     this.state.blog_image_id =
       data.blog_image_id === undefined
         ? this.state.blog_image_id
