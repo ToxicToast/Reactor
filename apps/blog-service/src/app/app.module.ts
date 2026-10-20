@@ -9,7 +9,7 @@ import {
   StorageModule,
   SystemModule,
 } from '@toxictoast/shared-nest';
-import { BlogTopics, MODERATION_TOPIC } from '@toxictoast/contracts-events';
+import { BlogTopics } from '@toxictoast/contracts-events';
 import { BlogModule } from './blog.module.js';
 
 @Module({
@@ -27,11 +27,12 @@ import { BlogModule } from './blog.module.js';
         inject: [ModerationDecidedHandler],
         useFactory: (handler: ModerationDecidedHandler) => {
           return {
-            'moderation.decided': (event) => handler.handle(event.payload),
+            'blog.comment.moderation.decided': (event) =>
+              handler.handle(event.payload),
           };
         },
       },
-      topics: [...Object.values(BlogTopics), MODERATION_TOPIC],
+      topics: [...Object.values(BlogTopics)],
     }),
     HealthModule.forRoot({ database: true }),
     MetricsModule.forRoot({ outbox: true }),

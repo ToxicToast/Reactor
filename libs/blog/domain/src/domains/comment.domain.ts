@@ -12,7 +12,9 @@ import {
   CreateCommentEvent,
   DeleteCommentEvent,
   HateCommentEvent,
+  RequestCommentModerationEvent,
   RestoreCommentEvent,
+  ReviewCommentEvent,
   SpamCommentEvent,
   UpdateCommentEvent,
 } from '../events/index.js';
@@ -29,6 +31,7 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
 
   createComment(): void {
     this.raise(CreateCommentEvent);
+    this.raise(RequestCommentModerationEvent);
   }
 
   updateContent(content: string): Result<void> {
@@ -87,6 +90,24 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
     );
   }
 
+  markForReview(
+    moderator: CommentModerator,
+    note: Nullable<string> = null,
+  ): Result<void> {
+    if (this.isDeleted) {
+      return Result.fail(new ConflictError('Comment is deleted'));
+    }
+    if (!this.isPending) {
+      return Result.fail(
+        new ConflictError('Only pending comments can be marked for review'),
+      );
+    }
+
+    this.recordModeration(moderator, note);
+    this.raise(ReviewCommentEvent);
+    return Result.ok();
+  }
+
   deleteComment(): void {
     this.markDeleted(DeleteCommentEvent);
   }
@@ -109,11 +130,18 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
     }
 
     this.state.status = status;
+    this.recordModeration(moderator, note);
+    this.raise(EventClass);
+    return Result.ok();
+  }
+
+  private recordModeration(
+    moderator: CommentModerator,
+    note: Nullable<string>,
+  ): void {
     this.state.moderation_note = note?.trim() || null;
     this.state.moderated_by = moderator;
     this.state.moderated_at = this.ctx.date.now();
     this.touch();
-    this.raise(EventClass);
-    return Result.ok();
   }
 }

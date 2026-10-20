@@ -4,6 +4,7 @@ import type {
   ConsumedEvent,
   KafkaEventConsumerOptions,
 } from '../interfaces/index.js';
+import { eventKey } from '../functions/index.js';
 
 type StringMessage = Message<string, string, string, string>;
 type StringStream = MessagesStream<string, string, string, string>;
@@ -62,7 +63,7 @@ export class KafkaEventConsumer {
     }
 
     const handler =
-      this.options.handlers[`${event.event_namespace}.${event.event_name}`];
+      this.options.handlers[eventKey(event.event_namespace, event.event_name)];
     if (!handler) {
       return true;
     }

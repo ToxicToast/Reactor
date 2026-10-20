@@ -4,6 +4,13 @@ import type { BlogCommentPayloadV1 } from '../payloads/index.js';
 
 export type BlogCommentEventV1 = EventEnvelope<
   typeof BlogTopics.COMMENT,
-  'create' | 'update' | 'approve' | 'spam' | 'hate' | 'delete' | 'restore',
+  | 'create'
+  | 'update'
+  | 'approve'
+  | 'spam'
+  | 'hate'
+  | 'delete'
+  | 'restore'
+  | 'review',
   BlogCommentPayloadV1
 >;

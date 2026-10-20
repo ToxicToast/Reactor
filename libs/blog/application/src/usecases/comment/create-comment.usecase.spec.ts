@@ -21,7 +21,6 @@ import {
   TEST_NOW,
 } from '../../testing/index.js';
 import { CreateCommentUseCase } from './create-comment.usecase.js';
-import { ModerationRequestService } from '../../services/index.js';
 
 const DATA: CommentData = {
   post_id: 'post-1' as PostId,
@@ -37,7 +36,6 @@ describe('CreateCommentUseCase', () => {
   let useCase: CreateCommentUseCase;
 
   beforeEach(async () => {
-    const ctx = createTestContext();
     comments = new InMemoryCommentRepository();
     posts = new InMemoryPostRepository();
     outbox = new InMemoryOutbox();
@@ -45,7 +43,6 @@ describe('CreateCommentUseCase', () => {
       new CommentFactory(createTestContext()),
       comments,
       posts,
-      new ModerationRequestService(ctx),
       new DomainPersistence(outbox, new ImmediateUnitOfWork()),
     );
 
@@ -61,11 +58,11 @@ describe('CreateCommentUseCase', () => {
     expect(comments.items.size).toBe(1);
     expect(
       outbox.events.map((e) => `${e.event_namespace}.${e.event_name}`),
-    ).toEqual(['blog.comment.create', 'moderation.requested']);
+    ).toEqual(['blog.comment.create', 'blog.comment.moderation.requested']);
     expect(outbox.events[1].payload).toMatchObject({
-      subject_type: 'blog.comment',
-      subject_id: result.value.id,
+      id: result.value.id,
       content: 'Für den Imperator!',
+      status: CommentStatus.PENDING,
     });
   });
 

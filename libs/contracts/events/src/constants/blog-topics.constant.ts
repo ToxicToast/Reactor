@@ -4,4 +4,5 @@ export const BlogTopics = {
   MEDIA: 'blog.media',
   POST: 'blog.post',
   COMMENT: 'blog.comment',
+  COMMENT_MODERATION: 'blog.comment.moderation',
 } as const;

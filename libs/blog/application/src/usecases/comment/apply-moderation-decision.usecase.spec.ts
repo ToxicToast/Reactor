@@ -56,14 +56,22 @@ describe('ApplyModerationDecisionUseCase', () => {
     expect(outbox.events.map((e) => e.event_name)).toEqual(['spam']);
   });
 
-  it('keeps the comment pending on review', async () => {
+  it('stores the note of the AI and keeps the comment pending', async () => {
     await comments.save(commentAnemic('c-1'));
 
-    const result = await useCase.execute({ id: ID, decision: 'review' });
+    const result = await useCase.execute({
+      id: ID,
+      decision: CommentStatus.PENDING,
+      note: 'vielleicht Spam',
+    });
 
     expect(result.isSuccess).toBe(true);
-    expect(result.value.status).toBe(CommentStatus.PENDING);
-    expect(uow.runs).toBe(0);
+    expect(result.value).toMatchObject({
+      status: CommentStatus.PENDING,
+      moderation_note: 'vielleicht Spam',
+      moderated_by: CommentModerator.AI,
+    });
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['review']);
   });
 
   it('ignores the decision when the admin was faster', async () => {

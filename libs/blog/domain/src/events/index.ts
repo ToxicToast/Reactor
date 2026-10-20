@@ -29,3 +29,6 @@ export * from './hate-comment.event.js';
 export * from './restore-comment.event.js';
 export * from './spam-comment.event.js';
 export * from './update-comment.event.js';
+
+export * from './request-comment-moderation.event.js';
+export * from './review-comment.event.js';

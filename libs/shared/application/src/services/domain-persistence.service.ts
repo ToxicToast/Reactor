@@ -1,8 +1,4 @@
-import {
-  type Anemic,
-  type DomainEvent,
-  Result,
-} from '@toxictoast/shared-kernel';
+import { type Anemic, Result } from '@toxictoast/shared-kernel';
 import type {
   Outbox,
   PersistableDomain,
@@ -19,7 +15,6 @@ export class DomainPersistence {
   async persist<TAnemic extends Anemic>(
     domain: PersistableDomain<TAnemic>,
     repository: SaveRepository<TAnemic>,
-    additionalEvents: ReadonlyArray<DomainEvent> = [],
   ): Promise<Result<TAnemic>> {
     const events = domain.toEvents();
     const anemic = domain.toAnemic();
@@ -30,7 +25,7 @@ export class DomainPersistence {
 
     return this.uow.run(async () => {
       const saved = await repository.save(anemic);
-      await this.outbox.add([...events, ...additionalEvents]);
+      await this.outbox.add(events);
       return Result.ok(saved);
     });
   }

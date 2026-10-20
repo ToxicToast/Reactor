@@ -10,7 +10,6 @@ import {
   ListCommentsByStatusUseCase,
   ListPostCommentsUseCase,
   ModerateCommentUseCase,
-  ModerationRequestService,
   postAnemic,
   RestoreCommentUseCase,
   UpdateCommentUseCase,
@@ -48,13 +47,7 @@ describe('CommentGrpcController', () => {
       new ImmediateUnitOfWork(),
     );
     controller = new CommentGrpcController(
-      new CreateCommentUseCase(
-        factory,
-        comments,
-        posts,
-        new ModerationRequestService(ctx),
-        persistence,
-      ),
+      new CreateCommentUseCase(factory, comments, posts, persistence),
       new UpdateCommentUseCase(factory, comments, persistence),
       new ModerateCommentUseCase(factory, comments, moderation, persistence),
       new DeleteCommentUseCase(factory, comments, persistence),

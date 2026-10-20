@@ -24,8 +24,7 @@ const COMMENT = randomUUID();
 
 const payload = (overrides: Record<string, unknown> = {}) => {
   return {
-    subject_type: 'blog.comment',
-    subject_id: COMMENT,
+    comment_id: COMMENT,
     decision: 'spam',
     note: 'link farm',
     ...overrides,
@@ -61,17 +60,20 @@ describe('ModerationDecidedHandler', () => {
     });
   });
 
-  it('keeps the comment pending on review', async () => {
-    await handler.handle(payload({ decision: 'review', note: null }));
+  it('stores the note and keeps the comment pending', async () => {
+    await handler.handle(payload({ decision: 'pending', note: 'unsicher' }));
 
-    expect(stored()?.status).toBe(CommentStatus.PENDING);
+    expect(stored()).toMatchObject({
+      status: CommentStatus.PENDING,
+      moderation_note: 'unsicher',
+      moderated_by: CommentModerator.AI,
+    });
   });
 
   it.each([
-    ['another subject type', payload({ subject_type: 'twitch.message' })],
     ['an invalid payload', { decision: 'spam' }],
     ['an unknown decision', payload({ decision: 'nope' })],
-    ['an invalid comment id', payload({ subject_id: 'abc' })],
+    ['an invalid comment id', payload({ comment_id: 'abc' })],
   ])('ignores %s', async (_, value) => {
     await handler.handle(value);
 
@@ -80,7 +82,7 @@ describe('ModerationDecidedHandler', () => {
 
   it('does not throw for a comment that no longer exists', async () => {
     await expect(
-      handler.handle(payload({ subject_id: randomUUID() })),
+      handler.handle(payload({ comment_id: randomUUID() })),
     ).resolves.toBeUndefined();
   });
 

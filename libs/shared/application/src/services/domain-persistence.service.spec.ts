@@ -68,25 +68,4 @@ describe('DomainPersistence', () => {
     expect(outbox.events).toHaveLength(0);
     expect(uow.runs).toBe(0);
   });
-
-  it('writes additional events after the domain events', async () => {
-    const additional: DomainEvent = {
-      ...event,
-      event_id: 'event-2',
-      event_namespace: 'moderation',
-      event_name: 'requested',
-    };
-
-    await persistence.persist(domainWith([event]), repository, [additional]);
-
-    expect(outbox.events).toEqual([event, additional]);
-    expect(uow.runs).toBe(1);
-  });
-
-  it('ignores additional events when the domain did not change', async () => {
-    await persistence.persist(domainWith([]), repository, [event]);
-
-    expect(outbox.events).toHaveLength(0);
-    expect(uow.runs).toBe(0);
-  });
 });

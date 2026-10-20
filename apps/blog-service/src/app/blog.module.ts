@@ -37,7 +37,6 @@ import {
   ListPostsUseCase,
   ListTagsUseCase,
   ModerateCommentUseCase,
-  ModerationRequestService,
   PostReferencesService,
   PublishPostUseCase,
   RequestMediaUploadUseCase,
@@ -109,7 +108,6 @@ const DATABASE = [DataSource, TransactionContext];
       MEDIA_REPOSITORY,
     ]),
     provideClass(CommentModerationService),
-    provideClass(ModerationRequestService, [DOMAIN_CONTEXT]),
 
     // ── Tag ─────────────────────────────────────
     provideClass(CreateTagUseCase, [
@@ -245,7 +243,6 @@ const DATABASE = [DataSource, TransactionContext];
       CommentFactory,
       COMMENT_REPOSITORY,
       POST_REPOSITORY,
-      ModerationRequestService,
       DomainPersistence,
     ]),
     provideClass(UpdateCommentUseCase, [

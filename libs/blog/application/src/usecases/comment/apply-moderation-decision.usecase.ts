@@ -9,9 +9,11 @@ import {
   type CommentAnemic,
   type CommentFactory,
   type CommentRepository,
+  type CommentDomain,
 } from '@toxictoast/blog-domain';
 import type { ApplyModerationDecisionInput } from '../../data/index.js';
 import type { CommentModerationService } from '../../services/index.js';
+import type { Nullable } from '@toxictoast/shared-types';
 
 export class ApplyModerationDecisionUseCase implements UseCase<
   ApplyModerationDecisionInput,
@@ -36,21 +38,29 @@ export class ApplyModerationDecisionUseCase implements UseCase<
       return Result.ok(anemic);
     }
 
-    if (input.decision === 'review') {
-      return Result.ok(anemic);
-    }
-
     const comment = this.factory.reconstitute(anemic);
-    const moderated = this.moderation.moderate(
-      comment,
-      input.decision,
-      CommentModerator.AI,
-      input.note ?? null,
-    );
+    const note = input.note ?? null;
+    const moderated = this.decide(comment, input.decision, note);
     if (moderated.isFailure) {
       return Result.fail(moderated.error);
     }
 
     return this.persistence.persist(comment, this.repository);
+  }
+
+  private decide(
+    comment: CommentDomain,
+    decision: CommentStatus,
+    note: Nullable<string>,
+  ): Result<void> {
+    if (decision === CommentStatus.PENDING) {
+      return comment.markForReview(CommentModerator.AI, note);
+    }
+    return this.moderation.moderate(
+      comment,
+      decision,
+      CommentModerator.AI,
+      note,
+    );
   }
 }

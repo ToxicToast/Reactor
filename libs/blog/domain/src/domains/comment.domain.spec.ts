@@ -33,7 +33,7 @@ describe('CommentDomain', () => {
   };
 
   describe('createDomain', () => {
-    it('creates a pending comment without moderation and CreateCommentEvent', () => {
+    it('creates a pending comment and requests moderation', () => {
       const result = factory.createDomain(VALID_DATA);
 
       expect(result.isSuccess).toBe(true);
@@ -46,6 +46,7 @@ describe('CommentDomain', () => {
       });
       expect(result.value.toEvents().map((e) => e.event_name)).toEqual([
         'create',
+        'requested',
       ]);
     });
 
@@ -236,6 +237,52 @@ describe('CommentDomain', () => {
       expect(result.isFailure).toBe(true);
       expect(result.error.code).toBe('CONFLICT');
       expect(comment.isPending).toBe(true);
+    });
+
+    it('requests moderation in its own namespace', () => {
+      const result = factory.createDomain(VALID_DATA);
+
+      const [, requested] = result.value.toEvents();
+
+      expect(requested.event_namespace).toBe('blog.comment.moderation');
+      expect(requested.payload).toMatchObject({
+        status: CommentStatus.PENDING,
+      });
+    });
+
+    it('marks a pending comment for review and keeps it pending', () => {
+      const comment = createComment();
+
+      const result = comment.markForReview(CommentModerator.AI, ' unsicher ');
+
+      expect(result.isSuccess).toBe(true);
+      expect(comment.toAnemic()).toMatchObject({
+        status: CommentStatus.PENDING,
+        moderation_note: 'unsicher',
+        moderated_by: CommentModerator.AI,
+        moderated_at: NOW,
+      });
+      expect(comment.toEvents().map((e) => e.event_name)).toEqual(['review']);
+    });
+
+    it('refuses to mark a moderated comment for review', () => {
+      const comment = createComment();
+      comment.approveComment(CommentModerator.ADMIN);
+
+      const result = comment.markForReview(CommentModerator.AI, 'zu spät');
+
+      expect(result.isFailure).toBe(true);
+      expect(result.error.code).toBe('CONFLICT');
+    });
+
+    it('refuses to mark a deleted comment for review', () => {
+      const comment = createComment();
+      comment.deleteComment();
+
+      const result = comment.markForReview(CommentModerator.AI, 'gelöscht');
+
+      expect(result.isFailure).toBe(true);
+      expect(result.error.code).toBe('CONFLICT');
     });
   });
 

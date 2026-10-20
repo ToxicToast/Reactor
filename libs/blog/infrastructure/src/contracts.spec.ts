@@ -9,24 +9,19 @@ import {
   type MediaAnemic,
   type PostAnemic,
   type TagAnemic,
+  CommentStatus,
+  RequestCommentModerationEvent,
 } from '@toxictoast/blog-domain';
-import {
-  commentAnemic,
-  createTestContext,
-  ModerationRequestService,
-  type ModerationDecision,
-  type ModerationRequestedPayload,
-} from '@toxictoast/blog-application';
+import { commentAnemic } from '@toxictoast/blog-application';
 import {
   BlogTopics,
-  MODERATION_TOPIC,
   type BlogCategoryPayloadV1,
   type BlogCommentPayloadV1,
   type BlogMediaPayloadV1,
   type BlogPostPayloadV1,
   type BlogTagPayloadV1,
   type ModerationDecidedPayloadV1,
-  type ModerationRequestedPayloadV1,
+  BlogCommentModerationEvents,
 } from '@toxictoast/contracts-events';
 
 type JsonValue<T> = T extends Date
@@ -47,10 +42,6 @@ type Compatible<TActual, TExpected> = [TActual] extends [TExpected]
   ? [TExpected] extends [TActual]
     ? true
     : false
-  : false;
-
-type Assignable<TActual, TExpected> = [TActual] extends [TExpected]
-  ? true
   : false;
 
 describe('Event contracts', () => {
@@ -84,21 +75,21 @@ describe('Event contracts', () => {
 
   it('match the moderation contracts', () => {
     const checks: Array<true> = [
-      true as Assignable<
-        Jsonified<ModerationRequestedPayload>,
-        ModerationRequestedPayloadV1
-      >,
       true as Compatible<
-        JsonValue<ModerationDecision>,
+        JsonValue<CommentStatus>,
         ModerationDecidedPayloadV1['decision']
       >,
     ];
-    const request = new ModerationRequestService(
-      createTestContext(),
-    ).forComment(commentAnemic('c-1'));
+    const at = new Date();
+    const request = new RequestCommentModerationEvent(
+      'event',
+      'aggregate',
+      at,
+      commentAnemic('c-1'),
+    );
 
-    expect(checks).toHaveLength(2);
-    expect(request.event_namespace).toBe(MODERATION_TOPIC);
-    expect(request.event_name).toBe('requested');
+    expect(checks).toHaveLength(1);
+    expect(request.event_namespace).toBe(BlogTopics.COMMENT_MODERATION);
+    expect(request.event_name).toBe(BlogCommentModerationEvents.REQUESTED);
   });
 });

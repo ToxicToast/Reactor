@@ -15,27 +15,26 @@ export class ModerationDecidedHandler {
 
   async handle(payload: unknown): Promise<void> {
     if (!isModerationDecidedPayload(payload)) {
-      this.logger.warn('Ignoring invalid moderation.decided payload');
-      return;
-    }
-    if (payload.subject_type !== 'blog.comment') {
-      return;
-    }
-    if (!isUuid(payload.subject_id)) {
       this.logger.warn(
-        `Ignoring decision for invalid comment id ${payload.subject_id}`,
+        'Ignoring invalid blog.comment.moderation.decided payload',
+      );
+      return;
+    }
+    if (!isUuid(payload.comment_id)) {
+      this.logger.warn(
+        `Ignoring decision for invalid comment id ${payload.comment_id}`,
       );
       return;
     }
 
     const result = await this.applyModerationDecisionUseCase.execute({
-      id: payload.subject_id.toLowerCase() as CommentId,
+      id: payload.comment_id.toLowerCase() as CommentId,
       decision: MODERATION_DECISION_FROM_EVENT[payload.decision],
       note: payload.note,
     });
     if (result.isFailure) {
       this.logger.warn(
-        `Decision for comment ${payload.subject_id} not applied: ${result.error.message}`,
+        `Decision for comment ${payload.comment_id} not applied: ${result.error.message}`,
       );
     }
   }
