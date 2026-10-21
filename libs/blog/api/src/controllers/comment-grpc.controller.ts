@@ -29,12 +29,13 @@ import {
   type RestoreCommentResponse,
   type UpdateCommentRequest,
   type UpdateCommentResponse,
+  BlogPermission,
 } from '@toxictoast/contracts-grpc';
 import {
   mapEnum,
   parseId,
   parseOptionalId,
-  requireUser,
+  requirePermission,
   unwrap,
 } from '@toxictoast/shared-grpc';
 import { CommentGrpcMapper } from '../mappers/index.js';
@@ -67,7 +68,10 @@ export class CommentGrpcController implements CommentServiceController {
       await this.createCommentUseCase.execute({
         post_id: parseId(request.post_id, 'post_id'),
         parent_id: parseOptionalId(request.parent_id, 'parent_id'),
-        author_id: requireUser(this.actors.current()),
+        author_id: requirePermission(
+          this.actors.current(),
+          BlogPermission.COMMENT_WRITE,
+        ),
         content: request.content,
       }),
     );

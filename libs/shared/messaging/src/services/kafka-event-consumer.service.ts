@@ -1,5 +1,9 @@
 import type { Consumer, Message, MessagesStream } from '@platformatic/kafka';
-import { isActor, SYSTEM_ACTOR, type Actor } from '@toxictoast/shared-kernel';
+import {
+  isActorIdentity,
+  SYSTEM_ACTOR,
+  type Actor,
+} from '@toxictoast/shared-kernel';
 import type { ActorContext } from '@toxictoast/shared-system';
 import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type {
@@ -88,10 +92,11 @@ export class KafkaEventConsumer {
   }
 
   private actorOf(event: ConsumedEvent): Actor {
-    if (isActor(event.actor)) {
-      return event.actor;
+    if (!isActorIdentity(event.actor)) {
+      return SYSTEM_ACTOR;
     }
-    return SYSTEM_ACTOR;
+    const { type, id, ip } = event.actor;
+    return { type, id, ip, permissions: [] };
   }
 
   private parse(message: StringMessage): Optional<ConsumedEvent> {

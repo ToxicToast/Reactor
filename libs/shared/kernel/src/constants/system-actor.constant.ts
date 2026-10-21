@@ -5,4 +5,5 @@ export const SYSTEM_ACTOR: Actor = Object.freeze({
   type: ActorType.SYSTEM,
   id: null,
   ip: null,
+  permissions: Object.freeze([]),
 });

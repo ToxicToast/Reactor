@@ -18,7 +18,12 @@ const EVENT: DomainEvent = {
   payload: { title: 'Warhammer' },
 };
 
-const USER: Actor = { type: ActorType.USER, id: 'user-1', ip: '203.0.113.7' };
+const USER: Actor = {
+  type: ActorType.USER,
+  id: 'user-1',
+  ip: '203.0.113.7',
+  permissions: ['blog.comment.write'],
+};
 
 describe('TypeOrmOutbox', () => {
   let insert: jest.Mock;

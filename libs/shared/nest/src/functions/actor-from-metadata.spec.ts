@@ -13,16 +13,22 @@ const metadata = (values: Record<string, string>): GrpcMetadata => {
 };
 
 describe('actorFromMetadata', () => {
-  it('reads type, id and ip', () => {
+  it('reads type, id, ip and permissions', () => {
     const actor = actorFromMetadata(
       metadata({
         'x-actor-type': 'user',
         'x-actor-id': 'user-1',
         'x-actor-ip': '203.0.113.7',
+        'x-actor-permissions': 'blog.comment.write, blog.post.write',
       }),
     );
 
-    expect(actor).toEqual({ type: 'user', id: 'user-1', ip: '203.0.113.7' });
+    expect(actor).toEqual({
+      type: 'user',
+      id: 'user-1',
+      ip: '203.0.113.7',
+      permissions: ['blog.comment.write', 'blog.post.write'],
+    });
   });
 
   it('is anonymous without metadata', () => {
@@ -30,30 +36,52 @@ describe('actorFromMetadata', () => {
       type: 'anonymous',
       id: null,
       ip: null,
+      permissions: [],
     });
   });
 
-  it('drops the id of unknown actor types but keeps the ip', () => {
-    const actor = actorFromMetadata(
+  it('never grants id or permissions to unknown or anonymous actors', () => {
+    const unknown = actorFromMetadata(
       metadata({
         'x-actor-type': 'admin',
         'x-actor-id': 'user-1',
         'x-actor-ip': '2001:db8::1',
+        'x-actor-permissions': 'blog.post.write',
+      }),
+    );
+    const anonymous = actorFromMetadata(
+      metadata({
+        'x-actor-type': 'anonymous',
+        'x-actor-id': 'user-1',
+        'x-actor-permissions': 'blog.post.write',
       }),
     );
 
-    expect(actor).toEqual({ type: 'anonymous', id: null, ip: '2001:db8::1' });
+    expect(unknown).toEqual({
+      type: 'anonymous',
+      id: null,
+      ip: '2001:db8::1',
+      permissions: [],
+    });
+    expect(anonymous.permissions).toEqual([]);
+    expect(anonymous.id).toBeNull();
   });
 
-  it('ignores invalid ips and oversized ids', () => {
+  it('ignores invalid ips, oversized ids, empty and duplicate permissions', () => {
     const actor = actorFromMetadata(
       metadata({
         'x-actor-type': 'user',
         'x-actor-id': 'x'.repeat(65),
         'x-actor-ip': 'not-an-ip',
+        'x-actor-permissions': 'blog.post.write,, blog.post.write ,',
       }),
     );
 
-    expect(actor).toEqual({ type: 'user', id: null, ip: null });
+    expect(actor).toEqual({
+      type: 'user',
+      id: null,
+      ip: null,
+      permissions: ['blog.post.write'],
+    });
   });
 });

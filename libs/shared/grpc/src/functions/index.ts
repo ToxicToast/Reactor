@@ -9,4 +9,5 @@ export * from './map-enum.function.js';
 export * from './map-optional-enum.function.js';
 export * from './parse-mask.function.js';
 export * from './unauthenticated.function.js';
-export * from './require-user.function.js';
+export * from './permission-denied.function.js';
+export * from './require-permission.function.js';

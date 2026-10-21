@@ -51,7 +51,12 @@ describe('ActorInterceptor', () => {
 
     const actor = await lastValueFrom(interceptor.intercept(context, next));
 
-    expect(actor).toEqual({ type: 'user', id: 'user-1', ip: null });
+    expect(actor).toEqual({
+      type: 'user',
+      id: 'user-1',
+      ip: null,
+      permissions: [],
+    });
     expect(actors.current()).toBe(SYSTEM_ACTOR);
   });
 

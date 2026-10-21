@@ -35,13 +35,14 @@ import {
   type UnarchivePostResponse,
   type UpdatePostRequest,
   type UpdatePostResponse,
+  BlogPermission,
 } from '@toxictoast/contracts-grpc';
 import {
   mapOptionalEnum,
   parseDate,
   parseId,
   parseOptionalId,
-  requireUser,
+  requirePermission,
   unwrap,
 } from '@toxictoast/shared-grpc';
 import { PostGrpcMapper, PostUpdateGrpcMapper } from '../mappers/index.js';
@@ -70,7 +71,10 @@ export class PostGrpcController implements PostServiceController {
   async createPost(request: CreatePostRequest): Promise<CreatePostResponse> {
     const post = unwrap(
       await this.createPostUseCase.execute({
-        author_id: requireUser(this.actors.current()),
+        author_id: requirePermission(
+          this.actors.current(),
+          BlogPermission.POST_WRITE,
+        ),
         title: request.title,
         excerpt: request.excerpt ?? null,
         content: request.content,

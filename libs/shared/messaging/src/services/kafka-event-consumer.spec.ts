@@ -4,7 +4,12 @@ import { ActorContext } from '@toxictoast/shared-system';
 import type { ConsumedEvent } from '../interfaces/index.js';
 import { KafkaEventConsumer } from './kafka-event-consumer.service.js';
 
-const AI = { type: ActorType.AI, id: 'moderation-service', ip: null };
+const AI = {
+  type: ActorType.AI,
+  id: 'moderation-service',
+  ip: null,
+  permissions: [],
+};
 
 const event = (name: string, actor: unknown = AI): ConsumedEvent => {
   return {

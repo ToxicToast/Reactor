@@ -24,7 +24,7 @@ import {
   BlogCommentModerationEvents,
   type EventActorV1,
 } from '@toxictoast/contracts-events';
-import type { Actor } from '@toxictoast/shared-kernel';
+import type { ActorIdentity } from '@toxictoast/shared-kernel';
 
 type JsonValue<T> = T extends Date
   ? string
@@ -97,7 +97,7 @@ describe('Event contracts', () => {
 
   it('match the event actor', () => {
     const checks: Array<true> = [
-      true as Compatible<Jsonified<Actor>, EventActorV1>,
+      true as Compatible<Jsonified<ActorIdentity>, EventActorV1>,
     ];
 
     expect(checks).toHaveLength(1);

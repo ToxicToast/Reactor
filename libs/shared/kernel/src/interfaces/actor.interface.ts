@@ -1,8 +1,5 @@
-import type { Nullable } from '@toxictoast/shared-types';
-import type { ActorType } from '../enums/index.js';
+import type { ActorIdentity } from './actor-identity.interface.js';
 
-export interface Actor {
-  readonly type: ActorType;
-  readonly id: Nullable<string>;
-  readonly ip: Nullable<string>;
+export interface Actor extends ActorIdentity {
+  readonly permissions: ReadonlyArray<string>;
 }

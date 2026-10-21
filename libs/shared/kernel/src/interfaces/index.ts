@@ -8,3 +8,4 @@ export * from './value-object.interface.js';
 export * from './clock.interface.js';
 export * from './domain-context.interface.js';
 export * from './actor.interface.js';
+export * from './actor-identity.interface.js';

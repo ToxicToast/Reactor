@@ -16,6 +16,7 @@ import {
 } from '@toxictoast/blog-application';
 import { CommentFactory, PostStatus } from '@toxictoast/blog-domain';
 import {
+  BlogPermission,
   CommentModerator as GrpcCommentModerator,
   CommentStatus as GrpcCommentStatus,
   ModerationStatus as GrpcModerationStatus,
@@ -37,7 +38,12 @@ import { CommentGrpcController } from './comment-grpc.controller.js';
 const NOW = new Date('2026-10-20T12:00:00Z');
 const POST = randomUUID();
 const AUTHOR = randomUUID();
-const USER: Actor = { type: ActorType.USER, id: AUTHOR, ip: null };
+const USER: Actor = {
+  type: ActorType.USER,
+  id: AUTHOR,
+  ip: null,
+  permissions: [BlogPermission.COMMENT_WRITE],
+};
 
 describe('CommentGrpcController', () => {
   let controller: CommentGrpcController;
@@ -172,7 +178,12 @@ describe('CommentGrpcController', () => {
   });
 
   it('rejects comments without a signed-in user', async () => {
-    actor = { type: ActorType.ANONYMOUS, id: null, ip: '203.0.113.7' };
+    actor = {
+      type: ActorType.ANONYMOUS,
+      id: null,
+      ip: '203.0.113.7',
+      permissions: [],
+    };
 
     const call = controller.createComment({
       post_id: POST,
@@ -180,5 +191,16 @@ describe('CommentGrpcController', () => {
     });
 
     expect(await grpcCode(call)).toBe(status.UNAUTHENTICATED);
+  });
+
+  it('rejects comments without the write permission', async () => {
+    actor = { ...USER, permissions: [] };
+
+    const call = controller.createComment({
+      post_id: POST,
+      content: 'Für den Imperator!',
+    });
+
+    expect(await grpcCode(call)).toBe(status.PERMISSION_DENIED);
   });
 });

@@ -24,6 +24,7 @@ import {
   PostStatus as GrpcPostStatus,
   type CreatePostRequest,
   type UpdatePostRequest,
+  BlogPermission,
 } from '@toxictoast/contracts-grpc';
 import {
   createUuidTestContext,
@@ -44,7 +45,12 @@ const CATEGORY = randomUUID();
 const MEDIA = randomUUID();
 
 const AUTHOR = randomUUID();
-const USER: Actor = { type: ActorType.USER, id: AUTHOR, ip: null };
+const USER: Actor = {
+  type: ActorType.USER,
+  id: AUTHOR,
+  ip: null,
+  permissions: [BlogPermission.POST_WRITE],
+};
 
 const CREATE: CreatePostRequest = {
   title: 'Warhammer 40k',
@@ -229,10 +235,18 @@ describe('PostGrpcController', () => {
   });
 
   it('rejects posts without a signed-in user', async () => {
-    actor = { type: ActorType.ANONYMOUS, id: null, ip: null };
+    actor = { type: ActorType.ANONYMOUS, id: null, ip: null, permissions: [] };
 
     expect(await grpcCode(controller.createPost(CREATE))).toBe(
       status.UNAUTHENTICATED,
+    );
+  });
+
+  it('rejects posts without the write permission', async () => {
+    actor = { ...USER, permissions: [] };
+
+    expect(await grpcCode(controller.createPost(CREATE))).toBe(
+      status.PERMISSION_DENIED,
     );
   });
 });

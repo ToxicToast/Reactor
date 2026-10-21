@@ -1,8 +1,8 @@
-import type { Actor } from '../interfaces/index.js';
+import type { ActorIdentity } from '../interfaces/index.js';
 import { isActorType } from './is-actor-type.function.js';
 import { isNullableString } from './is-nullable-string.function.js';
 
-export const isActor = (value: unknown): value is Actor => {
+export const isActorIdentity = (value: unknown): value is ActorIdentity => {
   if (typeof value !== 'object' || value === null) {
     return false;
   }
