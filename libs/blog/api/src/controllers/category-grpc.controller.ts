@@ -25,9 +25,17 @@ import {
   type RestoreCategoryResponse,
   type UpdateCategoryRequest,
   type UpdateCategoryResponse,
+  BlogPermission,
 } from '@toxictoast/contracts-grpc';
-import { parseId, parseOptionalId, unwrap } from '@toxictoast/shared-grpc';
+import {
+  hasPermission,
+  parseId,
+  parseOptionalId,
+  requirePermission,
+  unwrap,
+} from '@toxictoast/shared-grpc';
 import { CategoryGrpcMapper } from '../mappers/index.js';
+import { ActorProvider } from '@toxictoast/shared-kernel';
 
 @Controller()
 @CategoryServiceControllerMethods()
@@ -42,11 +50,13 @@ export class CategoryGrpcController implements CategoryServiceController {
     private readonly restoreCategoryUseCase: RestoreCategoryUseCase,
     private readonly getCategoryUseCase: GetCategoryUseCase,
     private readonly listCategoriesUseCase: ListCategoriesUseCase,
+    private readonly actors: ActorProvider,
   ) {}
 
   async createCategory(
     request: CreateCategoryRequest,
   ): Promise<CreateCategoryResponse> {
+    requirePermission(this.actors.current(), BlogPermission.CATEGORY_WRITE);
     const category = unwrap(
       await this.createCategoryUseCase.execute({
         title: request.title,
@@ -60,6 +70,7 @@ export class CategoryGrpcController implements CategoryServiceController {
   async updateCategory(
     request: UpdateCategoryRequest,
   ): Promise<UpdateCategoryResponse> {
+    requirePermission(this.actors.current(), BlogPermission.CATEGORY_WRITE);
     const category = unwrap(
       await this.updateCategoryUseCase.execute({
         id: parseId(request.id),
@@ -73,6 +84,7 @@ export class CategoryGrpcController implements CategoryServiceController {
   async changeCategoryParent(
     request: ChangeCategoryParentRequest,
   ): Promise<ChangeCategoryParentResponse> {
+    requirePermission(this.actors.current(), BlogPermission.CATEGORY_WRITE);
     const category = unwrap(
       await this.changeCategoryParentUseCase.execute({
         id: parseId(request.id),
@@ -85,6 +97,7 @@ export class CategoryGrpcController implements CategoryServiceController {
   async deleteCategory(
     request: DeleteCategoryRequest,
   ): Promise<DeleteCategoryResponse> {
+    requirePermission(this.actors.current(), BlogPermission.CATEGORY_DELETE);
     const category = unwrap(
       await this.deleteCategoryUseCase.execute({ id: parseId(request.id) }),
     );
@@ -94,6 +107,7 @@ export class CategoryGrpcController implements CategoryServiceController {
   async restoreCategory(
     request: RestoreCategoryRequest,
   ): Promise<RestoreCategoryResponse> {
+    requirePermission(this.actors.current(), BlogPermission.CATEGORY_DELETE);
     const category = unwrap(
       await this.restoreCategoryUseCase.execute({ id: parseId(request.id) }),
     );
@@ -104,7 +118,7 @@ export class CategoryGrpcController implements CategoryServiceController {
     const category = unwrap(
       await this.getCategoryUseCase.execute({
         id: parseId(request.id),
-        withDeleted: request.with_deleted,
+        withDeleted: this.withDeleted(request.with_deleted),
       }),
     );
     return { category: this.mapper.toProto(category) };
@@ -117,7 +131,7 @@ export class CategoryGrpcController implements CategoryServiceController {
       await this.listCategoriesUseCase.execute({
         limit: request.limit,
         offset: request.offset,
-        withDeleted: request.with_deleted,
+        withDeleted: this.withDeleted(request.with_deleted),
       }),
     );
     return {
@@ -125,5 +139,12 @@ export class CategoryGrpcController implements CategoryServiceController {
         return this.mapper.toProto(category);
       }),
     };
+  }
+
+  private withDeleted(requested: boolean): boolean {
+    return (
+      requested &&
+      hasPermission(this.actors.current(), BlogPermission.CATEGORY_DELETE)
+    );
   }
 }

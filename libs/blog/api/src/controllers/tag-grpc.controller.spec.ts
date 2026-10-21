@@ -16,7 +16,13 @@ import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
 } from '@toxictoast/shared-application';
-import { grpcCode } from '@toxictoast/shared-grpc';
+import { BlogPermission } from '@toxictoast/contracts-grpc';
+import {
+  anonymousTestActor,
+  grpcCode,
+  testActor,
+  TestActorProvider,
+} from '@toxictoast/shared-grpc';
 import { TagGrpcController } from './tag-grpc.controller.js';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
@@ -24,8 +30,13 @@ const NOW_ISO = '2026-10-20T12:00:00.000Z';
 
 describe('TagGrpcController', () => {
   let controller: TagGrpcController;
+  let actors: TestActorProvider;
 
   beforeEach(() => {
+    actors = new TestActorProvider(
+      testActor([BlogPermission.TAG_WRITE, BlogPermission.TAG_DELETE]),
+    );
+
     const factory = new TagFactory(createUuidTestContext(NOW));
     const tags = new InMemoryTagRepository();
     const persistence = new DomainPersistence(
@@ -39,6 +50,7 @@ describe('TagGrpcController', () => {
       new RestoreTagUseCase(factory, tags, persistence),
       new GetTagUseCase(tags),
       new ListTagsUseCase(tags),
+      actors,
     );
   });
 
@@ -118,5 +130,45 @@ describe('TagGrpcController', () => {
     expect(await grpcCode(controller.createTag({ title: 'Warhammer' }))).toBe(
       status.FAILED_PRECONDITION,
     );
+  });
+
+  it('requires the write permission to create and update', async () => {
+    actors.actor = testActor([BlogPermission.TAG_DELETE]);
+
+    expect(await grpcCode(controller.createTag({ title: 'Warhammer' }))).toBe(
+      status.PERMISSION_DENIED,
+    );
+  });
+
+  it('requires the delete permission to delete and restore', async () => {
+    const { tag } = await controller.createTag({ title: 'Warhammer' });
+    actors.actor = testActor([BlogPermission.TAG_WRITE]);
+
+    expect(await grpcCode(controller.deleteTag({ id: tag?.id ?? '' }))).toBe(
+      status.PERMISSION_DENIED,
+    );
+  });
+
+  it('rejects anonymous writes', async () => {
+    actors.actor = anonymousTestActor();
+
+    expect(await grpcCode(controller.createTag({ title: 'Warhammer' }))).toBe(
+      status.UNAUTHENTICATED,
+    );
+  });
+
+  it('serves public reads and ignores with_deleted without permission', async () => {
+    const { tag } = await controller.createTag({ title: 'Warhammer' });
+    const id = tag?.id ?? '';
+    await controller.createTag({ title: 'Sichtbar' });
+    await controller.deleteTag({ id });
+    actors.actor = anonymousTestActor();
+
+    const { tags } = await controller.listTags({ with_deleted: true });
+
+    expect(await grpcCode(controller.getTag({ id, with_deleted: true }))).toBe(
+      status.NOT_FOUND,
+    );
+    expect(tags.map((item) => item.title)).toEqual(['Sichtbar']);
   });
 });

@@ -28,10 +28,18 @@ import {
   type RestoreMediaResponse,
   type UpdateMediaAltTextRequest,
   type UpdateMediaAltTextResponse,
+  BlogPermission,
 } from '@toxictoast/contracts-grpc';
-import { mapOptionalEnum, parseId, unwrap } from '@toxictoast/shared-grpc';
+import {
+  hasPermission,
+  mapOptionalEnum,
+  parseId,
+  requirePermission,
+  unwrap,
+} from '@toxictoast/shared-grpc';
 import { MediaGrpcMapper } from '../mappers/index.js';
 import { MEDIA_STATUS_FROM_GRPC } from '../mappings/index.js';
+import { ActorProvider } from '@toxictoast/shared-kernel';
 
 @Controller()
 @MediaServiceControllerMethods()
@@ -47,11 +55,13 @@ export class MediaGrpcController implements MediaServiceController {
     private readonly getMediaUseCase: GetMediaUseCase,
     private readonly getMediaUrlUseCase: GetMediaUrlUseCase,
     private readonly listMediaUseCase: ListMediaUseCase,
+    private readonly actors: ActorProvider,
   ) {}
 
   async requestMediaUpload(
     request: RequestMediaUploadRequest,
   ): Promise<RequestMediaUploadResponse> {
+    requirePermission(this.actors.current(), BlogPermission.MEDIA_WRITE);
     const output = unwrap(
       await this.requestMediaUploadUseCase.execute({
         filename: request.filename,
@@ -69,6 +79,7 @@ export class MediaGrpcController implements MediaServiceController {
   async confirmMediaUpload(
     request: ConfirmMediaUploadRequest,
   ): Promise<ConfirmMediaUploadResponse> {
+    requirePermission(this.actors.current(), BlogPermission.MEDIA_WRITE);
     const media = unwrap(
       await this.confirmMediaUploadUseCase.execute({ id: parseId(request.id) }),
     );
@@ -78,6 +89,7 @@ export class MediaGrpcController implements MediaServiceController {
   async updateMediaAltText(
     request: UpdateMediaAltTextRequest,
   ): Promise<UpdateMediaAltTextResponse> {
+    requirePermission(this.actors.current(), BlogPermission.MEDIA_WRITE);
     const media = unwrap(
       await this.updateMediaAltTextUseCase.execute({
         id: parseId(request.id),
@@ -88,6 +100,7 @@ export class MediaGrpcController implements MediaServiceController {
   }
 
   async deleteMedia(request: DeleteMediaRequest): Promise<DeleteMediaResponse> {
+    requirePermission(this.actors.current(), BlogPermission.MEDIA_DELETE);
     const media = unwrap(
       await this.deleteMediaUseCase.execute({ id: parseId(request.id) }),
     );
@@ -97,6 +110,7 @@ export class MediaGrpcController implements MediaServiceController {
   async restoreMedia(
     request: RestoreMediaRequest,
   ): Promise<RestoreMediaResponse> {
+    requirePermission(this.actors.current(), BlogPermission.MEDIA_DELETE);
     const media = unwrap(
       await this.restoreMediaUseCase.execute({ id: parseId(request.id) }),
     );
@@ -104,10 +118,11 @@ export class MediaGrpcController implements MediaServiceController {
   }
 
   async getMedia(request: GetMediaRequest): Promise<GetMediaResponse> {
+    requirePermission(this.actors.current(), BlogPermission.MEDIA_WRITE);
     const media = unwrap(
       await this.getMediaUseCase.execute({
         id: parseId(request.id),
-        withDeleted: request.with_deleted,
+        withDeleted: this.withDeleted(request.with_deleted),
       }),
     );
     return { media: this.mapper.toProto(media) };
@@ -121,6 +136,7 @@ export class MediaGrpcController implements MediaServiceController {
   }
 
   async listMedia(request: ListMediaRequest): Promise<ListMediaResponse> {
+    requirePermission(this.actors.current(), BlogPermission.MEDIA_WRITE);
     const media = unwrap(
       await this.listMediaUseCase.execute({
         status: mapOptionalEnum(
@@ -130,9 +146,16 @@ export class MediaGrpcController implements MediaServiceController {
         ),
         limit: request.limit,
         offset: request.offset,
-        withDeleted: request.with_deleted,
+        withDeleted: this.withDeleted(request.with_deleted),
       }),
     );
     return { media: media.map((item) => this.mapper.toProto(item)) };
+  }
+
+  private withDeleted(requested: boolean): boolean {
+    return (
+      requested &&
+      hasPermission(this.actors.current(), BlogPermission.MEDIA_DELETE)
+    );
   }
 }

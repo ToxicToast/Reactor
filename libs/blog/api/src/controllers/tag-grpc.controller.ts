@@ -8,6 +8,7 @@ import {
   UpdateTagUseCase,
 } from '@toxictoast/blog-application';
 import {
+  BlogPermission,
   TagServiceControllerMethods,
   type CreateTagRequest,
   type CreateTagResponse,
@@ -23,7 +24,13 @@ import {
   type UpdateTagRequest,
   type UpdateTagResponse,
 } from '@toxictoast/contracts-grpc';
-import { parseId, unwrap } from '@toxictoast/shared-grpc';
+import {
+  hasPermission,
+  parseId,
+  requirePermission,
+  unwrap,
+} from '@toxictoast/shared-grpc';
+import { ActorProvider } from '@toxictoast/shared-kernel';
 import { TagGrpcMapper } from '../mappers/index.js';
 
 @Controller()
@@ -38,9 +45,11 @@ export class TagGrpcController implements TagServiceController {
     private readonly restoreTagUseCase: RestoreTagUseCase,
     private readonly getTagUseCase: GetTagUseCase,
     private readonly listTagsUseCase: ListTagsUseCase,
+    private readonly actors: ActorProvider,
   ) {}
 
   async createTag(request: CreateTagRequest): Promise<CreateTagResponse> {
+    requirePermission(this.actors.current(), BlogPermission.TAG_WRITE);
     const tag = unwrap(
       await this.createTagUseCase.execute({ title: request.title }),
     );
@@ -48,6 +57,7 @@ export class TagGrpcController implements TagServiceController {
   }
 
   async updateTag(request: UpdateTagRequest): Promise<UpdateTagResponse> {
+    requirePermission(this.actors.current(), BlogPermission.TAG_WRITE);
     const tag = unwrap(
       await this.updateTagUseCase.execute({
         id: parseId(request.id),
@@ -58,6 +68,7 @@ export class TagGrpcController implements TagServiceController {
   }
 
   async deleteTag(request: DeleteTagRequest): Promise<DeleteTagResponse> {
+    requirePermission(this.actors.current(), BlogPermission.TAG_DELETE);
     const tag = unwrap(
       await this.deleteTagUseCase.execute({ id: parseId(request.id) }),
     );
@@ -65,6 +76,7 @@ export class TagGrpcController implements TagServiceController {
   }
 
   async restoreTag(request: RestoreTagRequest): Promise<RestoreTagResponse> {
+    requirePermission(this.actors.current(), BlogPermission.TAG_DELETE);
     const tag = unwrap(
       await this.restoreTagUseCase.execute({ id: parseId(request.id) }),
     );
@@ -75,7 +87,7 @@ export class TagGrpcController implements TagServiceController {
     const tag = unwrap(
       await this.getTagUseCase.execute({
         id: parseId(request.id),
-        withDeleted: request.with_deleted,
+        withDeleted: this.withDeleted(request.with_deleted),
       }),
     );
     return { tag: this.mapper.toProto(tag) };
@@ -86,9 +98,16 @@ export class TagGrpcController implements TagServiceController {
       await this.listTagsUseCase.execute({
         limit: request.limit,
         offset: request.offset,
-        withDeleted: request.with_deleted,
+        withDeleted: this.withDeleted(request.with_deleted),
       }),
     );
     return { tags: tags.map((tag) => this.mapper.toProto(tag)) };
+  }
+
+  private withDeleted(requested: boolean): boolean {
+    return (
+      requested &&
+      hasPermission(this.actors.current(), BlogPermission.TAG_DELETE)
+    );
   }
 }

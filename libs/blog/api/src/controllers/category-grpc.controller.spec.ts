@@ -18,16 +18,29 @@ import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
 } from '@toxictoast/shared-application';
-import { grpcCode } from '@toxictoast/shared-grpc';
+import {
+  anonymousTestActor,
+  grpcCode,
+  testActor,
+  TestActorProvider,
+} from '@toxictoast/shared-grpc';
 import { CategoryGrpcController } from './category-grpc.controller.js';
 import type { Optional } from '@toxictoast/shared-types';
+import { BlogPermission } from '@toxictoast/contracts-grpc';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
 
 describe('CategoryGrpcController', () => {
   let controller: CategoryGrpcController;
+  let actors: TestActorProvider;
 
   beforeEach(() => {
+    actors = new TestActorProvider(
+      testActor([
+        BlogPermission.CATEGORY_WRITE,
+        BlogPermission.CATEGORY_DELETE,
+      ]),
+    );
     const factory = new CategoryFactory(createUuidTestContext(NOW));
     const categories = new InMemoryCategoryRepository();
     const hierarchy = new CategoryHierarchyService(categories);
@@ -48,6 +61,7 @@ describe('CategoryGrpcController', () => {
       new RestoreCategoryUseCase(factory, categories, persistence),
       new GetCategoryUseCase(categories),
       new ListCategoriesUseCase(categories),
+      actors,
     );
   });
 
@@ -138,5 +152,33 @@ describe('CategoryGrpcController', () => {
     });
 
     expect(categories).toHaveLength(2);
+  });
+
+  it('requires the write permission to change categories', async () => {
+    actors.actor = testActor([BlogPermission.CATEGORY_DELETE]);
+
+    expect(await grpcCode(create('Warhammer'))).toBe(status.PERMISSION_DENIED);
+  });
+
+  it('requires the delete permission to delete', async () => {
+    const id = await create('Warhammer');
+    actors.actor = testActor([BlogPermission.CATEGORY_WRITE]);
+
+    const call = controller.deleteCategory({ id });
+
+    expect(await grpcCode(call)).toBe(status.PERMISSION_DENIED);
+  });
+
+  it('serves public reads and ignores with_deleted without permission', async () => {
+    const id = await create('Warhammer');
+    await create('Sichtbar');
+    await controller.deleteCategory({ id });
+    actors.actor = anonymousTestActor();
+
+    const { categories } = await controller.listCategories({
+      with_deleted: true,
+    });
+
+    expect(categories.map((item) => item.title)).toEqual(['Sichtbar']);
   });
 });

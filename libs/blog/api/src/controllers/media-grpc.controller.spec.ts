@@ -11,7 +11,10 @@ import {
   UpdateMediaAltTextUseCase,
 } from '@toxictoast/blog-application';
 import { MediaFactory } from '@toxictoast/blog-domain';
-import { MediaStatus as GrpcMediaStatus } from '@toxictoast/contracts-grpc';
+import {
+  BlogPermission,
+  MediaStatus as GrpcMediaStatus,
+} from '@toxictoast/contracts-grpc';
 import {
   createUuidTestContext,
   DomainPersistence,
@@ -19,7 +22,12 @@ import {
   InMemoryFileStorage,
   InMemoryOutbox,
 } from '@toxictoast/shared-application';
-import { grpcCode } from '@toxictoast/shared-grpc';
+import {
+  anonymousTestActor,
+  grpcCode,
+  testActor,
+  TestActorProvider,
+} from '@toxictoast/shared-grpc';
 import { MediaGrpcController } from './media-grpc.controller.js';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
@@ -27,8 +35,12 @@ const NOW = new Date('2026-10-20T12:00:00Z');
 describe('MediaGrpcController', () => {
   let storage: InMemoryFileStorage;
   let controller: MediaGrpcController;
+  let actors: TestActorProvider;
 
   beforeEach(() => {
+    actors = new TestActorProvider(
+      testActor([BlogPermission.MEDIA_WRITE, BlogPermission.MEDIA_DELETE]),
+    );
     const factory = new MediaFactory(createUuidTestContext(NOW));
     const media = new InMemoryMediaRepository();
     const persistence = new DomainPersistence(
@@ -45,6 +57,7 @@ describe('MediaGrpcController', () => {
       new GetMediaUseCase(media),
       new GetMediaUrlUseCase(media, storage),
       new ListMediaUseCase(media),
+      actors,
     );
   });
 
@@ -126,5 +139,37 @@ describe('MediaGrpcController', () => {
     const call = controller.confirmMediaUpload({ id: media?.id ?? '' });
 
     expect(await grpcCode(call)).not.toBeUndefined();
+  });
+
+  it('keeps the media library behind the write permission', async () => {
+    actors.actor = anonymousTestActor();
+
+    expect(await grpcCode(requestUpload())).toBe(status.UNAUTHENTICATED);
+    expect(await grpcCode(controller.listMedia({ with_deleted: false }))).toBe(
+      status.UNAUTHENTICATED,
+    );
+  });
+
+  it('serves download urls of ready media publicly', async () => {
+    const { media } = await requestUpload();
+    storage.upload(media?.object_key ?? '', {
+      size: 1024,
+      mime_type: 'image/png',
+    });
+    await controller.confirmMediaUpload({ id: media?.id ?? '' });
+    actors.actor = anonymousTestActor();
+
+    const url = await controller.getMediaUrl({ id: media?.id ?? '' });
+
+    expect(url.url).toContain(media?.object_key);
+  });
+
+  it('requires the delete permission to delete media', async () => {
+    const { media } = await requestUpload();
+    actors.actor = testActor([BlogPermission.MEDIA_WRITE]);
+
+    const call = controller.deleteMedia({ id: media?.id ?? '' });
+
+    expect(await grpcCode(call)).toBe(status.PERMISSION_DENIED);
   });
 });

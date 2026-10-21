@@ -11,3 +11,4 @@ export * from './parse-mask.function.js';
 export * from './unauthenticated.function.js';
 export * from './permission-denied.function.js';
 export * from './require-permission.function.js';
+export * from './has-permission.function.js';
