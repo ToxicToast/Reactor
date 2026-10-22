@@ -38,6 +38,7 @@ import {
   BlogPermission,
 } from '@toxictoast/contracts-grpc';
 import {
+  hasPermission,
   mapOptionalEnum,
   parseDate,
   parseId,
@@ -91,6 +92,7 @@ export class PostGrpcController implements PostServiceController {
   }
 
   async updatePost(request: UpdatePostRequest): Promise<UpdatePostResponse> {
+    requirePermission(this.actors.current(), BlogPermission.POST_WRITE);
     const post = unwrap(
       await this.updatePostUseCase.execute(this.updateMapper.toInput(request)),
     );
@@ -98,6 +100,7 @@ export class PostGrpcController implements PostServiceController {
   }
 
   async publishPost(request: PublishPostRequest): Promise<PublishPostResponse> {
+    requirePermission(this.actors.current(), BlogPermission.POST_WRITE);
     const post = unwrap(
       await this.publishPostUseCase.execute({
         id: parseId(request.id),
@@ -108,6 +111,7 @@ export class PostGrpcController implements PostServiceController {
   }
 
   async archivePost(request: ArchivePostRequest): Promise<ArchivePostResponse> {
+    requirePermission(this.actors.current(), BlogPermission.POST_WRITE);
     const post = unwrap(
       await this.archivePostUseCase.execute({ id: parseId(request.id) }),
     );
@@ -117,6 +121,7 @@ export class PostGrpcController implements PostServiceController {
   async unarchivePost(
     request: UnarchivePostRequest,
   ): Promise<UnarchivePostResponse> {
+    requirePermission(this.actors.current(), BlogPermission.POST_WRITE);
     const post = unwrap(
       await this.unarchivePostUseCase.execute({ id: parseId(request.id) }),
     );
@@ -124,6 +129,7 @@ export class PostGrpcController implements PostServiceController {
   }
 
   async deletePost(request: DeletePostRequest): Promise<DeletePostResponse> {
+    requirePermission(this.actors.current(), BlogPermission.POST_DELETE);
     const post = unwrap(
       await this.deletePostUseCase.execute({ id: parseId(request.id) }),
     );
@@ -131,6 +137,7 @@ export class PostGrpcController implements PostServiceController {
   }
 
   async restorePost(request: RestorePostRequest): Promise<RestorePostResponse> {
+    requirePermission(this.actors.current(), BlogPermission.POST_DELETE);
     const post = unwrap(
       await this.restorePostUseCase.execute({ id: parseId(request.id) }),
     );
@@ -141,7 +148,8 @@ export class PostGrpcController implements PostServiceController {
     const post = unwrap(
       await this.getPostUseCase.execute({
         id: parseId(request.id),
-        withDeleted: request.with_deleted,
+        withDeleted: this.withDeleted(request.with_deleted),
+        publishedOnly: !this.canWrite(),
       }),
     );
     return { post: this.mapper.toProto(post) };
@@ -169,8 +177,20 @@ export class PostGrpcController implements PostServiceController {
         tag_id: parseOptionalId(request.tag_id, 'tag_id') ?? undefined,
         limit: request.limit,
         offset: request.offset,
+        publishedOnly: !this.canWrite(),
       }),
     );
     return { posts: posts.map((post) => this.mapper.toProto(post)) };
+  }
+
+  private canWrite(): boolean {
+    return hasPermission(this.actors.current(), BlogPermission.POST_WRITE);
+  }
+
+  private withDeleted(requested: boolean): boolean {
+    return (
+      requested &&
+      hasPermission(this.actors.current(), BlogPermission.POST_DELETE)
+    );
   }
 }

@@ -27,6 +27,7 @@ export interface PublishPostInput {
 export interface PostIdInput {
   readonly id: PostId;
   readonly withDeleted?: Optional<boolean>;
+  readonly publishedOnly?: Optional<boolean>;
 }
 
 export interface PostSlugInput {
@@ -39,4 +40,5 @@ export interface ListPostsInput {
   readonly tag_id?: Optional<TagId>;
   readonly limit?: Optional<number>;
   readonly offset?: Optional<number>;
+  readonly publishedOnly?: Optional<boolean>;
 }

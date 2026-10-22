@@ -1,4 +1,4 @@
-import type { PostId } from '@toxictoast/blog-domain';
+import { PostId, PostStatus } from '@toxictoast/blog-domain';
 import {
   InMemoryPostRepository,
   postAnemic,
@@ -39,6 +39,23 @@ describe('GetPostUseCase', () => {
     await posts.save(postAnemic('post-1', { deleted_at: TEST_NOW }));
 
     const result = await useCase.execute({ id: ID, withDeleted: true });
+
+    expect(result.isSuccess).toBe(true);
+  });
+
+  it('hides an unpublished post with publishedOnly', async () => {
+    await posts.save(postAnemic('post-1'));
+
+    const result = await useCase.execute({ id: ID, publishedOnly: true });
+
+    expect(result.isFailure).toBe(true);
+    expect(result.error.code).toBe('NOT_FOUND');
+  });
+
+  it('returns a published post with publishedOnly', async () => {
+    await posts.save(postAnemic('post-1', { status: PostStatus.PUBLISHED }));
+
+    const result = await useCase.execute({ id: ID, publishedOnly: true });
 
     expect(result.isSuccess).toBe(true);
   });

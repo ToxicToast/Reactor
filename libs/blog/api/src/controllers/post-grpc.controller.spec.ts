@@ -32,12 +32,12 @@ import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
 } from '@toxictoast/shared-application';
-import { grpcCode } from '@toxictoast/shared-grpc';
 import {
-  ActorType,
-  type Actor,
-  type ActorProvider,
-} from '@toxictoast/shared-kernel';
+  anonymousTestActor,
+  grpcCode,
+  testActor,
+  TestActorProvider,
+} from '@toxictoast/shared-grpc';
 import { PostGrpcController } from './post-grpc.controller.js';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
@@ -45,12 +45,10 @@ const CATEGORY = randomUUID();
 const MEDIA = randomUUID();
 
 const AUTHOR = randomUUID();
-const USER: Actor = {
-  type: ActorType.USER,
-  id: AUTHOR,
-  ip: null,
-  permissions: [BlogPermission.POST_WRITE],
-};
+const EDITOR = testActor(
+  [BlogPermission.POST_WRITE, BlogPermission.POST_DELETE],
+  { id: AUTHOR },
+);
 
 const CREATE: CreatePostRequest = {
   title: 'Warhammer 40k',
@@ -80,11 +78,10 @@ const update = (
 
 describe('PostGrpcController', () => {
   let controller: PostGrpcController;
-  let actor: Actor;
+  let actors: TestActorProvider;
 
   beforeEach(async () => {
-    actor = USER;
-    const actors: ActorProvider = { current: () => actor };
+    actors = new TestActorProvider(EDITOR);
     const factory = new PostFactory(createUuidTestContext(NOW));
     const posts = new InMemoryPostRepository();
     const categories = new InMemoryCategoryRepository();
@@ -235,7 +232,7 @@ describe('PostGrpcController', () => {
   });
 
   it('rejects posts without a signed-in user', async () => {
-    actor = { type: ActorType.ANONYMOUS, id: null, ip: null, permissions: [] };
+    actors.actor = anonymousTestActor();
 
     expect(await grpcCode(controller.createPost(CREATE))).toBe(
       status.UNAUTHENTICATED,
@@ -243,10 +240,46 @@ describe('PostGrpcController', () => {
   });
 
   it('rejects posts without the write permission', async () => {
-    actor = { ...USER, permissions: [] };
+    actors.actor = testActor([BlogPermission.POST_DELETE]);
 
     expect(await grpcCode(controller.createPost(CREATE))).toBe(
       status.PERMISSION_DENIED,
     );
+  });
+
+  it('requires the delete permission to delete posts', async () => {
+    const id = await create();
+    actors.actor = testActor([BlogPermission.POST_WRITE]);
+
+    expect(await grpcCode(controller.deletePost({ id }))).toBe(
+      status.PERMISSION_DENIED,
+    );
+  });
+
+  it('hides drafts from readers without the write permission', async () => {
+    const id = await create();
+    actors.actor = anonymousTestActor();
+
+    expect(
+      await grpcCode(controller.getPost({ id, with_deleted: false })),
+    ).toBe(status.NOT_FOUND);
+  });
+
+  it('lists only published posts for readers without the write permission', async () => {
+    const draft = await create();
+    const { post } = await controller.createPost({
+      ...CREATE,
+      title: 'Horus Heresy',
+    });
+    const published = post?.id ?? '';
+    await controller.publishPost({ id: published });
+    actors.actor = anonymousTestActor();
+
+    const { posts } = await controller.listPosts({
+      status: GrpcPostStatus.POST_STATUS_DRAFT,
+    });
+
+    expect(posts.map((item) => item.id)).toEqual([published]);
+    expect(posts.map((item) => item.id)).not.toContain(draft);
   });
 });

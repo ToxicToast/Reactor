@@ -78,4 +78,13 @@ describe('ListPostsUseCase', () => {
 
     expect(ids(result.value)).toEqual(['p-2']);
   });
+
+  it('returns only published posts with publishedOnly', async () => {
+    const result = await useCase.execute({
+      publishedOnly: true,
+      status: PostStatus.DRAFT,
+    });
+
+    expect(ids(result.value)).toEqual(['p-1', 'p-3']);
+  });
 });
