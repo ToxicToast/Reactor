@@ -1,0 +1,40 @@
+name: Test Apps
+
+on:
+  workflow_call:
+    inputs:
+      max-parallel:
+        required: true
+        type: string
+      node-version:
+        required: true
+        type: string
+
+jobs:
+  testing:
+    runs-on: ubuntu-24.04
+    name: 'Test Apps'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: nrwl/nx-set-shas@v5
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🚀 Test Apps
+        run: npx nx affected -t test --passWithNoTests --parallel=${{ inputs.max-parallel }}
+
+      - name: 🚀 e2e Apps
+        run: npx nx affected -t e2e --parallel=${{ inputs.max-parallel }}
+
+      - name: 🚀 Integration Apps
+        run: npx nx affected -t integration --parallel=${{ inputs.max-parallel }}

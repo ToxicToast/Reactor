@@ -1,0 +1,132 @@
+import { Logger, Module, type DynamicModule } from '@nestjs/common';
+import type { Producer } from '@platformatic/kafka';
+import type { Clock } from '@toxictoast/shared-kernel';
+import {
+  createKafkaAdmin,
+  createKafkaConsumer,
+  createKafkaProducer,
+  KafkaEventConsumer,
+  KafkaEventPublisher,
+  kafkaConfigFromEnv,
+  OutboxRelay,
+  OutboxRelayWorker,
+  TopicProvisioner,
+  type EventPublisher,
+} from '@toxictoast/shared-messaging';
+import {
+  ActorContext,
+  booleanEnv,
+  describeError,
+  numberEnv,
+} from '@toxictoast/shared-system';
+import { DataSource } from 'typeorm';
+import { TOKENS } from '../constants/index.js';
+import type { MessagingModuleOptions } from '../interfaces/index.js';
+import { MessagingLifecycle } from '../lifecycles/index.js';
+import { Nullable } from '@toxictoast/shared-types';
+
+type StringProducer = Producer<string, string, string, string>;
+
+@Module({})
+export class MessagingModule {
+  static forRoot(options: MessagingModuleOptions): DynamicModule {
+    const logger = new Logger('Messaging');
+    const handlers = options.handlers;
+
+    return {
+      module: MessagingModule,
+      global: true,
+      imports: options.imports ?? [],
+      providers: [
+        {
+          provide: TOKENS.KAFKA_PRODUCER,
+          useFactory: (): StringProducer => {
+            return createKafkaProducer(kafkaConfigFromEnv());
+          },
+        },
+        {
+          provide: TOKENS.EVENT_PUBLISHER,
+          inject: [TOKENS.KAFKA_PRODUCER],
+          useFactory: (producer: StringProducer): EventPublisher => {
+            return new KafkaEventPublisher(producer);
+          },
+        },
+        {
+          provide: OutboxRelay,
+          inject: [DataSource, TOKENS.EVENT_PUBLISHER, TOKENS.CLOCK],
+          useFactory: (
+            dataSource: DataSource,
+            publisher: EventPublisher,
+            clock: Clock,
+          ) => {
+            return new OutboxRelay(
+              dataSource,
+              publisher,
+              clock,
+              numberEnv('OUTBOX_BATCH_SIZE', 100),
+            );
+          },
+        },
+        {
+          provide: OutboxRelayWorker,
+          inject: [OutboxRelay],
+          useFactory: (relay: OutboxRelay) => {
+            return new OutboxRelayWorker(relay, {
+              intervalMs: numberEnv('OUTBOX_INTERVAL_MS', 500),
+              onError: (error) => {
+                logger.error('Outbox relay failed', describeError(error));
+              },
+            });
+          },
+        },
+        {
+          provide: TOKENS.EVENT_CONSUMER,
+          inject: [ActorContext, ...(handlers?.inject ?? [])],
+          useFactory: (actors: ActorContext, ...deps: Array<unknown>) => {
+            if (!handlers) {
+              return null;
+            }
+            return new KafkaEventConsumer(
+              createKafkaConsumer(kafkaConfigFromEnv(), options.groupId),
+              actors,
+              {
+                handlers: handlers.useFactory(...deps),
+                onError: (error, event) => {
+                  const name = event
+                    ? `${event.event_namespace}.${event.event_name}`
+                    : 'unknown event';
+                  logger.error(`Handling ${name} failed`, describeError(error));
+                },
+              },
+            );
+          },
+        },
+        {
+          provide: TOKENS.TOPIC_PROVISIONER,
+          inject: [TOKENS.EVENT_CONSUMER],
+          useFactory: (
+            consumer: Nullable<KafkaEventConsumer>,
+          ): Nullable<TopicProvisioner> => {
+            if (!booleanEnv('KAFKA_AUTO_CREATE_TOPICS', true)) {
+              return null;
+            }
+            const topics = [
+              ...(options.topics ?? []),
+              ...(consumer?.topics ?? []),
+            ];
+            return new TopicProvisioner(
+              createKafkaAdmin(kafkaConfigFromEnv()),
+              topics,
+              {
+                partitions: numberEnv('KAFKA_TOPIC_PARTITIONS', 3),
+                replicas: numberEnv('KAFKA_TOPIC_REPLICAS', 1),
+              },
+            );
+          },
+        },
+        MessagingLifecycle,
+      ],
+      exports: [TOKENS.EVENT_PUBLISHER],
+    };
+  }
+}

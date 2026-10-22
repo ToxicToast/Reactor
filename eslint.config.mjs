@@ -1,163 +1,123 @@
 import nx from '@nx/eslint-plugin';
 
+const infraPackages = [
+  '@nestjs/*',
+  'typeorm',
+  'pg',
+  'ioredis',
+  'bullmq',
+  'kafkajs',
+  '@aws-sdk/*',
+  '@grpc/*',
+  'rxjs',
+];
+
 export default [
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
+  { ignores: ['**/dist', 'libs/contracts/grpc/src/generated/**'] },
   {
-    ignores: [
-      '**/dist',
-      '**/out-tsc',
-      '**/vite.config.*.timestamp*',
-      '**/vitest.config.*.timestamp*',
-      '**/test-output',
-    ],
-  },
-  {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    files: ['**/*.ts', '**/*.js'],
     rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { varsIgnorePattern: '^_' },
+      ],
       '@nx/enforce-module-boundaries': [
         'error',
         {
-          enforceBuildableLibDependency: true,
-          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
-          // Three tag dimensions, evaluated independently (AND):
-          // every project must satisfy its scope, type AND runtime constraint.
+          enforceBuildableLibDependency: false,
+          allow: [],
           depConstraints: [
-            // --- scope: bounded-context isolation -------------------------
+            // ── Schichten ───────────────────────────────
             {
-              sourceTag: 'scope:shared',
-              onlyDependOnLibsWithTags: ['scope:shared'],
+              sourceTag: 'type:types',
+              onlyDependOnLibsWithTags: ['type:types'],
             },
             {
-              sourceTag: 'scope:platform',
-              onlyDependOnLibsWithTags: ['scope:platform', 'scope:shared'],
+              sourceTag: 'type:domain',
+              onlyDependOnLibsWithTags: ['type:domain', 'type:types'],
+              bannedExternalImports: infraPackages,
             },
             {
-              sourceTag: 'scope:foodfolio',
+              sourceTag: 'type:application',
               onlyDependOnLibsWithTags: [
-                'scope:foodfolio',
-                'scope:platform',
-                'scope:shared',
+                'type:domain',
+                'type:application',
+                'type:types',
               ],
+              bannedExternalImports: infraPackages,
+            },
+            {
+              sourceTag: 'type:infrastructure',
+              onlyDependOnLibsWithTags: [
+                'type:domain',
+                'type:application',
+                'type:infrastructure',
+                'type:contracts',
+                'type:types',
+              ],
+            },
+            {
+              sourceTag: 'type:api',
+              onlyDependOnLibsWithTags: [
+                'type:domain',
+                'type:application',
+                'type:contracts',
+                'type:api',
+                'type:types',
+              ],
+            },
+            {
+              sourceTag: 'type:contracts',
+              onlyDependOnLibsWithTags: ['type:contracts', 'type:types'],
+            },
+            {
+              sourceTag: 'type:app',
+              onlyDependOnLibsWithTags: [
+                'type:domain',
+                'type:application',
+                'type:infrastructure',
+                'type:api',
+                'type:contracts',
+                'type:types',
+              ],
+            },
+
+            // ── Service-Grenzen ─────────────────────────
+            {
+              sourceTag: 'scope:types',
+              onlyDependOnLibsWithTags: ['scope:types'],
             },
             {
               sourceTag: 'scope:blog',
               onlyDependOnLibsWithTags: [
                 'scope:blog',
-                'scope:platform',
+                'scope:contracts',
                 'scope:shared',
+                'scope:types',
               ],
             },
             {
-              sourceTag: 'scope:app',
-              onlyDependOnLibsWithTags: ['*'],
-            },
-
-            // --- type: onion layers ---------------------------------------
-            {
-              sourceTag: 'type:kernel',
-              onlyDependOnLibsWithTags: ['type:kernel'],
-              allowedExternalImports: [],
-            },
-            {
-              sourceTag: 'type:domain',
-              onlyDependOnLibsWithTags: ['type:domain', 'type:kernel'],
-              allowedExternalImports: [],
-            },
-            {
-              sourceTag: 'type:contracts',
-              onlyDependOnLibsWithTags: ['type:contracts', 'type:kernel'],
-              allowedExternalImports: [],
-            },
-            {
-              sourceTag: 'type:application',
+              sourceTag: 'scope:gateway',
               onlyDependOnLibsWithTags: [
-                'type:application',
-                'type:domain',
-                'type:contracts',
-                'type:kernel',
-              ],
-              allowedExternalImports: [],
-            },
-            {
-              sourceTag: 'type:infrastructure',
-              onlyDependOnLibsWithTags: [
-                'type:infrastructure',
-                'type:application',
-                'type:domain',
-                'type:contracts',
-                'type:kernel',
+                'scope:contracts',
+                'scope:shared',
+                'scope:types',
               ],
             },
             {
-              sourceTag: 'type:ui',
-              onlyDependOnLibsWithTags: ['type:ui', 'type:kernel'],
+              sourceTag: 'scope:shared',
+              onlyDependOnLibsWithTags: ['scope:shared', 'scope:types'],
             },
             {
-              // Features never import other features; shared pieces go to type:ui.
-              sourceTag: 'type:feature',
-              onlyDependOnLibsWithTags: [
-                'type:ui',
-                'type:infrastructure',
-                'type:application',
-                'type:domain',
-                'type:contracts',
-                'type:kernel',
-              ],
-            },
-            {
-              // Composition root: wires features, adapters and use cases.
-              sourceTag: 'type:app',
-              onlyDependOnLibsWithTags: [
-                'type:feature',
-                'type:ui',
-                'type:infrastructure',
-                'type:application',
-                'type:contracts',
-                'type:kernel',
-              ],
-            },
-            {
-              sourceTag: 'type:e2e',
-              onlyDependOnLibsWithTags: ['type:app'],
-            },
-
-            // --- runtime: keep server code out of browser bundles -------------
-            {
-              sourceTag: 'runtime:universal',
-              onlyDependOnLibsWithTags: ['runtime:universal'],
-            },
-            {
-              sourceTag: 'runtime:browser',
-              onlyDependOnLibsWithTags: [
-                'runtime:browser',
-                'runtime:universal',
-              ],
-              bannedExternalImports: ['@nestjs/*'],
-            },
-            {
-              sourceTag: 'runtime:server',
-              onlyDependOnLibsWithTags: ['runtime:server', 'runtime:universal'],
-              bannedExternalImports: ['react', 'react-dom', 'react-dom/*'],
+              sourceTag: 'scope:contracts',
+              onlyDependOnLibsWithTags: ['scope:contracts', 'scope:types'],
             },
           ],
         },
       ],
     },
-  },
-  {
-    files: [
-      '**/*.ts',
-      '**/*.tsx',
-      '**/*.cts',
-      '**/*.mts',
-      '**/*.js',
-      '**/*.jsx',
-      '**/*.cjs',
-      '**/*.mjs',
-    ],
-    // Override or add rules here
-    rules: {},
   },
 ];

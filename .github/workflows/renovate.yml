@@ -1,0 +1,38 @@
+name: Renovate
+
+on:
+  push:
+    branches: [renovate/**/*, renovate/*]
+
+env:
+  NODE_VERSION: 24
+  MAX_PARALLEL: 3
+
+jobs:
+  renovate:
+    runs-on: ubuntu-24.04
+    name: 'Check Renovate Update'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: nrwl/nx-set-shas@v5
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🚀 Check Format
+        run: npx nx format:check
+
+      - name: 🚀 Lint, Typecheck, Test and Build Apps
+        run: npx nx affected -t lint typecheck test build --passWithNoTests --parallel=${{ env.MAX_PARALLEL }}
+
+      - name: 🚀 e2e Apps
+        run: npx nx affected -t e2e --parallel=${{ env.MAX_PARALLEL }}

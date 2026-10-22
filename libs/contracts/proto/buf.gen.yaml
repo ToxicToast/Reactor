@@ -1,0 +1,15 @@
+version: v2
+inputs:
+  - directory: src
+plugins:
+  - local: ['node', '../../../node_modules/ts-proto/protoc-gen-ts_proto']
+    out: ../grpc/src/generated
+    strategy: all
+    opt:
+      - nestJs=true
+      - snakeToCamel=false
+      - stringEnums=true
+      - unrecognizedEnum=false
+      - importSuffix=.js
+      - esModuleInterop=true
+      - exportCommonSymbols=false

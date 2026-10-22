@@ -53,3 +53,7 @@ vitest.config.*.timestamp*
 .vitest
 
 test-output
+
+apps/*/.env
+
+nx-output.txt

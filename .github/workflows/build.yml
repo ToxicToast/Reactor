@@ -1,0 +1,34 @@
+name: Build Apps
+
+on:
+  workflow_call:
+    inputs:
+      max-parallel:
+        required: true
+        type: string
+      node-version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    name: 'Build Apps'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: nrwl/nx-set-shas@v5
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🚀 Build Apps
+        run: npx nx affected -t build --parallel=${{ inputs.max-parallel }}

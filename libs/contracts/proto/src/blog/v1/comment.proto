@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package blog.v1;
+
+service CommentService {
+  rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse);
+  rpc UpdateComment(UpdateCommentRequest) returns (UpdateCommentResponse);
+  rpc ModerateComment(ModerateCommentRequest) returns (ModerateCommentResponse);
+  rpc DeleteComment(DeleteCommentRequest) returns (DeleteCommentResponse);
+  rpc RestoreComment(RestoreCommentRequest) returns (RestoreCommentResponse);
+  rpc GetComment(GetCommentRequest) returns (GetCommentResponse);
+  rpc ListPostComments(ListPostCommentsRequest) returns (ListPostCommentsResponse);
+  rpc ListCommentsByStatus(ListCommentsByStatusRequest) returns (ListCommentsByStatusResponse);
+}
+
+enum CommentStatus {
+  COMMENT_STATUS_UNSPECIFIED = 0;
+  COMMENT_STATUS_PENDING = 1;
+  COMMENT_STATUS_APPROVED = 2;
+  COMMENT_STATUS_SPAM = 3;
+  COMMENT_STATUS_HATE = 4;
+}
+
+enum ModerationStatus {
+  MODERATION_STATUS_UNSPECIFIED = 0;
+  MODERATION_STATUS_APPROVED = 1;
+  MODERATION_STATUS_SPAM = 2;
+  MODERATION_STATUS_HATE = 3;
+}
+
+enum CommentModerator {
+  COMMENT_MODERATOR_UNSPECIFIED = 0;
+  COMMENT_MODERATOR_AI = 1;
+  COMMENT_MODERATOR_ADMIN = 2;
+}
+
+message Comment {
+  string id = 1;
+  string post_id = 2;
+  optional string parent_id = 3;
+  string author_id = 4;
+  string content = 5;
+  CommentStatus status = 6;
+  optional string moderation_note = 7;
+  optional CommentModerator moderated_by = 8;
+  optional string moderated_at = 9;
+  string created_at = 10;
+  optional string updated_at = 11;
+  optional string deleted_at = 12;
+}
+
+message CreateCommentRequest {
+  reserved 3;
+  reserved "author_id";
+
+  string post_id = 1;
+  optional string parent_id = 2;
+  string content = 4;
+}
+
+message CreateCommentResponse {
+  Comment comment = 1;
+}
+
+message UpdateCommentRequest {
+  string id = 1;
+  string content = 2;
+}
+
+message UpdateCommentResponse {
+  Comment comment = 1;
+}
+
+message ModerateCommentRequest {
+  string id = 1;
+  ModerationStatus status = 2;
+  optional string note = 3;
+}
+
+message ModerateCommentResponse {
+  Comment comment = 1;
+}
+
+message DeleteCommentRequest {
+  string id = 1;
+}
+
+message DeleteCommentResponse {
+  Comment comment = 1;
+}
+
+message RestoreCommentRequest {
+  string id = 1;
+}
+
+message RestoreCommentResponse {
+  Comment comment = 1;
+}
+
+message GetCommentRequest {
+  string id = 1;
+  bool with_deleted = 2;
+}
+
+message GetCommentResponse {
+  Comment comment = 1;
+}
+
+message ListPostCommentsRequest {
+  string post_id = 1;
+}
+
+message ListPostCommentsResponse {
+  repeated Comment comments = 1;
+}
+
+message ListCommentsByStatusRequest {
+  CommentStatus status = 1;
+  optional int32 limit = 2;
+  optional int32 offset = 3;
+}
+
+message ListCommentsByStatusResponse {
+  repeated Comment comments = 1;
+}

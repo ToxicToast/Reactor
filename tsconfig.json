@@ -4,19 +4,55 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/foodfolio-e2e"
+      "path": "./libs/blog/domain"
     },
     {
-      "path": "./apps/foodfolio"
+      "path": "./libs/blog/application"
     },
     {
-      "path": "./libs/foodfolio/domain"
+      "path": "./libs/blog/infrastructure"
     },
     {
-      "path": "./libs/foodfolio/application"
+      "path": "./libs/blog/api"
+    },
+    {
+      "path": "./libs/contracts/proto"
+    },
+    {
+      "path": "./libs/contracts/grpc"
+    },
+    {
+      "path": "./libs/contracts/events"
     },
     {
       "path": "./libs/shared/kernel"
+    },
+    {
+      "path": "./libs/shared/application"
+    },
+    {
+      "path": "./libs/shared/persistence"
+    },
+    {
+      "path": "./libs/shared/storage"
+    },
+    {
+      "path": "./libs/shared/messaging"
+    },
+    {
+      "path": "./libs/shared/system"
+    },
+    {
+      "path": "./libs/shared/grpc"
+    },
+    {
+      "path": "./libs/shared/nest"
+    },
+    {
+      "path": "./libs/shared/types"
+    },
+    {
+      "path": "./apps/blog-service"
     }
   ],
   "compilerOptions": {}

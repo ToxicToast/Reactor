@@ -1,0 +1,32 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":enableVulnerabilityAlertsWithLabel('security')",
+    ":preserveSemverRanges",
+    ":rebaseStalePrs",
+    "group:recommended"
+  ],
+  "labels": ["renovate"],
+  "packageRules": [
+    {
+      "groupName": "devDependencies (non-major)",
+      "matchDepTypes": ["devDependencies", "require-dev"],
+      "matchUpdateTypes": ["digest", "minor", "patch"]
+    },
+    {
+      "groupName": "devDependencies (major)",
+      "matchDepTypes": ["devDependencies", "require-dev"],
+      "matchUpdateTypes": ["major"]
+    },
+    {
+      "description": "terminus 12 is ESM-only and breaks Jest; keep 11 until the Nest 12 upgrade",
+      "matchPackageNames": ["@nestjs/terminus"],
+      "allowedVersions": "<12"
+    }
+  ],
+  "separateMinorPatch": true,
+  "stopUpdatingLabel": "renovate/stop_updating",
+  "assignees": ["ToxicToast"]
+}

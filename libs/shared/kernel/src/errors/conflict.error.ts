@@ -1,0 +1,8 @@
+import { DomainError } from './domain.error.js';
+
+export class ConflictError extends DomainError {
+  readonly code = 'CONFLICT';
+  constructor(message: string) {
+    super(message);
+  }
+}
