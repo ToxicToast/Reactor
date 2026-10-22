@@ -94,7 +94,9 @@ describe('TypeOrmPostRepository', () => {
     await posts.save(post());
     await posts.save(post({ status: PostStatus.PUBLISHED, deleted_at: NOW }));
 
-    expect(await posts.findByStatus(PostStatus.PUBLISHED)).toEqual([published]);
+    expect(await posts.findByFilter({ status: PostStatus.PUBLISHED })).toEqual([
+      published,
+    ]);
   });
 
   it('finds by category and by tag', async () => {
@@ -103,24 +105,55 @@ describe('TypeOrmPostRepository', () => {
     await posts.save(both);
     await posts.save(other);
 
-    expect(await posts.findByCategoryId(CAT_A)).toEqual([both]);
-    expect(await posts.findByTagId(TAG_A)).toEqual([both]);
+    expect(await posts.findByFilter({ category_id: CAT_A })).toEqual([both]);
+    expect(await posts.findByFilter({ tag_id: TAG_A })).toEqual([both]);
   });
 
-  it('pages by posts, not by joined rows', async () => {
+  it('combines status, category and tag in one query', async () => {
+    const match = post({
+      status: PostStatus.PUBLISHED,
+      category_ids: [CAT_A],
+      tag_ids: [TAG_A],
+    });
+    await posts.save(match);
+    await posts.save(post({ category_ids: [CAT_A], tag_ids: [TAG_A] }));
+    await posts.save(
+      post({ status: PostStatus.PUBLISHED, category_ids: [CAT_A] }),
+    );
+
+    const found = await posts.findByFilter({
+      status: PostStatus.PUBLISHED,
+      category_id: CAT_A,
+      tag_id: TAG_A,
+    });
+
+    expect(found).toEqual([match]);
+  });
+
+  it('pages after filtering', async () => {
     const oldest = post({
+      status: PostStatus.PUBLISHED,
       category_ids: [CAT_A, CAT_B],
       created_at: new Date('2026-10-01T00:00:00Z'),
     });
-    const newest = post({
-      category_ids: [CAT_A, CAT_B],
-      created_at: new Date('2026-10-02T00:00:00Z'),
-    });
     await posts.save(oldest);
+    await posts.save(
+      post({
+        category_ids: [CAT_A],
+        created_at: new Date('2026-10-02T00:00:00Z'),
+      }),
+    );
+    const newest = post({
+      status: PostStatus.PUBLISHED,
+      category_ids: [CAT_A, CAT_B],
+      created_at: new Date('2026-10-03T00:00:00Z'),
+    });
     await posts.save(newest);
 
-    expect(await posts.findByCategoryId(CAT_A, 1, 0)).toEqual([newest]);
-    expect(await posts.findByCategoryId(CAT_A, 1, 1)).toEqual([oldest]);
+    const filter = { status: PostStatus.PUBLISHED, category_id: CAT_A };
+
+    expect(await posts.findByFilter(filter, 1, 0)).toEqual([newest]);
+    expect(await posts.findByFilter(filter, 1, 1)).toEqual([oldest]);
   });
 
   it('rolls back post and links when the unit of work fails', async () => {

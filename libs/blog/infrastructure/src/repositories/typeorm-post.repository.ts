@@ -1,10 +1,8 @@
 import type {
-  CategoryId,
   PostAnemic,
+  PostFilter,
   PostId,
   PostRepository,
-  PostStatus,
-  TagId,
 } from '@toxictoast/blog-domain';
 import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type { TransactionContext } from '@toxictoast/shared-persistence';
@@ -56,36 +54,27 @@ export class TypeOrmPostRepository implements PostRepository {
     );
   }
 
-  findByStatus(
-    status: PostStatus,
+  findByFilter(
+    filter: PostFilter,
     limit?: Optional<number>,
     offset?: Optional<number>,
   ): Promise<Array<PostAnemic>> {
-    const query = this.query().andWhere('e.status = :status', { status });
-    return this.many(this.page(query, limit, offset));
-  }
-
-  findByCategoryId(
-    categoryId: CategoryId,
-    limit?: Optional<number>,
-    offset?: Optional<number>,
-  ): Promise<Array<PostAnemic>> {
-    const query = this.query().andWhere(
-      'EXISTS (SELECT 1 FROM post_categories pc WHERE pc.post_id = e.id AND pc.category_id = :categoryId)',
-      { categoryId },
-    );
-    return this.many(this.page(query, limit, offset));
-  }
-
-  findByTagId(
-    tagId: TagId,
-    limit?: Optional<number>,
-    offset?: Optional<number>,
-  ): Promise<Array<PostAnemic>> {
-    const query = this.query().andWhere(
-      'EXISTS (SELECT 1 FROM post_tags pt WHERE pt.post_id = e.id AND pt.tag_id = :tagId)',
-      { tagId },
-    );
+    const query = this.query();
+    if (filter.status) {
+      query.andWhere('e.status = :status', { status: filter.status });
+    }
+    if (filter.category_id) {
+      query.andWhere(
+        'EXISTS (SELECT 1 FROM post_categories pc WHERE pc.post_id = e.id AND pc.category_id = :categoryId)',
+        { categoryId: filter.category_id },
+      );
+    }
+    if (filter.tag_id) {
+      query.andWhere(
+        'EXISTS (SELECT 1 FROM post_tags pt WHERE pt.post_id = e.id AND pt.tag_id = :tagId)',
+        { tagId: filter.tag_id },
+      );
+    }
     return this.many(this.page(query, limit, offset));
   }
 

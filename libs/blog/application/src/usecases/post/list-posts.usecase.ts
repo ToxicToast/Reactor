@@ -15,12 +15,16 @@ export class ListPostsUseCase implements UseCase<
   constructor(private readonly repository: PostRepository) {}
 
   async execute(input: ListPostsInput): Promise<Result<Array<PostAnemic>>> {
-    const status = this.statusOf(input);
-    const posts = await this.load({ ...input, status });
-    if (status === undefined) {
-      return Result.ok(posts);
-    }
-    return Result.ok(posts.filter((post) => post.status === status));
+    const posts = await this.repository.findByFilter(
+      {
+        status: this.statusOf(input),
+        category_id: input.category_id ?? undefined,
+        tag_id: input.tag_id ?? undefined,
+      },
+      input.limit,
+      input.offset,
+    );
+    return Result.ok(posts);
   }
 
   private statusOf(input: ListPostsInput): Optional<PostStatus> {
@@ -28,30 +32,5 @@ export class ListPostsUseCase implements UseCase<
       return PostStatus.PUBLISHED;
     }
     return input.status ?? undefined;
-  }
-
-  private load(input: ListPostsInput): Promise<Array<PostAnemic>> {
-    if (input.category_id) {
-      return this.repository.findByCategoryId(
-        input.category_id,
-        input.limit,
-        input.offset,
-      );
-    }
-    if (input.tag_id) {
-      return this.repository.findByTagId(
-        input.tag_id,
-        input.limit,
-        input.offset,
-      );
-    }
-    if (input.status) {
-      return this.repository.findByStatus(
-        input.status,
-        input.limit,
-        input.offset,
-      );
-    }
-    return this.repository.findList(input.limit, input.offset);
   }
 }

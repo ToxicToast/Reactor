@@ -87,4 +87,30 @@ describe('ListPostsUseCase', () => {
 
     expect(ids(result.value)).toEqual(['p-1', 'p-3']);
   });
+
+  it('combines category and tag', async () => {
+    await posts.save(postAnemic('p-5', { tag_ids: [TAG] }));
+
+    const result = await useCase.execute({ category_id: CAT, tag_id: TAG });
+
+    expect(ids(result.value)).toEqual(['p-1']);
+  });
+
+  it('pages after filtering', async () => {
+    await posts.save(
+      postAnemic('p-5', {
+        status: PostStatus.PUBLISHED,
+        category_ids: [CAT],
+      }),
+    );
+
+    const result = await useCase.execute({
+      category_id: CAT,
+      publishedOnly: true,
+      limit: 1,
+      offset: 1,
+    });
+
+    expect(ids(result.value)).toEqual(['p-5']);
+  });
 });

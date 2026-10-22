@@ -1,11 +1,9 @@
 import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type {
-  CategoryId,
   PostAnemic,
+  PostFilter,
   PostId,
   PostRepository,
-  PostStatus,
-  TagId,
 } from '@toxictoast/blog-domain';
 
 export class InMemoryPostRepository implements PostRepository {
@@ -55,37 +53,13 @@ export class InMemoryPostRepository implements PostRepository {
     return post;
   }
 
-  async findByStatus(
-    status: PostStatus,
+  async findByFilter(
+    filter: PostFilter,
     limit?: Optional<number>,
     offset = 0,
   ): Promise<Array<PostAnemic>> {
     return this.page(
-      this.active().filter((post) => post.status === status),
-      limit,
-      offset,
-    );
-  }
-
-  async findByCategoryId(
-    categoryId: CategoryId,
-    limit?: Optional<number>,
-    offset = 0,
-  ): Promise<Array<PostAnemic>> {
-    return this.page(
-      this.active().filter((post) => post.category_ids.includes(categoryId)),
-      limit,
-      offset,
-    );
-  }
-
-  async findByTagId(
-    tagId: TagId,
-    limit?: Optional<number>,
-    offset = 0,
-  ): Promise<Array<PostAnemic>> {
-    return this.page(
-      this.active().filter((post) => post.tag_ids.includes(tagId)),
+      this.active().filter((post) => this.matches(post, filter)),
       limit,
       offset,
     );
@@ -104,5 +78,18 @@ export class InMemoryPostRepository implements PostRepository {
       offset,
       limit === undefined ? undefined : offset + limit,
     );
+  }
+
+  private matches(post: PostAnemic, filter: PostFilter): boolean {
+    if (filter.status && post.status !== filter.status) {
+      return false;
+    }
+    if (filter.category_id && !post.category_ids.includes(filter.category_id)) {
+      return false;
+    }
+    if (filter.tag_id && !post.tag_ids.includes(filter.tag_id)) {
+      return false;
+    }
+    return true;
   }
 }
