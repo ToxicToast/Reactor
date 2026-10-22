@@ -3,7 +3,11 @@ import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
 } from '@toxictoast/shared-application';
-import { CommentFactory, type CommentId } from '@toxictoast/blog-domain';
+import {
+  AuthorId,
+  CommentFactory,
+  type CommentId,
+} from '@toxictoast/blog-domain';
 import {
   commentAnemic,
   createTestContext,
@@ -12,6 +16,7 @@ import {
 import { UpdateCommentUseCase } from './update-comment.usecase.js';
 
 const ID = 'c-1' as CommentId;
+const AUTHOR = 'author-1' as AuthorId;
 
 describe('UpdateCommentUseCase', () => {
   let comments: InMemoryCommentRepository;
@@ -33,17 +38,25 @@ describe('UpdateCommentUseCase', () => {
   });
 
   it('updates the content', async () => {
-    const result = await useCase.execute({ id: ID, content: ' Neu ' });
+    const result = await useCase.execute({
+      id: ID,
+      content: ' Neu ',
+      author_id: AUTHOR,
+    });
 
     expect(result.isSuccess).toBe(true);
     expect(result.value.content).toBe('Neu');
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['update']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual([
+      'update',
+      'requested',
+    ]);
   });
 
   it('does not write when nothing changes', async () => {
     const result = await useCase.execute({
       id: ID,
       content: 'Für den Imperator!',
+      author_id: AUTHOR,
     });
 
     expect(result.isSuccess).toBe(true);
@@ -51,7 +64,11 @@ describe('UpdateCommentUseCase', () => {
   });
 
   it('fails on empty content', async () => {
-    const result = await useCase.execute({ id: ID, content: '' });
+    const result = await useCase.execute({
+      id: ID,
+      content: '',
+      author_id: AUTHOR,
+    });
 
     expect(result.isFailure).toBe(true);
     expect(result.error.code).toBe('VALIDATION');
@@ -61,9 +78,22 @@ describe('UpdateCommentUseCase', () => {
     const result = await useCase.execute({
       id: 'missing' as CommentId,
       content: 'Neu',
+      author_id: AUTHOR,
     });
 
     expect(result.isFailure).toBe(true);
     expect(result.error.code).toBe('NOT_FOUND');
+  });
+
+  it('refuses edits by anyone but the author', async () => {
+    const result = await useCase.execute({
+      id: ID,
+      content: 'Neu',
+      author_id: 'other' as AuthorId,
+    });
+
+    expect(result.isFailure).toBe(true);
+    expect(result.error.code).toBe('FORBIDDEN');
+    expect(uow.runs).toBe(0);
   });
 });

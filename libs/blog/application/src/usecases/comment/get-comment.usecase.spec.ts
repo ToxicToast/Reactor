@@ -1,4 +1,4 @@
-import type { CommentId } from '@toxictoast/blog-domain';
+import { CommentStatus, type CommentId } from '@toxictoast/blog-domain';
 import {
   commentAnemic,
   InMemoryCommentRepository,
@@ -39,6 +39,25 @@ describe('GetCommentUseCase', () => {
     await comments.save(commentAnemic('c-1', { deleted_at: TEST_NOW }));
 
     const result = await useCase.execute({ id: ID, withDeleted: true });
+
+    expect(result.isSuccess).toBe(true);
+  });
+
+  it('hides an unapproved comment with approvedOnly', async () => {
+    await comments.save(commentAnemic('c-1'));
+
+    const result = await useCase.execute({ id: ID, approvedOnly: true });
+
+    expect(result.isFailure).toBe(true);
+    expect(result.error.code).toBe('NOT_FOUND');
+  });
+
+  it('returns an approved comment with approvedOnly', async () => {
+    await comments.save(
+      commentAnemic('c-1', { status: CommentStatus.APPROVED }),
+    );
+
+    const result = await useCase.execute({ id: ID, approvedOnly: true });
 
     expect(result.isSuccess).toBe(true);
   });

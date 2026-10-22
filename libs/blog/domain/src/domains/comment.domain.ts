@@ -2,6 +2,7 @@ import type { Nullable } from '@toxictoast/shared-types';
 import {
   BaseDomain,
   ConflictError,
+  ForbiddenError,
   type DomainEventClass,
   Result,
 } from '@toxictoast/shared-kernel';
@@ -19,6 +20,7 @@ import {
   UpdateCommentEvent,
 } from '../events/index.js';
 import { ValidateCommentContent } from '../validations/index.js';
+import type { AuthorId } from '../types/index.js';
 
 export class CommentDomain extends BaseDomain<CommentAnemic> {
   get isApproved(): boolean {
@@ -34,7 +36,12 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
     this.raise(RequestCommentModerationEvent);
   }
 
-  updateContent(content: string): Result<void> {
+  updateContent(content: string, editor: AuthorId): Result<void> {
+    if (this.state.author_id !== editor) {
+      return Result.fail(
+        new ForbiddenError('Only the author can edit the comment'),
+      );
+    }
     if (this.isDeleted) {
       return Result.fail(new ConflictError('Comment is deleted'));
     }
@@ -49,8 +56,10 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
     }
 
     this.state.content = trimmed;
+    this.resetModeration();
     this.touch();
     this.raise(UpdateCommentEvent);
+    this.raise(RequestCommentModerationEvent);
     return Result.ok();
   }
 
@@ -143,5 +152,12 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
     this.state.moderated_by = moderator;
     this.state.moderated_at = this.ctx.date.now();
     this.touch();
+  }
+
+  private resetModeration(): void {
+    this.state.status = CommentStatus.PENDING;
+    this.state.moderation_note = null;
+    this.state.moderated_by = null;
+    this.state.moderated_at = null;
   }
 }

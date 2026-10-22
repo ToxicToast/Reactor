@@ -1,10 +1,16 @@
 import type { Nullable, Optional } from '@toxictoast/shared-types';
-import type { CommentId, CommentStatus, PostId } from '@toxictoast/blog-domain';
+import type {
+  AuthorId,
+  CommentId,
+  CommentStatus,
+  PostId,
+} from '@toxictoast/blog-domain';
 import type { ModerationStatus } from '../types/index.js';
 
 export interface UpdateCommentInput {
   readonly id: CommentId;
   readonly content: string;
+  readonly author_id: AuthorId;
 }
 
 export interface ModerateCommentInput {
@@ -22,6 +28,7 @@ export interface ApplyModerationDecisionInput {
 export interface CommentIdInput {
   readonly id: CommentId;
   readonly withDeleted?: Optional<boolean>;
+  readonly approvedOnly?: Optional<boolean>;
 }
 
 export interface PostCommentsInput {

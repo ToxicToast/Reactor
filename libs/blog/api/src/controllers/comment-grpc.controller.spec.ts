@@ -27,31 +27,33 @@ import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
 } from '@toxictoast/shared-application';
-import { grpcCode } from '@toxictoast/shared-grpc';
 import {
-  ActorType,
-  type Actor,
-  type ActorProvider,
-} from '@toxictoast/shared-kernel';
+  anonymousTestActor,
+  grpcCode,
+  testActor,
+  TestActorProvider,
+} from '@toxictoast/shared-grpc';
 import { CommentGrpcController } from './comment-grpc.controller.js';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
 const POST = randomUUID();
 const AUTHOR = randomUUID();
-const USER: Actor = {
-  type: ActorType.USER,
-  id: AUTHOR,
-  ip: null,
-  permissions: [BlogPermission.COMMENT_WRITE],
-};
+const MODERATOR = testActor(
+  [
+    BlogPermission.COMMENT_WRITE,
+    BlogPermission.COMMENT_MODERATE,
+    BlogPermission.COMMENT_DELETE,
+  ],
+  { id: AUTHOR },
+);
+const READER = testActor([BlogPermission.COMMENT_WRITE], { id: AUTHOR });
 
 describe('CommentGrpcController', () => {
   let controller: CommentGrpcController;
-  let actor: Actor;
+  let actors: TestActorProvider;
 
   beforeEach(async () => {
-    actor = USER;
-    const actors: ActorProvider = { current: () => actor };
+    actors = new TestActorProvider(MODERATOR);
     const ctx = createUuidTestContext(NOW);
     const factory = new CommentFactory(ctx);
     const comments = new InMemoryCommentRepository();
@@ -178,12 +180,7 @@ describe('CommentGrpcController', () => {
   });
 
   it('rejects comments without a signed-in user', async () => {
-    actor = {
-      type: ActorType.ANONYMOUS,
-      id: null,
-      ip: '203.0.113.7',
-      permissions: [],
-    };
+    actors.actor = anonymousTestActor();
 
     const call = controller.createComment({
       post_id: POST,
@@ -194,7 +191,7 @@ describe('CommentGrpcController', () => {
   });
 
   it('rejects comments without the write permission', async () => {
-    actor = { ...USER, permissions: [] };
+    actors.actor = testActor([], { id: AUTHOR });
 
     const call = controller.createComment({
       post_id: POST,
@@ -202,5 +199,70 @@ describe('CommentGrpcController', () => {
     });
 
     expect(await grpcCode(call)).toBe(status.PERMISSION_DENIED);
+  });
+
+  it('lets the author edit and sends the comment back to moderation', async () => {
+    const id = await create();
+    await controller.moderateComment({
+      id,
+      status: GrpcModerationStatus.MODERATION_STATUS_APPROVED,
+    });
+    actors.actor = READER;
+
+    const { comment } = await controller.updateComment({
+      id,
+      content: 'Geändert',
+    });
+
+    expect(comment).toMatchObject({
+      content: 'Geändert',
+      status: GrpcCommentStatus.COMMENT_STATUS_PENDING,
+      moderated_by: undefined,
+    });
+  });
+
+  it('rejects edits by other users', async () => {
+    const id = await create();
+    actors.actor = testActor([BlogPermission.COMMENT_WRITE], {
+      id: randomUUID(),
+    });
+
+    const call = controller.updateComment({ id, content: 'Fremd' });
+
+    expect(await grpcCode(call)).toBe(status.PERMISSION_DENIED);
+  });
+
+  it('keeps moderation and the queue behind the moderate permission', async () => {
+    const id = await create();
+    actors.actor = READER;
+
+    const moderate = controller.moderateComment({
+      id,
+      status: GrpcModerationStatus.MODERATION_STATUS_APPROVED,
+    });
+    const queue = controller.listCommentsByStatus({
+      status: GrpcCommentStatus.COMMENT_STATUS_PENDING,
+    });
+
+    expect(await grpcCode(moderate)).toBe(status.PERMISSION_DENIED);
+    expect(await grpcCode(queue)).toBe(status.PERMISSION_DENIED);
+  });
+
+  it('lets only the delete permission delete comments', async () => {
+    const id = await create();
+    actors.actor = READER;
+
+    expect(await grpcCode(controller.deleteComment({ id }))).toBe(
+      status.PERMISSION_DENIED,
+    );
+  });
+
+  it('hides unapproved comments from readers', async () => {
+    const id = await create();
+    actors.actor = anonymousTestActor();
+
+    const call = controller.getComment({ id, with_deleted: false });
+
+    expect(await grpcCode(call)).toBe(status.NOT_FOUND);
   });
 });

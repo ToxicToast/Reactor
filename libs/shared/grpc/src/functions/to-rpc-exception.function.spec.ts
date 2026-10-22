@@ -1,6 +1,7 @@
 import { status } from '@grpc/grpc-js';
 import {
   ConflictError,
+  ForbiddenError,
   NotFoundError,
   ValidationError,
 } from '@toxictoast/shared-kernel';
@@ -14,6 +15,7 @@ describe('toRpcException', () => {
       new ConflictError('Post is already published'),
       status.FAILED_PRECONDITION,
     ],
+    [new ForbiddenError('Only the author can edit'), status.PERMISSION_DENIED],
   ])('maps %s to its grpc status', (error, code) => {
     expect(toRpcException(error).getError()).toEqual({
       code,

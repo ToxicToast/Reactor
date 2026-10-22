@@ -32,6 +32,7 @@ import {
   BlogPermission,
 } from '@toxictoast/contracts-grpc';
 import {
+  hasPermission,
   mapEnum,
   parseId,
   parseOptionalId,
@@ -85,6 +86,10 @@ export class CommentGrpcController implements CommentServiceController {
       await this.updateCommentUseCase.execute({
         id: parseId(request.id),
         content: request.content,
+        author_id: requirePermission(
+          this.actors.current(),
+          BlogPermission.COMMENT_WRITE,
+        ),
       }),
     );
     return { comment: this.mapper.toProto(comment) };
@@ -93,6 +98,7 @@ export class CommentGrpcController implements CommentServiceController {
   async moderateComment(
     request: ModerateCommentRequest,
   ): Promise<ModerateCommentResponse> {
+    requirePermission(this.actors.current(), BlogPermission.COMMENT_MODERATE);
     const comment = unwrap(
       await this.moderateCommentUseCase.execute({
         id: parseId(request.id),
@@ -106,6 +112,7 @@ export class CommentGrpcController implements CommentServiceController {
   async deleteComment(
     request: DeleteCommentRequest,
   ): Promise<DeleteCommentResponse> {
+    requirePermission(this.actors.current(), BlogPermission.COMMENT_DELETE);
     const comment = unwrap(
       await this.deleteCommentUseCase.execute({ id: parseId(request.id) }),
     );
@@ -115,6 +122,7 @@ export class CommentGrpcController implements CommentServiceController {
   async restoreComment(
     request: RestoreCommentRequest,
   ): Promise<RestoreCommentResponse> {
+    requirePermission(this.actors.current(), BlogPermission.COMMENT_DELETE);
     const comment = unwrap(
       await this.restoreCommentUseCase.execute({ id: parseId(request.id) }),
     );
@@ -122,10 +130,14 @@ export class CommentGrpcController implements CommentServiceController {
   }
 
   async getComment(request: GetCommentRequest): Promise<GetCommentResponse> {
+    const actor = this.actors.current();
     const comment = unwrap(
       await this.getCommentUseCase.execute({
         id: parseId(request.id),
-        withDeleted: request.with_deleted,
+        withDeleted:
+          request.with_deleted &&
+          hasPermission(actor, BlogPermission.COMMENT_DELETE),
+        approvedOnly: !hasPermission(actor, BlogPermission.COMMENT_MODERATE),
       }),
     );
     return { comment: this.mapper.toProto(comment) };
@@ -145,6 +157,7 @@ export class CommentGrpcController implements CommentServiceController {
   async listCommentsByStatus(
     request: ListCommentsByStatusRequest,
   ): Promise<ListCommentsByStatusResponse> {
+    requirePermission(this.actors.current(), BlogPermission.COMMENT_MODERATE);
     const comments = unwrap(
       await this.listCommentsByStatusUseCase.execute({
         status: mapEnum(COMMENT_STATUS_FROM_GRPC, request.status, 'status'),

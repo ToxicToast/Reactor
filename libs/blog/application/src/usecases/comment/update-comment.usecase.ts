@@ -27,7 +27,7 @@ export class UpdateCommentUseCase implements UseCase<
     }
 
     const comment = this.factory.reconstitute(anemic);
-    const updated = comment.updateContent(input.content);
+    const updated = comment.updateContent(input.content, input.author_id);
     if (updated.isFailure) {
       return Result.fail(updated.error);
     }

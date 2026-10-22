@@ -19,6 +19,8 @@ const VALID_DATA: CommentData = {
   content: 'Für den Imperator!',
 };
 
+const AUTHOR = VALID_DATA.author_id;
+
 describe('CommentDomain', () => {
   const factory = new CommentFactory(ctx);
 
@@ -76,32 +78,50 @@ describe('CommentDomain', () => {
   });
 
   describe('updateContent', () => {
-    it('updates and trims the content', () => {
+    it('updates and trims the content and requests moderation', () => {
       const comment = createComment();
 
-      const result = comment.updateContent('  Ketzerei!  ');
+      const result = comment.updateContent('  Ketzerei!  ', AUTHOR);
 
       expect(result.isSuccess).toBe(true);
       expect(comment.toAnemic()).toMatchObject({
         content: 'Ketzerei!',
         updated_at: NOW,
       });
-      expect(comment.toEvents().map((e) => e.event_name)).toEqual(['update']);
+      expect(comment.toEvents().map((e) => e.event_name)).toEqual([
+        'update',
+        'requested',
+      ]);
     });
 
-    it('keeps the moderation status', () => {
+    it('sends an approved comment back to moderation', () => {
       const comment = createComment();
-      comment.approveComment(CommentModerator.ADMIN);
+      comment.approveComment(CommentModerator.ADMIN, 'passt');
 
-      comment.updateContent('Geändert');
+      comment.updateContent('Geändert', AUTHOR);
 
-      expect(comment.toAnemic().status).toBe(CommentStatus.APPROVED);
+      expect(comment.toAnemic()).toMatchObject({
+        status: CommentStatus.PENDING,
+        moderation_note: null,
+        moderated_by: null,
+        moderated_at: null,
+      });
+    });
+
+    it('refuses edits by anyone but the author', () => {
+      const comment = createComment();
+
+      const result = comment.updateContent('Neu', 'other' as AuthorId);
+
+      expect(result.isFailure).toBe(true);
+      expect(result.error.code).toBe('FORBIDDEN');
+      expect(comment.toEvents()).toHaveLength(0);
     });
 
     it('raises no event when nothing changes', () => {
       const comment = createComment();
 
-      comment.updateContent(VALID_DATA.content);
+      comment.updateContent(VALID_DATA.content, AUTHOR);
 
       expect(comment.toEvents()).toHaveLength(0);
     });
@@ -109,7 +129,7 @@ describe('CommentDomain', () => {
     it('fails on empty content', () => {
       const comment = createComment();
 
-      const result = comment.updateContent('   ');
+      const result = comment.updateContent('   ', AUTHOR);
 
       expect(result.isFailure).toBe(true);
       expect(result.error.code).toBe('VALIDATION');
@@ -119,7 +139,7 @@ describe('CommentDomain', () => {
       const comment = createComment();
       comment.deleteComment();
 
-      const result = comment.updateContent('Neu');
+      const result = comment.updateContent('Neu', AUTHOR);
 
       expect(result.isFailure).toBe(true);
       expect(result.error.code).toBe('CONFLICT');

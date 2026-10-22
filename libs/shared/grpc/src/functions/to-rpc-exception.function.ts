@@ -6,6 +6,7 @@ const STATUS_BY_CODE: Record<string, status> = {
   NOT_FOUND: status.NOT_FOUND,
   VALIDATION: status.INVALID_ARGUMENT,
   CONFLICT: status.FAILED_PRECONDITION,
+  FORBIDDEN: status.PERMISSION_DENIED,
 };
 
 export const toRpcException = (error: DomainError): RpcException => {
