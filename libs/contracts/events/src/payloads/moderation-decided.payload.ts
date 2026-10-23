@@ -5,4 +5,7 @@ export interface ModerationDecidedPayloadV1 {
   readonly comment_id: string;
   readonly decision: (typeof BlogModerationDecision)[keyof typeof BlogModerationDecision];
   readonly note: Nullable<string>;
+  readonly confidence: number;
+  readonly model: string;
+  readonly prompt_version: string;
 }

@@ -7,4 +7,5 @@ export interface MessagingModuleOptions {
   readonly imports?: Optional<NonNullable<ModuleMetadata['imports']>>;
   readonly handlers?: Optional<EventHandlersProvider>;
   readonly topics?: Optional<ReadonlyArray<string>>;
+  readonly outbox?: Optional<boolean>;
 }
