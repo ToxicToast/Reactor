@@ -6,3 +6,4 @@ export * from './interfaces/index.js';
 export * from './metrics/index.js';
 export * from './modules/index.js';
 export * from './interceptors/index.js';
+export * from './loggers/index.js';

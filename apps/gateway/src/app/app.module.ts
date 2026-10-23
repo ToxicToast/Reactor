@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  Module,
+  type MiddlewareConsumer,
+  type NestModule,
+} from '@nestjs/common';
+import { CorrelationMiddleware } from './correlation/middlewares/index.js';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import {
   HealthModule,
@@ -39,4 +44,8 @@ const { KEYCLOAK_CONFIG } = GATEWAY_TOKENS;
     { provide: APP_FILTER, useClass: GrpcExceptionFilter },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(CorrelationMiddleware).forRoutes('{*path}');
+  }
+}

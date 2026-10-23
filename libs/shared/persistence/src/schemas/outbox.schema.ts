@@ -13,6 +13,7 @@ export const OutboxSchema = new EntitySchema<OutboxRow>({
     actor_type: { type: 'varchar', length: 20 },
     actor_id: { type: 'varchar', length: 64, nullable: true },
     actor_ip: { type: 'varchar', length: 45, nullable: true },
+    correlation_id: { type: 'uuid', nullable: true },
     payload: { type: 'jsonb' },
     occurred_at: { type: 'timestamptz' },
     published_at: { type: 'timestamptz', nullable: true },

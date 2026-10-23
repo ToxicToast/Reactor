@@ -2,12 +2,16 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { numberEnv } from '@toxictoast/shared-system';
 import { cleanupOpenApiDoc } from 'nestjs-zod';
 import { AppModule } from './app/app.module.js';
+import { CorrelationLogger } from '@toxictoast/shared-nest';
+import { CorrelationContext, numberEnv } from '@toxictoast/shared-system';
 
 const bootstrap = async (): Promise<void> => {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
+  app.useLogger(new CorrelationLogger(app.get(CorrelationContext)));
   app.enableShutdownHooks();
   app.set('trust proxy', numberEnv('TRUST_PROXY_HOPS', 0));
 

@@ -5,6 +5,7 @@ import type {
   PublishedEvent,
 } from '@toxictoast/shared-messaging';
 import { KafkaDecisionPublisher } from './kafka-decision-publisher.service.js';
+import { CorrelationContext } from '@toxictoast/shared-system';
 
 const NOW = new Date('2026-10-23T12:00:00Z');
 
@@ -12,6 +13,8 @@ const ctx: DomainContext = {
   id: { generate: () => 'event-1' as never },
   date: { now: () => NOW },
 };
+
+const CID = '01a16a00-3111-7049-8d8d-0db609f31f2a';
 
 class RecordingPublisher implements EventPublisher {
   readonly published: Array<PublishedEvent> = [];
@@ -24,15 +27,18 @@ class RecordingPublisher implements EventPublisher {
 describe('KafkaDecisionPublisher', () => {
   it('publishes the decision as blog.comment.moderation.decided', async () => {
     const recording = new RecordingPublisher();
+    const correlations = new CorrelationContext();
 
-    await new KafkaDecisionPublisher(recording, ctx).publish({
-      content_id: 'comment-1',
-      decision: ModerationDecision.PENDING,
-      note: 'spam (0.62): Links',
-      confidence: 0.62,
-      model: 'nvidia/nemotron-nano',
-      prompt_version: 'v1',
-    });
+    await correlations.run(CID, () =>
+      new KafkaDecisionPublisher(recording, ctx, correlations).publish({
+        content_id: 'comment-1',
+        decision: ModerationDecision.PENDING,
+        note: 'spam (0.62): Links',
+        confidence: 0.62,
+        model: 'nvidia/nemotron-nano',
+        prompt_version: 'v1',
+      }),
+    );
 
     expect(recording.published).toEqual([
       {
@@ -43,6 +49,7 @@ describe('KafkaDecisionPublisher', () => {
         aggregate_id: 'comment-1',
         occurred_at: NOW,
         actor: { type: 'ai', id: 'moderation-service', ip: null },
+        correlation_id: CID,
         payload: {
           comment_id: 'comment-1',
           decision: 'pending',

@@ -1,10 +1,13 @@
 import type { Metadata } from '@grpc/grpc-js';
 import type { ClientGrpc } from '@nestjs/microservices';
+import type { DomainContext } from '@toxictoast/shared-kernel';
+import { CorrelationContext } from '@toxictoast/shared-system';
 import { UnrecoverableError, type Job } from 'bullmq';
 import { of } from 'rxjs';
 import { BlogProcessor } from './blog.processor.js';
 
 const ACTOR_ID = '0192f3a0-0000-7000-8000-0000000000c0';
+const CID = '01a16a00-0000-7000-8000-000000000001';
 
 describe('BlogProcessor', () => {
   let cleanup: jest.Mock;
@@ -15,7 +18,13 @@ describe('BlogProcessor', () => {
     const client = {
       getService: () => ({ cleanupPendingMedia: cleanup }),
     } as unknown as ClientGrpc;
-    processor = new BlogProcessor(client, ACTOR_ID);
+    const ctx = { id: { generate: () => CID } } as unknown as DomainContext;
+    processor = new BlogProcessor(
+      client,
+      ACTOR_ID,
+      ctx,
+      new CorrelationContext(),
+    );
     processor.onModuleInit();
   });
 
@@ -32,6 +41,13 @@ describe('BlogProcessor', () => {
     expect(metadata.get('x-actor-type')).toEqual(['system']);
     expect(metadata.get('x-actor-id')).toEqual([ACTOR_ID]);
     expect(metadata.get('x-actor-permissions')).toEqual(['blog.media.delete']);
+  });
+
+  it('sends a fresh correlation id per job', async () => {
+    await processor.process({ name: 'media.cleanup' } as Job);
+
+    const metadata = cleanup.mock.calls[0][1] as Metadata;
+    expect(metadata.get('x-correlation-id')).toEqual([CID]);
   });
 
   it('does not retry unknown jobs', async () => {

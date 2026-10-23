@@ -22,6 +22,7 @@ const row = (minute: number, overrides: Partial<OutboxRow> = {}): OutboxRow => {
     actor_type: ActorType.USER,
     actor_id: 'user-1',
     actor_ip: '203.0.113.7',
+    correlation_id: null,
     payload: { minute },
     occurred_at: new Date(
       `2026-10-20T10:${String(minute).padStart(2, '0')}:00Z`,
@@ -99,6 +100,19 @@ describe('OutboxRelay', () => {
     expect(publisher.published.map((event) => event.actor)).toEqual([
       { type: 'user', id: 'user-1', ip: '203.0.113.7' },
       { type: 'system', id: null, ip: null },
+    ]);
+  });
+
+  it('publishes the correlation id of each event', async () => {
+    const publisher = new RecordingPublisher();
+    const correlationId = randomUUID();
+    await insert(row(1, { correlation_id: correlationId }), row(2));
+
+    await new OutboxRelay(dataSource, publisher, clock).relay();
+
+    expect(publisher.published.map((event) => event.correlation_id)).toEqual([
+      correlationId,
+      null,
     ]);
   });
 

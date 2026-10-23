@@ -1,11 +1,23 @@
 import type { Metadata } from '@grpc/grpc-js';
-import { actorToMetadata } from '@toxictoast/shared-nest';
-import type { ActorContext } from '@toxictoast/shared-system';
+import {
+  actorToMetadata,
+  addCorrelationMetadata,
+} from '@toxictoast/shared-nest';
+import type {
+  ActorContext,
+  CorrelationContext,
+} from '@toxictoast/shared-system';
 
 export class ActorMetadata {
-  constructor(private readonly actors: ActorContext) {}
+  constructor(
+    private readonly actors: ActorContext,
+    private readonly correlations: CorrelationContext,
+  ) {}
 
   current(): Metadata {
-    return actorToMetadata(this.actors.current());
+    return addCorrelationMetadata(
+      actorToMetadata(this.actors.current()),
+      this.correlations.current(),
+    );
   }
 }

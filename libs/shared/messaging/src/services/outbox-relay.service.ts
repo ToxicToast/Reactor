@@ -63,6 +63,7 @@ export class OutboxRelay {
       aggregate_id: row.aggregate_id,
       occurred_at: row.occurred_at,
       actor: { type: row.actor_type, id: row.actor_id, ip: row.actor_ip },
+      correlation_id: row.correlation_id,
       payload: row.payload,
     };
   }

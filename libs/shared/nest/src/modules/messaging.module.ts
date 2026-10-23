@@ -23,6 +23,7 @@ import {
   booleanEnv,
   describeError,
   numberEnv,
+  CorrelationContext,
 } from '@toxictoast/shared-system';
 import type { Nullable } from '@toxictoast/shared-types';
 import { DataSource } from 'typeorm';
@@ -96,9 +97,14 @@ export class MessagingModule {
         ...outbox,
         {
           provide: TOKENS.EVENT_CONSUMER,
-          inject: [ActorContext, ...(handlers?.inject ?? [])],
+          inject: [
+            ActorContext,
+            CorrelationContext,
+            ...(handlers?.inject ?? []),
+          ],
           useFactory: async (
             actors: ActorContext,
+            correlations: CorrelationContext,
             ...deps: Array<unknown>
           ): Promise<Nullable<KafkaEventConsumer>> => {
             if (!handlers) {
@@ -107,6 +113,7 @@ export class MessagingModule {
             return new KafkaEventConsumer(
               await createKafkaConsumer(kafkaConfigFromEnv(), options.groupId),
               actors,
+              correlations,
               {
                 handlers: handlers.useFactory(...deps),
                 onError: (error, event) => {

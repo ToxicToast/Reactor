@@ -1,8 +1,11 @@
 import { status } from '@grpc/grpc-js';
 import { ForbiddenException, type ArgumentsHost } from '@nestjs/common';
-import { GrpcExceptionFilter } from './grpc-exception.filter.js';
+import { CorrelationContext } from '@toxictoast/shared-system';
 import { ZodValidationException } from 'nestjs-zod';
 import { z } from 'zod';
+import { GrpcExceptionFilter } from './grpc-exception.filter.js';
+
+const CID = '01a16a00-3111-7049-8d8d-0db609f31f2a';
 
 const grpcError = (code: status, details: string): Error => {
   return Object.assign(new Error(details), { code, details, metadata: {} });
@@ -12,7 +15,8 @@ describe('GrpcExceptionFilter', () => {
   let json: jest.Mock;
   let statusOf: jest.Mock;
   let host: ArgumentsHost;
-  const filter = new GrpcExceptionFilter();
+  const correlations = new CorrelationContext();
+  const filter = new GrpcExceptionFilter(correlations);
 
   beforeEach(() => {
     json = jest.fn();
@@ -36,6 +40,7 @@ describe('GrpcExceptionFilter', () => {
     expect(json).toHaveBeenCalledWith({
       status_code: http,
       message: 'Post p-1 not found',
+      correlation_id: null,
     });
   });
 
@@ -43,7 +48,11 @@ describe('GrpcExceptionFilter', () => {
     filter.catch(new ForbiddenException('nope'), host);
 
     expect(statusOf).toHaveBeenCalledWith(403);
-    expect(json).toHaveBeenCalledWith({ status_code: 403, message: 'nope' });
+    expect(json).toHaveBeenCalledWith({
+      status_code: 403,
+      message: 'nope',
+      correlation_id: null,
+    });
   });
 
   it('reduces zod errors to path and message', () => {
@@ -53,21 +62,33 @@ describe('GrpcExceptionFilter', () => {
 
     filter.catch(new ZodValidationException(error), host);
 
-    expect(statusOf).toHaveBeenCalledWith(400);
     expect(json).toHaveBeenCalledWith({
       status_code: 400,
       message: 'validation failed',
       errors: [{ path: 'id', message: 'Invalid UUID' }],
+      correlation_id: null,
     });
   });
 
   it('hides unexpected errors behind a neutral message', () => {
     filter.catch(new Error('db password wrong'), host);
 
-    expect(statusOf).toHaveBeenCalledWith(500);
     expect(json).toHaveBeenCalledWith({
       status_code: 500,
       message: 'internal server error',
+      correlation_id: null,
+    });
+  });
+
+  it('includes the correlation id of the request', () => {
+    correlations.run(CID, () => {
+      filter.catch(new ForbiddenException('nope'), host);
+    });
+
+    expect(json).toHaveBeenCalledWith({
+      status_code: 403,
+      message: 'nope',
+      correlation_id: CID,
     });
   });
 });

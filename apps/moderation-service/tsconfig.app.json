@@ -23,6 +23,9 @@
   ],
   "references": [
     {
+      "path": "../../libs/shared/kernel/tsconfig.lib.json"
+    },
+    {
       "path": "../../libs/shared/nest/tsconfig.lib.json"
     },
     {

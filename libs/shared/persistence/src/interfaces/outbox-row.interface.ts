@@ -10,6 +10,7 @@ export interface OutboxRow {
   actor_type: ActorType;
   actor_id: Nullable<string>;
   actor_ip: Nullable<string>;
+  correlation_id: Nullable<string>;
   payload: object;
   occurred_at: Date;
   published_at: Nullable<Date>;

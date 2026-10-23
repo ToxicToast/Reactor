@@ -1,20 +1,25 @@
 import { ActorType } from '@toxictoast/shared-kernel';
-import { ActorContext } from '@toxictoast/shared-system';
+import { ActorContext, CorrelationContext } from '@toxictoast/shared-system';
 import { ActorMetadata } from './actor-metadata.service.js';
 
-describe('ActorMetadata', () => {
-  it('builds the metadata from the actor of the current request', () => {
-    const actors = new ActorContext();
-    const metadata = new ActorMetadata(actors);
+const CID = '01a16a00-3111-7049-8d8d-0db609f31f2a';
 
-    const result = actors.run(
-      {
-        type: ActorType.USER,
-        id: 'a42295ac-be2a-49ea-aeb7-4a6ca8f56af3',
-        ip: '203.0.113.7',
-        permissions: ['blog.tag.write', 'blog.tag.delete'],
-      },
-      () => metadata.current(),
+describe('ActorMetadata', () => {
+  it('builds the metadata from the actor and correlation id of the request', () => {
+    const actors = new ActorContext();
+    const correlations = new CorrelationContext();
+    const metadata = new ActorMetadata(actors, correlations);
+
+    const result = correlations.run(CID, () =>
+      actors.run(
+        {
+          type: ActorType.USER,
+          id: 'a42295ac-be2a-49ea-aeb7-4a6ca8f56af3',
+          ip: '203.0.113.7',
+          permissions: ['blog.tag.write', 'blog.tag.delete'],
+        },
+        () => metadata.current(),
+      ),
     );
 
     expect(result.get('x-actor-type')).toEqual(['user']);
@@ -24,5 +29,6 @@ describe('ActorMetadata', () => {
     expect(result.get('x-actor-permissions')).toEqual([
       'blog.tag.write,blog.tag.delete',
     ]);
+    expect(result.get('x-correlation-id')).toEqual([CID]);
   });
 });

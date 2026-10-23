@@ -6,25 +6,25 @@ import {
   type ArgumentsHost,
   type ExceptionFilter,
 } from '@nestjs/common';
-import { describeError } from '@toxictoast/shared-system';
+import { CorrelationContext, describeError } from '@toxictoast/shared-system';
 import type { Response } from 'express';
+import { ZodValidationException } from 'nestjs-zod';
+import type { ZodError } from 'zod';
 import { HTTP_STATUS_BY_GRPC_CODE } from '../constants/index.js';
 import { isGrpcError } from '../functions/index.js';
-import { ZodValidationException } from 'nestjs-zod';
-import { ZodError } from 'zod';
 
 @Catch()
 export class GrpcExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(GrpcExceptionFilter.name);
+
+  constructor(private readonly correlations: CorrelationContext) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
     const response = host.switchToHttp().getResponse<Response>();
 
     if (exception instanceof ZodValidationException) {
       const { issues } = exception.getZodError() as ZodError;
-      response.status(HttpStatus.BAD_REQUEST).json({
-        status_code: HttpStatus.BAD_REQUEST,
-        message: 'validation failed',
+      this.send(response, HttpStatus.BAD_REQUEST, 'validation failed', {
         errors: issues.map((issue) => {
           return {
             path: issue.path.map(String).join('.'),
@@ -36,11 +36,7 @@ export class GrpcExceptionFilter implements ExceptionFilter {
     }
 
     if (exception instanceof HttpException) {
-      const statusCode = exception.getStatus();
-      response.status(statusCode).json({
-        status_code: statusCode,
-        message: exception.message,
-      });
+      this.send(response, exception.getStatus(), exception.message);
       return;
     }
 
@@ -51,17 +47,29 @@ export class GrpcExceptionFilter implements ExceptionFilter {
       if (statusCode === HttpStatus.INTERNAL_SERVER_ERROR) {
         this.logger.error('Unexpected gRPC error', describeError(exception));
       }
-      response.status(statusCode).json({
-        status_code: statusCode,
-        message: exception.details,
-      });
+      this.send(response, statusCode, exception.details);
       return;
     }
 
     this.logger.error('Unhandled error', describeError(exception));
-    response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      status_code: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'internal server error',
+    this.send(
+      response,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      'internal server error',
+    );
+  }
+
+  private send(
+    response: Response,
+    statusCode: number,
+    message: string,
+    extra: object = {},
+  ): void {
+    response.status(statusCode).json({
+      status_code: statusCode,
+      message,
+      ...extra,
+      correlation_id: this.correlations.current(),
     });
   }
 }
