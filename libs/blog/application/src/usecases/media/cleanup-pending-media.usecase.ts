@@ -1,4 +1,4 @@
-import { Result } from '@toxictoast/shared-kernel';
+import { Result, type Clock } from '@toxictoast/shared-kernel';
 import type {
   DomainPersistence,
   FileStorage,
@@ -9,13 +9,12 @@ import {
   type MediaFactory,
   type MediaRepository,
 } from '@toxictoast/blog-domain';
-import type {
-  CleanupPendingMediaInput,
-  CleanupPendingMediaOutput,
-} from '../../data/index.js';
+import type { CleanupPendingMediaOutput } from '../../data/index.js';
+
+const HOUR_MS = 60 * 60 * 1000;
 
 export class CleanupPendingMediaUseCase implements UseCase<
-  CleanupPendingMediaInput,
+  void,
   CleanupPendingMediaOutput
 > {
   constructor(
@@ -23,14 +22,17 @@ export class CleanupPendingMediaUseCase implements UseCase<
     private readonly repository: MediaRepository,
     private readonly storage: FileStorage,
     private readonly persistence: DomainPersistence,
+    private readonly clock: Clock,
+    private readonly maxAgeHours: number,
   ) {}
 
-  async execute(
-    input: CleanupPendingMediaInput,
-  ): Promise<Result<CleanupPendingMediaOutput>> {
+  async execute(): Promise<Result<CleanupPendingMediaOutput>> {
+    const olderThan = new Date(
+      this.clock.now().getTime() - this.maxAgeHours * HOUR_MS,
+    );
     const pending = await this.repository.findByStatus(
       MediaStatus.PENDING,
-      input.olderThan,
+      olderThan,
     );
 
     let removed = 0;

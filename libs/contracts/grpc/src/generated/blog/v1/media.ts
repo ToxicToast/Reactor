@@ -5,6 +5,7 @@
 // source: blog/v1/media.proto
 
 /* eslint-disable */
+import type { Metadata } from "@grpc/grpc-js";
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
 
@@ -101,52 +102,81 @@ export interface ListMediaResponse {
   media: Media[];
 }
 
+export interface CleanupPendingMediaRequest {
+}
+
+export interface CleanupPendingMediaResponse {
+  removed: number;
+}
+
 export interface MediaServiceClient {
-  requestMediaUpload(request: RequestMediaUploadRequest): Observable<RequestMediaUploadResponse>;
+  requestMediaUpload(request: RequestMediaUploadRequest, metadata?: Metadata): Observable<RequestMediaUploadResponse>;
 
-  confirmMediaUpload(request: ConfirmMediaUploadRequest): Observable<ConfirmMediaUploadResponse>;
+  confirmMediaUpload(request: ConfirmMediaUploadRequest, metadata?: Metadata): Observable<ConfirmMediaUploadResponse>;
 
-  updateMediaAltText(request: UpdateMediaAltTextRequest): Observable<UpdateMediaAltTextResponse>;
+  updateMediaAltText(request: UpdateMediaAltTextRequest, metadata?: Metadata): Observable<UpdateMediaAltTextResponse>;
 
-  deleteMedia(request: DeleteMediaRequest): Observable<DeleteMediaResponse>;
+  deleteMedia(request: DeleteMediaRequest, metadata?: Metadata): Observable<DeleteMediaResponse>;
 
-  restoreMedia(request: RestoreMediaRequest): Observable<RestoreMediaResponse>;
+  restoreMedia(request: RestoreMediaRequest, metadata?: Metadata): Observable<RestoreMediaResponse>;
 
-  getMedia(request: GetMediaRequest): Observable<GetMediaResponse>;
+  getMedia(request: GetMediaRequest, metadata?: Metadata): Observable<GetMediaResponse>;
 
-  getMediaUrl(request: GetMediaUrlRequest): Observable<GetMediaUrlResponse>;
+  getMediaUrl(request: GetMediaUrlRequest, metadata?: Metadata): Observable<GetMediaUrlResponse>;
 
-  listMedia(request: ListMediaRequest): Observable<ListMediaResponse>;
+  listMedia(request: ListMediaRequest, metadata?: Metadata): Observable<ListMediaResponse>;
+
+  cleanupPendingMedia(
+    request: CleanupPendingMediaRequest,
+    metadata?: Metadata,
+  ): Observable<CleanupPendingMediaResponse>;
 }
 
 export interface MediaServiceController {
   requestMediaUpload(
     request: RequestMediaUploadRequest,
+    metadata?: Metadata,
   ): Promise<RequestMediaUploadResponse> | Observable<RequestMediaUploadResponse> | RequestMediaUploadResponse;
 
   confirmMediaUpload(
     request: ConfirmMediaUploadRequest,
+    metadata?: Metadata,
   ): Promise<ConfirmMediaUploadResponse> | Observable<ConfirmMediaUploadResponse> | ConfirmMediaUploadResponse;
 
   updateMediaAltText(
     request: UpdateMediaAltTextRequest,
+    metadata?: Metadata,
   ): Promise<UpdateMediaAltTextResponse> | Observable<UpdateMediaAltTextResponse> | UpdateMediaAltTextResponse;
 
   deleteMedia(
     request: DeleteMediaRequest,
+    metadata?: Metadata,
   ): Promise<DeleteMediaResponse> | Observable<DeleteMediaResponse> | DeleteMediaResponse;
 
   restoreMedia(
     request: RestoreMediaRequest,
+    metadata?: Metadata,
   ): Promise<RestoreMediaResponse> | Observable<RestoreMediaResponse> | RestoreMediaResponse;
 
-  getMedia(request: GetMediaRequest): Promise<GetMediaResponse> | Observable<GetMediaResponse> | GetMediaResponse;
+  getMedia(
+    request: GetMediaRequest,
+    metadata?: Metadata,
+  ): Promise<GetMediaResponse> | Observable<GetMediaResponse> | GetMediaResponse;
 
   getMediaUrl(
     request: GetMediaUrlRequest,
+    metadata?: Metadata,
   ): Promise<GetMediaUrlResponse> | Observable<GetMediaUrlResponse> | GetMediaUrlResponse;
 
-  listMedia(request: ListMediaRequest): Promise<ListMediaResponse> | Observable<ListMediaResponse> | ListMediaResponse;
+  listMedia(
+    request: ListMediaRequest,
+    metadata?: Metadata,
+  ): Promise<ListMediaResponse> | Observable<ListMediaResponse> | ListMediaResponse;
+
+  cleanupPendingMedia(
+    request: CleanupPendingMediaRequest,
+    metadata?: Metadata,
+  ): Promise<CleanupPendingMediaResponse> | Observable<CleanupPendingMediaResponse> | CleanupPendingMediaResponse;
 }
 
 export function MediaServiceControllerMethods() {
@@ -160,6 +190,7 @@ export function MediaServiceControllerMethods() {
       "getMedia",
       "getMediaUrl",
       "listMedia",
+      "cleanupPendingMedia",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

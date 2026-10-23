@@ -5,6 +5,7 @@
 // source: blog/v1/category.proto
 
 /* eslint-disable */
+import type { Metadata } from "@grpc/grpc-js";
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
 
@@ -84,48 +85,58 @@ export interface ListCategoriesResponse {
 }
 
 export interface CategoryServiceClient {
-  createCategory(request: CreateCategoryRequest): Observable<CreateCategoryResponse>;
+  createCategory(request: CreateCategoryRequest, metadata?: Metadata): Observable<CreateCategoryResponse>;
 
-  updateCategory(request: UpdateCategoryRequest): Observable<UpdateCategoryResponse>;
+  updateCategory(request: UpdateCategoryRequest, metadata?: Metadata): Observable<UpdateCategoryResponse>;
 
-  changeCategoryParent(request: ChangeCategoryParentRequest): Observable<ChangeCategoryParentResponse>;
+  changeCategoryParent(
+    request: ChangeCategoryParentRequest,
+    metadata?: Metadata,
+  ): Observable<ChangeCategoryParentResponse>;
 
-  deleteCategory(request: DeleteCategoryRequest): Observable<DeleteCategoryResponse>;
+  deleteCategory(request: DeleteCategoryRequest, metadata?: Metadata): Observable<DeleteCategoryResponse>;
 
-  restoreCategory(request: RestoreCategoryRequest): Observable<RestoreCategoryResponse>;
+  restoreCategory(request: RestoreCategoryRequest, metadata?: Metadata): Observable<RestoreCategoryResponse>;
 
-  getCategory(request: GetCategoryRequest): Observable<GetCategoryResponse>;
+  getCategory(request: GetCategoryRequest, metadata?: Metadata): Observable<GetCategoryResponse>;
 
-  listCategories(request: ListCategoriesRequest): Observable<ListCategoriesResponse>;
+  listCategories(request: ListCategoriesRequest, metadata?: Metadata): Observable<ListCategoriesResponse>;
 }
 
 export interface CategoryServiceController {
   createCategory(
     request: CreateCategoryRequest,
+    metadata?: Metadata,
   ): Promise<CreateCategoryResponse> | Observable<CreateCategoryResponse> | CreateCategoryResponse;
 
   updateCategory(
     request: UpdateCategoryRequest,
+    metadata?: Metadata,
   ): Promise<UpdateCategoryResponse> | Observable<UpdateCategoryResponse> | UpdateCategoryResponse;
 
   changeCategoryParent(
     request: ChangeCategoryParentRequest,
+    metadata?: Metadata,
   ): Promise<ChangeCategoryParentResponse> | Observable<ChangeCategoryParentResponse> | ChangeCategoryParentResponse;
 
   deleteCategory(
     request: DeleteCategoryRequest,
+    metadata?: Metadata,
   ): Promise<DeleteCategoryResponse> | Observable<DeleteCategoryResponse> | DeleteCategoryResponse;
 
   restoreCategory(
     request: RestoreCategoryRequest,
+    metadata?: Metadata,
   ): Promise<RestoreCategoryResponse> | Observable<RestoreCategoryResponse> | RestoreCategoryResponse;
 
   getCategory(
     request: GetCategoryRequest,
+    metadata?: Metadata,
   ): Promise<GetCategoryResponse> | Observable<GetCategoryResponse> | GetCategoryResponse;
 
   listCategories(
     request: ListCategoriesRequest,
+    metadata?: Metadata,
   ): Promise<ListCategoriesResponse> | Observable<ListCategoriesResponse> | ListCategoriesResponse;
 }
 

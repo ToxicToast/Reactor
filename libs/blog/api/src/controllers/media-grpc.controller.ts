@@ -1,5 +1,6 @@
 import { Controller } from '@nestjs/common';
 import {
+  CleanupPendingMediaUseCase,
   ConfirmMediaUploadUseCase,
   DeleteMediaUseCase,
   GetMediaUrlUseCase,
@@ -29,6 +30,8 @@ import {
   type UpdateMediaAltTextRequest,
   type UpdateMediaAltTextResponse,
   BlogPermission,
+  CleanupPendingMediaRequest,
+  CleanupPendingMediaResponse,
 } from '@toxictoast/contracts-grpc';
 import {
   hasPermission,
@@ -55,6 +58,7 @@ export class MediaGrpcController implements MediaServiceController {
     private readonly getMediaUseCase: GetMediaUseCase,
     private readonly getMediaUrlUseCase: GetMediaUrlUseCase,
     private readonly listMediaUseCase: ListMediaUseCase,
+    private readonly cleanupPendingMediaUseCase: CleanupPendingMediaUseCase,
     private readonly actors: ActorProvider,
   ) {}
 
@@ -150,6 +154,14 @@ export class MediaGrpcController implements MediaServiceController {
       }),
     );
     return { media: media.map((item) => this.mapper.toProto(item)) };
+  }
+
+  async cleanupPendingMedia(
+    _request: CleanupPendingMediaRequest,
+  ): Promise<CleanupPendingMediaResponse> {
+    requirePermission(this.actors.current(), BlogPermission.MEDIA_DELETE);
+    const output = unwrap(await this.cleanupPendingMediaUseCase.execute());
+    return { removed: output.removed };
   }
 
   private withDeleted(requested: boolean): boolean {

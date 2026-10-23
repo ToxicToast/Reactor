@@ -92,6 +92,22 @@ jobs:
           DEFAULT_BUMP: minor
           PRE_RELEASE: true
 
+      - name: 📝 Generate release notes
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --unreleased --tag ${{ steps.tagger.outputs.new_tag }} --strip header
+        env:
+          OUTPUT: RELEASE_NOTES.md
+
+      - name: 🚀 Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tagger.outputs.new_tag }}
+          name: ${{ steps.tagger.outputs.new_tag }}
+          body_path: RELEASE_NOTES.md
+          prerelease: true
+
       - name: API Alerts Notify
         uses: apialerts/notify-action@v2
         with:

@@ -1,5 +1,6 @@
 import { status } from '@grpc/grpc-js';
 import {
+  CleanupPendingMediaUseCase,
   ConfirmMediaUploadUseCase,
   DeleteMediaUseCase,
   GetMediaUrlUseCase,
@@ -41,7 +42,8 @@ describe('MediaGrpcController', () => {
     actors = new TestActorProvider(
       testActor([BlogPermission.MEDIA_WRITE, BlogPermission.MEDIA_DELETE]),
     );
-    const factory = new MediaFactory(createUuidTestContext(NOW));
+    const ctx = createUuidTestContext(NOW);
+    const factory = new MediaFactory(ctx);
     const media = new InMemoryMediaRepository();
     const persistence = new DomainPersistence(
       new InMemoryOutbox(),
@@ -57,6 +59,14 @@ describe('MediaGrpcController', () => {
       new GetMediaUseCase(media),
       new GetMediaUrlUseCase(media, storage),
       new ListMediaUseCase(media),
+      new CleanupPendingMediaUseCase(
+        factory,
+        media,
+        storage,
+        persistence,
+        ctx.date,
+        24,
+      ),
       actors,
     );
   });
@@ -171,5 +181,21 @@ describe('MediaGrpcController', () => {
     const call = controller.deleteMedia({ id: media?.id ?? '' });
 
     expect(await grpcCode(call)).toBe(status.PERMISSION_DENIED);
+  });
+
+  it('cleans up pending media with the delete permission', async () => {
+    await requestUpload();
+
+    const { removed } = await controller.cleanupPendingMedia({});
+
+    expect(removed).toBe(0);
+  });
+
+  it('requires the delete permission to clean up', async () => {
+    actors.actor = testActor([BlogPermission.MEDIA_WRITE]);
+
+    expect(await grpcCode(controller.cleanupPendingMedia({}))).toBe(
+      status.PERMISSION_DENIED,
+    );
   });
 });

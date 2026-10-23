@@ -1,4 +1,9 @@
-import { Logger, Module, type DynamicModule } from '@nestjs/common';
+import {
+  Logger,
+  Module,
+  type DynamicModule,
+  type Provider,
+} from '@nestjs/common';
 import type { Producer } from '@platformatic/kafka';
 import type { Clock } from '@toxictoast/shared-kernel';
 import {
@@ -19,19 +24,56 @@ import {
   describeError,
   numberEnv,
 } from '@toxictoast/shared-system';
+import type { Nullable } from '@toxictoast/shared-types';
 import { DataSource } from 'typeorm';
 import { TOKENS } from '../constants/index.js';
 import type { MessagingModuleOptions } from '../interfaces/index.js';
 import { MessagingLifecycle } from '../lifecycles/index.js';
-import { Nullable } from '@toxictoast/shared-types';
 
 type StringProducer = Producer<string, string, string, string>;
+
+const outboxProviders = (logger: Logger): Array<Provider> => {
+  return [
+    {
+      provide: OutboxRelay,
+      inject: [DataSource, TOKENS.EVENT_PUBLISHER, TOKENS.CLOCK],
+      useFactory: (
+        dataSource: DataSource,
+        publisher: EventPublisher,
+        clock: Clock,
+      ) => {
+        return new OutboxRelay(
+          dataSource,
+          publisher,
+          clock,
+          numberEnv('OUTBOX_BATCH_SIZE', 100),
+        );
+      },
+    },
+    {
+      provide: TOKENS.OUTBOX_RELAY_WORKER,
+      inject: [OutboxRelay],
+      useFactory: (relay: OutboxRelay) => {
+        return new OutboxRelayWorker(relay, {
+          intervalMs: numberEnv('OUTBOX_INTERVAL_MS', 500),
+          onError: (error) => {
+            logger.error('Outbox relay failed', describeError(error));
+          },
+        });
+      },
+    },
+  ];
+};
 
 @Module({})
 export class MessagingModule {
   static forRoot(options: MessagingModuleOptions): DynamicModule {
     const logger = new Logger('Messaging');
     const handlers = options.handlers;
+    const outbox: Array<Provider> =
+      options.outbox === false
+        ? [{ provide: TOKENS.OUTBOX_RELAY_WORKER, useValue: null }]
+        : outboxProviders(logger);
 
     return {
       module: MessagingModule,
@@ -40,7 +82,7 @@ export class MessagingModule {
       providers: [
         {
           provide: TOKENS.KAFKA_PRODUCER,
-          useFactory: (): StringProducer => {
+          useFactory: (): Promise<StringProducer> => {
             return createKafkaProducer(kafkaConfigFromEnv());
           },
         },
@@ -51,43 +93,19 @@ export class MessagingModule {
             return new KafkaEventPublisher(producer);
           },
         },
-        {
-          provide: OutboxRelay,
-          inject: [DataSource, TOKENS.EVENT_PUBLISHER, TOKENS.CLOCK],
-          useFactory: (
-            dataSource: DataSource,
-            publisher: EventPublisher,
-            clock: Clock,
-          ) => {
-            return new OutboxRelay(
-              dataSource,
-              publisher,
-              clock,
-              numberEnv('OUTBOX_BATCH_SIZE', 100),
-            );
-          },
-        },
-        {
-          provide: OutboxRelayWorker,
-          inject: [OutboxRelay],
-          useFactory: (relay: OutboxRelay) => {
-            return new OutboxRelayWorker(relay, {
-              intervalMs: numberEnv('OUTBOX_INTERVAL_MS', 500),
-              onError: (error) => {
-                logger.error('Outbox relay failed', describeError(error));
-              },
-            });
-          },
-        },
+        ...outbox,
         {
           provide: TOKENS.EVENT_CONSUMER,
           inject: [ActorContext, ...(handlers?.inject ?? [])],
-          useFactory: (actors: ActorContext, ...deps: Array<unknown>) => {
+          useFactory: async (
+            actors: ActorContext,
+            ...deps: Array<unknown>
+          ): Promise<Nullable<KafkaEventConsumer>> => {
             if (!handlers) {
               return null;
             }
             return new KafkaEventConsumer(
-              createKafkaConsumer(kafkaConfigFromEnv(), options.groupId),
+              await createKafkaConsumer(kafkaConfigFromEnv(), options.groupId),
               actors,
               {
                 handlers: handlers.useFactory(...deps),
@@ -104,9 +122,9 @@ export class MessagingModule {
         {
           provide: TOKENS.TOPIC_PROVISIONER,
           inject: [TOKENS.EVENT_CONSUMER],
-          useFactory: (
+          useFactory: async (
             consumer: Nullable<KafkaEventConsumer>,
-          ): Nullable<TopicProvisioner> => {
+          ): Promise<Nullable<TopicProvisioner>> => {
             if (!booleanEnv('KAFKA_AUTO_CREATE_TOPICS', true)) {
               return null;
             }
@@ -115,7 +133,7 @@ export class MessagingModule {
               ...(consumer?.topics ?? []),
             ];
             return new TopicProvisioner(
-              createKafkaAdmin(kafkaConfigFromEnv()),
+              await createKafkaAdmin(kafkaConfigFromEnv()),
               topics,
               {
                 partitions: numberEnv('KAFKA_TOPIC_PARTITIONS', 3),

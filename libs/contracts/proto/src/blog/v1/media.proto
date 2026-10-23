@@ -11,6 +11,7 @@ service MediaService {
   rpc GetMedia(GetMediaRequest) returns (GetMediaResponse);
   rpc GetMediaUrl(GetMediaUrlRequest) returns (GetMediaUrlResponse);
   rpc ListMedia(ListMediaRequest) returns (ListMediaResponse);
+  rpc CleanupPendingMedia(CleanupPendingMediaRequest) returns (CleanupPendingMediaResponse);
 }
 
 enum MediaStatus {
@@ -104,4 +105,10 @@ message ListMediaRequest {
 
 message ListMediaResponse {
   repeated Media media = 1;
+}
+
+message CleanupPendingMediaRequest {}
+
+message CleanupPendingMediaResponse {
+  int32 removed = 1;
 }

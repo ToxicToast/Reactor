@@ -51,6 +51,7 @@ import {
   UpdateMediaAltTextUseCase,
   UpdatePostUseCase,
   UpdateTagUseCase,
+  CleanupPendingMediaUseCase,
 } from '@toxictoast/blog-application';
 import {
   CategoryFactory,
@@ -71,10 +72,12 @@ import { provideClass, TOKENS } from '@toxictoast/shared-nest';
 import { TransactionContext } from '@toxictoast/shared-persistence';
 import { DataSource } from 'typeorm';
 import { BLOG_TOKENS } from './constants/index.js';
+import { numberEnv } from '@toxictoast/shared-system';
 
 const { TAG_REPOSITORY, CATEGORY_REPOSITORY, MEDIA_REPOSITORY } = BLOG_TOKENS;
 const { POST_REPOSITORY, COMMENT_REPOSITORY } = BLOG_TOKENS;
-const { DOMAIN_CONTEXT, FILE_STORAGE } = TOKENS;
+const { PENDING_MEDIA_MAX_AGE_HOURS } = BLOG_TOKENS;
+const { CLOCK, DOMAIN_CONTEXT, FILE_STORAGE } = TOKENS;
 const DATABASE = [DataSource, TransactionContext];
 
 @Module({
@@ -86,6 +89,11 @@ const DATABASE = [DataSource, TransactionContext];
     CommentGrpcController,
   ],
   providers: [
+    // ── Configs ───────────────────────────────
+    {
+      provide: PENDING_MEDIA_MAX_AGE_HOURS,
+      useFactory: () => numberEnv('BLOG_PENDING_MEDIA_MAX_AGE_HOURS', 24),
+    },
     // ── Factories ───────────────────────────────
     provideClass(TagFactory, [DOMAIN_CONTEXT]),
     provideClass(CategoryFactory, [DOMAIN_CONTEXT]),
@@ -195,6 +203,14 @@ const DATABASE = [DataSource, TransactionContext];
     provideClass(GetMediaUseCase, [MEDIA_REPOSITORY]),
     provideClass(GetMediaUrlUseCase, [MEDIA_REPOSITORY, FILE_STORAGE]),
     provideClass(ListMediaUseCase, [MEDIA_REPOSITORY]),
+    provideClass(CleanupPendingMediaUseCase, [
+      MediaFactory,
+      MEDIA_REPOSITORY,
+      FILE_STORAGE,
+      DomainPersistence,
+      CLOCK,
+      PENDING_MEDIA_MAX_AGE_HOURS,
+    ]),
 
     // ── Post ────────────────────────────────────
     provideClass(CreatePostUseCase, [

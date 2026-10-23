@@ -6,10 +6,10 @@ import {
   type OnApplicationBootstrap,
 } from '@nestjs/common';
 import type { Producer } from '@platformatic/kafka';
-import {
+import type {
+  KafkaEventConsumer,
   OutboxRelayWorker,
-  type KafkaEventConsumer,
-  type TopicProvisioner,
+  TopicProvisioner,
 } from '@toxictoast/shared-messaging';
 import type { Nullable } from '@toxictoast/shared-types';
 import { TOKENS } from '../constants/index.js';
@@ -21,7 +21,8 @@ export class MessagingLifecycle
   private readonly logger = new Logger('Messaging');
 
   constructor(
-    private readonly worker: OutboxRelayWorker,
+    @Inject(TOKENS.OUTBOX_RELAY_WORKER)
+    private readonly worker: Nullable<OutboxRelayWorker>,
     @Inject(TOKENS.EVENT_CONSUMER)
     private readonly consumer: Nullable<KafkaEventConsumer>,
     @Inject(TOKENS.KAFKA_PRODUCER)
@@ -38,7 +39,9 @@ export class MessagingLifecycle
       }
     }
 
-    this.worker.start();
+    if (this.worker) {
+      this.worker.start();
+    }
     if (this.consumer) {
       await this.consumer.start();
     }
@@ -48,7 +51,9 @@ export class MessagingLifecycle
     if (this.consumer) {
       await this.consumer.stop();
     }
-    await this.worker.stop();
+    if (this.worker) {
+      await this.worker.stop();
+    }
     await this.producer.close();
   }
 }

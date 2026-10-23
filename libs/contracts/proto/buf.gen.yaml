@@ -13,3 +13,4 @@ plugins:
       - importSuffix=.js
       - esModuleInterop=true
       - exportCommonSymbols=false
+      - addGrpcMetadata=true

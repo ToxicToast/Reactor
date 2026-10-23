@@ -32,10 +32,6 @@ export interface ListMediaInput {
   readonly withDeleted?: Optional<boolean>;
 }
 
-export interface CleanupPendingMediaInput {
-  readonly olderThan: Date;
-}
-
 export interface CleanupPendingMediaOutput {
   readonly removed: number;
 }

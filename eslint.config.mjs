@@ -100,6 +100,15 @@ export default [
               ],
             },
             {
+              sourceTag: 'scope:moderation',
+              onlyDependOnLibsWithTags: [
+                'scope:moderation',
+                'scope:contracts',
+                'scope:shared',
+                'scope:types',
+              ],
+            },
+            {
               sourceTag: 'scope:gateway',
               onlyDependOnLibsWithTags: [
                 'scope:contracts',
@@ -114,6 +123,14 @@ export default [
             {
               sourceTag: 'scope:contracts',
               onlyDependOnLibsWithTags: ['scope:contracts', 'scope:types'],
+            },
+            {
+              sourceTag: 'scope:cronjob',
+              onlyDependOnLibsWithTags: [
+                'scope:contracts',
+                'scope:shared',
+                'scope:types',
+              ],
             },
           ],
         },

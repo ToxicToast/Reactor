@@ -5,6 +5,7 @@
 // source: blog/v1/tag.proto
 
 /* eslint-disable */
+import type { Metadata } from "@grpc/grpc-js";
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
 
@@ -70,33 +71,49 @@ export interface ListTagsResponse {
 }
 
 export interface TagServiceClient {
-  createTag(request: CreateTagRequest): Observable<CreateTagResponse>;
+  createTag(request: CreateTagRequest, metadata?: Metadata): Observable<CreateTagResponse>;
 
-  updateTag(request: UpdateTagRequest): Observable<UpdateTagResponse>;
+  updateTag(request: UpdateTagRequest, metadata?: Metadata): Observable<UpdateTagResponse>;
 
-  deleteTag(request: DeleteTagRequest): Observable<DeleteTagResponse>;
+  deleteTag(request: DeleteTagRequest, metadata?: Metadata): Observable<DeleteTagResponse>;
 
-  restoreTag(request: RestoreTagRequest): Observable<RestoreTagResponse>;
+  restoreTag(request: RestoreTagRequest, metadata?: Metadata): Observable<RestoreTagResponse>;
 
-  getTag(request: GetTagRequest): Observable<GetTagResponse>;
+  getTag(request: GetTagRequest, metadata?: Metadata): Observable<GetTagResponse>;
 
-  listTags(request: ListTagsRequest): Observable<ListTagsResponse>;
+  listTags(request: ListTagsRequest, metadata?: Metadata): Observable<ListTagsResponse>;
 }
 
 export interface TagServiceController {
-  createTag(request: CreateTagRequest): Promise<CreateTagResponse> | Observable<CreateTagResponse> | CreateTagResponse;
+  createTag(
+    request: CreateTagRequest,
+    metadata?: Metadata,
+  ): Promise<CreateTagResponse> | Observable<CreateTagResponse> | CreateTagResponse;
 
-  updateTag(request: UpdateTagRequest): Promise<UpdateTagResponse> | Observable<UpdateTagResponse> | UpdateTagResponse;
+  updateTag(
+    request: UpdateTagRequest,
+    metadata?: Metadata,
+  ): Promise<UpdateTagResponse> | Observable<UpdateTagResponse> | UpdateTagResponse;
 
-  deleteTag(request: DeleteTagRequest): Promise<DeleteTagResponse> | Observable<DeleteTagResponse> | DeleteTagResponse;
+  deleteTag(
+    request: DeleteTagRequest,
+    metadata?: Metadata,
+  ): Promise<DeleteTagResponse> | Observable<DeleteTagResponse> | DeleteTagResponse;
 
   restoreTag(
     request: RestoreTagRequest,
+    metadata?: Metadata,
   ): Promise<RestoreTagResponse> | Observable<RestoreTagResponse> | RestoreTagResponse;
 
-  getTag(request: GetTagRequest): Promise<GetTagResponse> | Observable<GetTagResponse> | GetTagResponse;
+  getTag(
+    request: GetTagRequest,
+    metadata?: Metadata,
+  ): Promise<GetTagResponse> | Observable<GetTagResponse> | GetTagResponse;
 
-  listTags(request: ListTagsRequest): Promise<ListTagsResponse> | Observable<ListTagsResponse> | ListTagsResponse;
+  listTags(
+    request: ListTagsRequest,
+    metadata?: Metadata,
+  ): Promise<ListTagsResponse> | Observable<ListTagsResponse> | ListTagsResponse;
 }
 
 export function TagServiceControllerMethods() {
