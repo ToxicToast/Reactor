@@ -1,0 +1,145 @@
+{
+  "realm": "azkaban",
+  "displayName": "Azkaban",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "roles": {
+    "realm": [
+      {
+        "name": "reader",
+        "description": "Default role for every user: may write comments",
+        "composite": true,
+        "composites": {
+          "client": {
+            "azkaban-api": ["blog.comment.write"]
+          }
+        }
+      },
+      {
+        "name": "blog-moderator",
+        "description": "May moderate and delete comments",
+        "composite": true,
+        "composites": {
+          "client": {
+            "azkaban-api": [
+              "blog.comment.write",
+              "blog.comment.moderate",
+              "blog.comment.delete"
+            ]
+          }
+        }
+      },
+      {
+        "name": "blog-admin",
+        "description": "All blog permissions",
+        "composite": true,
+        "composites": {
+          "client": {
+            "azkaban-api": [
+              "blog.post.write",
+              "blog.post.delete",
+              "blog.category.write",
+              "blog.category.delete",
+              "blog.tag.write",
+              "blog.tag.delete",
+              "blog.media.write",
+              "blog.media.delete",
+              "blog.comment.write",
+              "blog.comment.moderate",
+              "blog.comment.delete"
+            ]
+          }
+        }
+      }
+    ],
+    "client": {
+      "azkaban-api": [
+        {
+          "name": "blog.post.write",
+          "description": "Create, edit, publish and archive posts, read drafts"
+        },
+        {
+          "name": "blog.post.delete",
+          "description": "Delete and restore posts, read deleted posts"
+        },
+        {
+          "name": "blog.category.write",
+          "description": "Create and edit categories"
+        },
+        {
+          "name": "blog.category.delete",
+          "description": "Delete and restore categories"
+        },
+        { "name": "blog.tag.write", "description": "Create and edit tags" },
+        { "name": "blog.tag.delete", "description": "Delete and restore tags" },
+        {
+          "name": "blog.media.write",
+          "description": "Upload media and manage the media library"
+        },
+        {
+          "name": "blog.media.delete",
+          "description": "Delete and restore media, clean up pending uploads"
+        },
+        {
+          "name": "blog.comment.write",
+          "description": "Write comments and edit own comments"
+        },
+        {
+          "name": "blog.comment.moderate",
+          "description": "Moderate comments and read the moderation queue"
+        },
+        {
+          "name": "blog.comment.delete",
+          "description": "Delete and restore comments"
+        }
+      ]
+    }
+  },
+  "defaultRole": {
+    "name": "default-roles-azkaban",
+    "composite": true,
+    "composites": {
+      "realm": ["offline_access", "uma_authorization", "reader"]
+    }
+  },
+  "clients": [
+    {
+      "clientId": "azkaban-api",
+      "name": "Azkaban API",
+      "description": "Resource server: carries the permissions as client roles",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "bearerOnly": true,
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false
+    },
+    {
+      "clientId": "azkaban-web",
+      "name": "Azkaban Web",
+      "description": "Frontend (SPA) with authorization code flow and PKCE",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "fullScopeAllowed": true,
+      "redirectUris": ["http://localhost:4200/*", "http://localhost:5173/*"],
+      "webOrigins": ["+"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "+"
+      }
+    }
+  ]
+}
