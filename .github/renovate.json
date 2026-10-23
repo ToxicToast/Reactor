@@ -24,6 +24,16 @@
       "description": "terminus 12 is ESM-only and breaks Jest; keep 11 until the Nest 12 upgrade",
       "matchPackageNames": ["@nestjs/terminus"],
       "allowedVersions": "<12"
+    },
+    {
+      "description": "bullmq 12 is ESM-only and breaks App; keep 11 until the Nest 12 upgrade",
+      "matchPackageNames": ["@nestjs/bullmq", "@nestjs/bull-shared"],
+      "allowedVersions": "<12"
+    },
+    {
+      "description": "bullmq 6 no longer ships a redis client and is barely tested with @nestjs/bullmq 11 and bull-board; stay on 5",
+      "matchPackageNames": ["bullmq"],
+      "allowedVersions": "<6"
     }
   ],
   "separateMinorPatch": true,

@@ -5,6 +5,7 @@
 // source: blog/v1/comment.proto
 
 /* eslint-disable */
+import type { Metadata } from "@grpc/grpc-js";
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
 
@@ -117,54 +118,65 @@ export interface ListCommentsByStatusResponse {
 }
 
 export interface CommentServiceClient {
-  createComment(request: CreateCommentRequest): Observable<CreateCommentResponse>;
+  createComment(request: CreateCommentRequest, metadata?: Metadata): Observable<CreateCommentResponse>;
 
-  updateComment(request: UpdateCommentRequest): Observable<UpdateCommentResponse>;
+  updateComment(request: UpdateCommentRequest, metadata?: Metadata): Observable<UpdateCommentResponse>;
 
-  moderateComment(request: ModerateCommentRequest): Observable<ModerateCommentResponse>;
+  moderateComment(request: ModerateCommentRequest, metadata?: Metadata): Observable<ModerateCommentResponse>;
 
-  deleteComment(request: DeleteCommentRequest): Observable<DeleteCommentResponse>;
+  deleteComment(request: DeleteCommentRequest, metadata?: Metadata): Observable<DeleteCommentResponse>;
 
-  restoreComment(request: RestoreCommentRequest): Observable<RestoreCommentResponse>;
+  restoreComment(request: RestoreCommentRequest, metadata?: Metadata): Observable<RestoreCommentResponse>;
 
-  getComment(request: GetCommentRequest): Observable<GetCommentResponse>;
+  getComment(request: GetCommentRequest, metadata?: Metadata): Observable<GetCommentResponse>;
 
-  listPostComments(request: ListPostCommentsRequest): Observable<ListPostCommentsResponse>;
+  listPostComments(request: ListPostCommentsRequest, metadata?: Metadata): Observable<ListPostCommentsResponse>;
 
-  listCommentsByStatus(request: ListCommentsByStatusRequest): Observable<ListCommentsByStatusResponse>;
+  listCommentsByStatus(
+    request: ListCommentsByStatusRequest,
+    metadata?: Metadata,
+  ): Observable<ListCommentsByStatusResponse>;
 }
 
 export interface CommentServiceController {
   createComment(
     request: CreateCommentRequest,
+    metadata?: Metadata,
   ): Promise<CreateCommentResponse> | Observable<CreateCommentResponse> | CreateCommentResponse;
 
   updateComment(
     request: UpdateCommentRequest,
+    metadata?: Metadata,
   ): Promise<UpdateCommentResponse> | Observable<UpdateCommentResponse> | UpdateCommentResponse;
 
   moderateComment(
     request: ModerateCommentRequest,
+    metadata?: Metadata,
   ): Promise<ModerateCommentResponse> | Observable<ModerateCommentResponse> | ModerateCommentResponse;
 
   deleteComment(
     request: DeleteCommentRequest,
+    metadata?: Metadata,
   ): Promise<DeleteCommentResponse> | Observable<DeleteCommentResponse> | DeleteCommentResponse;
 
   restoreComment(
     request: RestoreCommentRequest,
+    metadata?: Metadata,
   ): Promise<RestoreCommentResponse> | Observable<RestoreCommentResponse> | RestoreCommentResponse;
 
   getComment(
     request: GetCommentRequest,
+    metadata?: Metadata,
   ): Promise<GetCommentResponse> | Observable<GetCommentResponse> | GetCommentResponse;
 
   listPostComments(
     request: ListPostCommentsRequest,
+    metadata?: Metadata,
   ): Promise<ListPostCommentsResponse> | Observable<ListPostCommentsResponse> | ListPostCommentsResponse;
 
   listCommentsByStatus(
     request: ListCommentsByStatusRequest,
+    metadata?: Metadata,
   ): Promise<ListCommentsByStatusResponse> | Observable<ListCommentsByStatusResponse> | ListCommentsByStatusResponse;
 }
 

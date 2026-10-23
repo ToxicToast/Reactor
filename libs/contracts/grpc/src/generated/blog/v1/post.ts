@@ -5,6 +5,7 @@
 // source: blog/v1/post.proto
 
 /* eslint-disable */
+import type { Metadata } from "@grpc/grpc-js";
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
 
@@ -138,63 +139,77 @@ export interface ListPostsResponse {
 }
 
 export interface PostServiceClient {
-  createPost(request: CreatePostRequest): Observable<CreatePostResponse>;
+  createPost(request: CreatePostRequest, metadata?: Metadata): Observable<CreatePostResponse>;
 
-  updatePost(request: UpdatePostRequest): Observable<UpdatePostResponse>;
+  updatePost(request: UpdatePostRequest, metadata?: Metadata): Observable<UpdatePostResponse>;
 
-  publishPost(request: PublishPostRequest): Observable<PublishPostResponse>;
+  publishPost(request: PublishPostRequest, metadata?: Metadata): Observable<PublishPostResponse>;
 
-  archivePost(request: ArchivePostRequest): Observable<ArchivePostResponse>;
+  archivePost(request: ArchivePostRequest, metadata?: Metadata): Observable<ArchivePostResponse>;
 
-  unarchivePost(request: UnarchivePostRequest): Observable<UnarchivePostResponse>;
+  unarchivePost(request: UnarchivePostRequest, metadata?: Metadata): Observable<UnarchivePostResponse>;
 
-  deletePost(request: DeletePostRequest): Observable<DeletePostResponse>;
+  deletePost(request: DeletePostRequest, metadata?: Metadata): Observable<DeletePostResponse>;
 
-  restorePost(request: RestorePostRequest): Observable<RestorePostResponse>;
+  restorePost(request: RestorePostRequest, metadata?: Metadata): Observable<RestorePostResponse>;
 
-  getPost(request: GetPostRequest): Observable<GetPostResponse>;
+  getPost(request: GetPostRequest, metadata?: Metadata): Observable<GetPostResponse>;
 
-  getPublishedPost(request: GetPublishedPostRequest): Observable<GetPublishedPostResponse>;
+  getPublishedPost(request: GetPublishedPostRequest, metadata?: Metadata): Observable<GetPublishedPostResponse>;
 
-  listPosts(request: ListPostsRequest): Observable<ListPostsResponse>;
+  listPosts(request: ListPostsRequest, metadata?: Metadata): Observable<ListPostsResponse>;
 }
 
 export interface PostServiceController {
   createPost(
     request: CreatePostRequest,
+    metadata?: Metadata,
   ): Promise<CreatePostResponse> | Observable<CreatePostResponse> | CreatePostResponse;
 
   updatePost(
     request: UpdatePostRequest,
+    metadata?: Metadata,
   ): Promise<UpdatePostResponse> | Observable<UpdatePostResponse> | UpdatePostResponse;
 
   publishPost(
     request: PublishPostRequest,
+    metadata?: Metadata,
   ): Promise<PublishPostResponse> | Observable<PublishPostResponse> | PublishPostResponse;
 
   archivePost(
     request: ArchivePostRequest,
+    metadata?: Metadata,
   ): Promise<ArchivePostResponse> | Observable<ArchivePostResponse> | ArchivePostResponse;
 
   unarchivePost(
     request: UnarchivePostRequest,
+    metadata?: Metadata,
   ): Promise<UnarchivePostResponse> | Observable<UnarchivePostResponse> | UnarchivePostResponse;
 
   deletePost(
     request: DeletePostRequest,
+    metadata?: Metadata,
   ): Promise<DeletePostResponse> | Observable<DeletePostResponse> | DeletePostResponse;
 
   restorePost(
     request: RestorePostRequest,
+    metadata?: Metadata,
   ): Promise<RestorePostResponse> | Observable<RestorePostResponse> | RestorePostResponse;
 
-  getPost(request: GetPostRequest): Promise<GetPostResponse> | Observable<GetPostResponse> | GetPostResponse;
+  getPost(
+    request: GetPostRequest,
+    metadata?: Metadata,
+  ): Promise<GetPostResponse> | Observable<GetPostResponse> | GetPostResponse;
 
   getPublishedPost(
     request: GetPublishedPostRequest,
+    metadata?: Metadata,
   ): Promise<GetPublishedPostResponse> | Observable<GetPublishedPostResponse> | GetPublishedPostResponse;
 
-  listPosts(request: ListPostsRequest): Promise<ListPostsResponse> | Observable<ListPostsResponse> | ListPostsResponse;
+  listPosts(
+    request: ListPostsRequest,
+    metadata?: Metadata,
+  ): Promise<ListPostsResponse> | Observable<ListPostsResponse> | ListPostsResponse;
 }
 
 export function PostServiceControllerMethods() {

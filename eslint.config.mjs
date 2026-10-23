@@ -124,6 +124,14 @@ export default [
               sourceTag: 'scope:contracts',
               onlyDependOnLibsWithTags: ['scope:contracts', 'scope:types'],
             },
+            {
+              sourceTag: 'scope:cronjob',
+              onlyDependOnLibsWithTags: [
+                'scope:contracts',
+                'scope:shared',
+                'scope:types',
+              ],
+            },
           ],
         },
       ],

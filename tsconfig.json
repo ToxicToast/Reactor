@@ -68,6 +68,9 @@
     },
     {
       "path": "./apps/moderation-service"
+    },
+    {
+      "path": "./apps/cronjob-service"
     }
   ],
   "compilerOptions": {}
