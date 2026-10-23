@@ -13,29 +13,35 @@ import {
   createTestContext,
   InMemoryMediaRepository,
   mediaAnemic,
+  TEST_NOW,
 } from '../../testing/index.js';
 import { CleanupPendingMediaUseCase } from './cleanup-pending-media.usecase.js';
 
 const OLD = new Date('2026-10-17T12:00:00Z');
 const RECENT = new Date('2026-10-19T11:00:00Z');
-const CUTOFF = new Date('2026-10-18T12:00:00Z');
 
 describe('CleanupPendingMediaUseCase', () => {
   let repository: InMemoryMediaRepository;
   let storage: InMemoryFileStorage;
   let outbox: InMemoryOutbox;
-  let useCase: CleanupPendingMediaUseCase;
+  let persistence: DomainPersistence;
+
+  const create = (maxAgeHours: number): CleanupPendingMediaUseCase => {
+    return new CleanupPendingMediaUseCase(
+      new MediaFactory(createTestContext()),
+      repository,
+      storage,
+      persistence,
+      { now: () => TEST_NOW },
+      maxAgeHours,
+    );
+  };
 
   beforeEach(async () => {
     repository = new InMemoryMediaRepository();
     storage = new InMemoryFileStorage();
     outbox = new InMemoryOutbox();
-    useCase = new CleanupPendingMediaUseCase(
-      new MediaFactory(createTestContext()),
-      repository,
-      storage,
-      new DomainPersistence(outbox, new ImmediateUnitOfWork()),
-    );
+    persistence = new DomainPersistence(outbox, new ImmediateUnitOfWork());
 
     await repository.save(mediaAnemic('old-pending', { created_at: OLD }));
     await repository.save(mediaAnemic('new-pending', { created_at: RECENT }));
@@ -45,7 +51,7 @@ describe('CleanupPendingMediaUseCase', () => {
   });
 
   it('removes only old pending media and their files', async () => {
-    const result = await useCase.execute({ olderThan: CUTOFF });
+    const result = await create(24).execute();
 
     expect(result.isSuccess).toBe(true);
     expect(result.value.removed).toBe(1);
@@ -61,7 +67,7 @@ describe('CleanupPendingMediaUseCase', () => {
   });
 
   it('removes nothing when there is nothing to clean up', async () => {
-    const result = await useCase.execute({ olderThan: OLD });
+    const result = await create(48).execute();
 
     expect(result.value.removed).toBe(0);
     expect(storage.deleted).toHaveLength(0);
