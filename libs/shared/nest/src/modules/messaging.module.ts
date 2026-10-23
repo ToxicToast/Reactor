@@ -82,7 +82,7 @@ export class MessagingModule {
       providers: [
         {
           provide: TOKENS.KAFKA_PRODUCER,
-          useFactory: (): StringProducer => {
+          useFactory: (): Promise<StringProducer> => {
             return createKafkaProducer(kafkaConfigFromEnv());
           },
         },
@@ -97,12 +97,15 @@ export class MessagingModule {
         {
           provide: TOKENS.EVENT_CONSUMER,
           inject: [ActorContext, ...(handlers?.inject ?? [])],
-          useFactory: (actors: ActorContext, ...deps: Array<unknown>) => {
+          useFactory: async (
+            actors: ActorContext,
+            ...deps: Array<unknown>
+          ): Promise<Nullable<KafkaEventConsumer>> => {
             if (!handlers) {
               return null;
             }
             return new KafkaEventConsumer(
-              createKafkaConsumer(kafkaConfigFromEnv(), options.groupId),
+              await createKafkaConsumer(kafkaConfigFromEnv(), options.groupId),
               actors,
               {
                 handlers: handlers.useFactory(...deps),
@@ -119,9 +122,9 @@ export class MessagingModule {
         {
           provide: TOKENS.TOPIC_PROVISIONER,
           inject: [TOKENS.EVENT_CONSUMER],
-          useFactory: (
+          useFactory: async (
             consumer: Nullable<KafkaEventConsumer>,
-          ): Nullable<TopicProvisioner> => {
+          ): Promise<Nullable<TopicProvisioner>> => {
             if (!booleanEnv('KAFKA_AUTO_CREATE_TOPICS', true)) {
               return null;
             }
@@ -130,7 +133,7 @@ export class MessagingModule {
               ...(consumer?.topics ?? []),
             ];
             return new TopicProvisioner(
-              createKafkaAdmin(kafkaConfigFromEnv()),
+              await createKafkaAdmin(kafkaConfigFromEnv()),
               topics,
               {
                 partitions: numberEnv('KAFKA_TOPIC_PARTITIONS', 3),

@@ -1,15 +1,16 @@
-import { ProduceAcks, Producer, stringSerializers } from '@platformatic/kafka';
+import type { Producer } from '@platformatic/kafka';
 import type { KafkaConfig } from '../interfaces/index.js';
 
-export const createKafkaProducer = (
+export const createKafkaProducer = async (
   config: KafkaConfig,
-): Producer<string, string, string, string> => {
-  return new Producer({
+): Promise<Producer<string, string, string, string>> => {
+  const kafka = await import('@platformatic/kafka');
+  return new kafka.Producer({
     clientId: config.clientId,
     bootstrapBrokers: [...config.brokers],
-    serializers: stringSerializers,
+    serializers: kafka.stringSerializers,
     idempotent: true,
-    acks: ProduceAcks.ALL,
+    acks: kafka.ProduceAcks.ALL,
     autocreateTopics: false,
   });
 };
