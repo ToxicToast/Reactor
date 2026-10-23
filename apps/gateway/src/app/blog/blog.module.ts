@@ -8,6 +8,10 @@ import { CategoryController } from './categories/category.controller.js';
 import { CategoryGateway } from './categories/category.gateway.js';
 import { TagController } from './tags/tag.controller.js';
 import { TagGateway } from './tags/tag.gateway.js';
+import { CommentController } from './comments/comment.controller.js';
+import { CommentGateway } from './comments/comment.gateway.js';
+import { PostController } from './posts/post.controller.js';
+import { PostGateway } from './posts/post.gateway.js';
 
 @Module({
   imports: [
@@ -19,10 +23,17 @@ import { TagGateway } from './tags/tag.gateway.js';
       urlEnv: 'BLOG_GRPC_URL',
     }),
   ],
-  controllers: [TagController, CategoryController],
+  controllers: [
+    TagController,
+    CategoryController,
+    PostController,
+    CommentController,
+  ],
   providers: [
     provideClass(TagGateway, [BLOG_GRPC_CLIENT, ActorMetadata]),
     provideClass(CategoryGateway, [BLOG_GRPC_CLIENT, ActorMetadata]),
+    provideClass(PostGateway, [BLOG_GRPC_CLIENT, ActorMetadata]),
+    provideClass(CommentGateway, [BLOG_GRPC_CLIENT, ActorMetadata]),
   ],
 })
 export class BlogModule {}
