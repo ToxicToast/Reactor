@@ -3,40 +3,31 @@ import {
   type MiddlewareConsumer,
   type NestModule,
 } from '@nestjs/common';
-import { CorrelationMiddleware } from './correlation/middlewares/index.js';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import {
   HealthModule,
   MetricsModule,
-  provideClass,
   SystemModule,
 } from '@toxictoast/shared-nest';
 import { ZodValidationPipe } from 'nestjs-zod';
-import { keycloakConfigFromEnv } from './auth/functions/index.js';
+import { AdminModule } from './admin/admin.module.js';
+import { AuthModule } from './auth/auth.module.js';
 import { HttpActorInterceptor } from './auth/interceptors/index.js';
-import { KeycloakTokenVerifier } from './auth/services/index.js';
-import { GATEWAY_TOKENS } from './constants/index.js';
-import { GrpcExceptionFilter } from './grpc/filters/index.js';
 import { BlogModule } from './blog/blog.module.js';
-
-const { KEYCLOAK_CONFIG } = GATEWAY_TOKENS;
+import { CorrelationMiddleware } from './correlation/middlewares/index.js';
+import { GrpcExceptionFilter } from './grpc/filters/index.js';
 
 @Module({
   imports: [
     SystemModule,
     HealthModule.forRoot({ database: false }),
     MetricsModule.forRoot({ outbox: false }),
+    AuthModule,
+    AdminModule,
     BlogModule,
   ],
   providers: [
-    // ── Configs ───────────────────────────────
-    {
-      provide: KEYCLOAK_CONFIG,
-      useFactory: () => keycloakConfigFromEnv(),
-    },
-
     // ── Auth ────────────────────────────────────
-    provideClass(KeycloakTokenVerifier, [KEYCLOAK_CONFIG]),
     { provide: APP_INTERCEPTOR, useClass: HttpActorInterceptor },
 
     // ── HTTP ────────────────────────────────────
