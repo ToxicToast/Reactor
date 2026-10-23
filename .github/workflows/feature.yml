@@ -2,7 +2,8 @@ name: Feature
 
 on:
   push:
-    branches: [feature/**/*, feature/*, refactor/**/*, refactor/*, feat/**/*, feat/*]
+    branches:
+      [feature/**/*, feature/*, refactor/**/*, refactor/*, feat/**/*, feat/*]
 
 env:
   NODE_VERSION: 24
