@@ -12,6 +12,8 @@ import { CommentController } from './comments/comment.controller.js';
 import { CommentGateway } from './comments/comment.gateway.js';
 import { PostController } from './posts/post.controller.js';
 import { PostGateway } from './posts/post.gateway.js';
+import { MediaController } from './media/media.controller.js';
+import { MediaGateway } from './media/media.gateway.js';
 
 @Module({
   imports: [
@@ -28,12 +30,14 @@ import { PostGateway } from './posts/post.gateway.js';
     CategoryController,
     PostController,
     CommentController,
+    MediaController,
   ],
   providers: [
     provideClass(TagGateway, [BLOG_GRPC_CLIENT, ActorMetadata]),
     provideClass(CategoryGateway, [BLOG_GRPC_CLIENT, ActorMetadata]),
     provideClass(PostGateway, [BLOG_GRPC_CLIENT, ActorMetadata]),
     provideClass(CommentGateway, [BLOG_GRPC_CLIENT, ActorMetadata]),
+    provideClass(MediaGateway, [BLOG_GRPC_CLIENT, ActorMetadata]),
   ],
 })
 export class BlogModule {}
