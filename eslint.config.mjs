@@ -100,6 +100,15 @@ export default [
               ],
             },
             {
+              sourceTag: 'scope:moderation',
+              onlyDependOnLibsWithTags: [
+                'scope:moderation',
+                'scope:contracts',
+                'scope:shared',
+                'scope:types',
+              ],
+            },
+            {
               sourceTag: 'scope:gateway',
               onlyDependOnLibsWithTags: [
                 'scope:contracts',

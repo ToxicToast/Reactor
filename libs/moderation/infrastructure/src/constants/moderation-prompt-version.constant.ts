@@ -1,0 +1,1 @@
+export const MODERATION_PROMPT_VERSION = 'v1';

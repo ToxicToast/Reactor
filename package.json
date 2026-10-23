@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "nx": "nx",
-    "serve:blog": "nx serve blog-service"
+    "serve:blog": "nx serve blog-service",
+    "serve:moderation": "nx serve moderation-service"
   },
   "private": true,
   "devDependencies": {

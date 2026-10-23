@@ -53,6 +53,21 @@
     },
     {
       "path": "./apps/blog-service"
+    },
+    {
+      "path": "./libs/moderation/domain"
+    },
+    {
+      "path": "./libs/moderation/application"
+    },
+    {
+      "path": "./libs/moderation/infrastructure"
+    },
+    {
+      "path": "./libs/moderation/api"
+    },
+    {
+      "path": "./apps/moderation-service"
     }
   ],
   "compilerOptions": {}
