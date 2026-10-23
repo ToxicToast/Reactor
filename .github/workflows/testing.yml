@@ -12,7 +12,7 @@ on:
 
 jobs:
   testing:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     name: 'Test Apps'
     steps:
       - uses: actions/checkout@v5
