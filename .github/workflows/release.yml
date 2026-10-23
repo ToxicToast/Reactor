@@ -17,7 +17,7 @@ jobs:
 
       - name: 🪐 Major version for each merge
         id: tagger
-        uses: anothrNick/github-tag-action@1.71.0
+        uses: anothrNick/github-tag-action@1.75.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
