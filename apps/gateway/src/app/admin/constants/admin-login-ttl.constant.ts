@@ -1,0 +1,1 @@
+export const ADMIN_LOGIN_TTL_SECONDS = 600;

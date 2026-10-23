@@ -3,10 +3,12 @@ import {
   type Actor,
   type DomainEvent,
 } from '@toxictoast/shared-kernel';
-import { ActorContext } from '@toxictoast/shared-system';
 import type { EntityManager } from 'typeorm';
 import { TransactionContext } from '../classes/index.js';
 import { TypeOrmOutbox } from './typeorm-outbox.service.js';
+import { ActorContext, CorrelationContext } from '@toxictoast/shared-system';
+
+const CID = '01a16a00-3111-7049-8d8d-0db609f31f2a';
 
 const EVENT: DomainEvent = {
   event_id: '0192f3a0-0000-7000-8000-000000000001',
@@ -31,6 +33,7 @@ describe('TypeOrmOutbox', () => {
   let context: TransactionContext;
   let actors: ActorContext;
   let outbox: TypeOrmOutbox;
+  let correlations: CorrelationContext;
 
   beforeEach(() => {
     insert = jest.fn();
@@ -39,7 +42,8 @@ describe('TypeOrmOutbox', () => {
     } as unknown as EntityManager;
     context = new TransactionContext();
     actors = new ActorContext();
-    outbox = new TypeOrmOutbox(context, actors);
+    correlations = new CorrelationContext();
+    outbox = new TypeOrmOutbox(context, actors, correlations);
   });
 
   it('inserts the events as unpublished rows with the current actor', async () => {
@@ -53,6 +57,7 @@ describe('TypeOrmOutbox', () => {
         actor_type: 'user',
         actor_id: 'user-1',
         actor_ip: '203.0.113.7',
+        correlation_id: null,
         published_at: null,
         attempts: 0,
       },
@@ -79,5 +84,15 @@ describe('TypeOrmOutbox', () => {
 
   it('refuses to write outside a unit of work', async () => {
     await expect(outbox.add([EVENT])).rejects.toThrow('UnitOfWork');
+  });
+
+  it('stores the correlation id of the request', async () => {
+    await correlations.run(CID, () =>
+      actors.run(USER, () => context.run(manager, () => outbox.add([EVENT]))),
+    );
+
+    expect(insert).toHaveBeenCalledWith([
+      expect.objectContaining({ correlation_id: CID }),
+    ]);
   });
 });

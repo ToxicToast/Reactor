@@ -29,7 +29,10 @@ import {
         };
       },
     }),
-    BullBoardModule.forRoot({ route: '/queues', adapter: ExpressAdapter }),
+    BullBoardModule.forRoot({
+      route: '/admin/queues',
+      adapter: ExpressAdapter,
+    }),
     BlogJobsModule,
   ],
 })

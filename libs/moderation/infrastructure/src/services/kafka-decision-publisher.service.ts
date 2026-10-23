@@ -7,7 +7,10 @@ import type {
   DecisionPublisher,
   ModerationResult,
 } from '@toxictoast/moderation-application';
-import type { DomainContext } from '@toxictoast/shared-kernel';
+import type {
+  CorrelationProvider,
+  DomainContext,
+} from '@toxictoast/shared-kernel';
 import type { EventPublisher } from '@toxictoast/shared-messaging';
 import { MODERATION_ACTOR } from '../constants/index.js';
 import { DECISION_TO_EVENT } from '../mappings/index.js';
@@ -16,6 +19,7 @@ export class KafkaDecisionPublisher implements DecisionPublisher {
   constructor(
     private readonly publisher: EventPublisher,
     private readonly ctx: DomainContext,
+    private readonly correlations: CorrelationProvider,
   ) {}
 
   async publish(result: ModerationResult): Promise<void> {
@@ -37,6 +41,7 @@ export class KafkaDecisionPublisher implements DecisionPublisher {
         aggregate_id: result.content_id,
         occurred_at: this.ctx.date.now(),
         actor: MODERATION_ACTOR,
+        correlation_id: this.correlations.current(),
         payload,
       },
     ]);

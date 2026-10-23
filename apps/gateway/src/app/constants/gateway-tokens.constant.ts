@@ -1,0 +1,4 @@
+export const GATEWAY_TOKENS = {
+  KEYCLOAK_CONFIG: Symbol('KEYCLOAK_CONFIG'),
+  ADMIN_AUTH_CONFIG: Symbol('ADMIN_AUTH_CONFIG'),
+} as const;

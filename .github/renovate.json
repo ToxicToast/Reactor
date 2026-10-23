@@ -34,6 +34,21 @@
       "description": "bullmq 6 no longer ships a redis client and is barely tested with @nestjs/bullmq 11 and bull-board; stay on 5",
       "matchPackageNames": ["bullmq"],
       "allowedVersions": "<6"
+    },
+    {
+      "description": "jose 6 is ESM-only and breaks Jest; stay on 5",
+      "matchPackageNames": ["jose"],
+      "allowedVersions": "<6"
+    },
+    {
+      "description": "swagger 12 requires Nest 12",
+      "matchPackageNames": ["@nestjs/swagger"],
+      "allowedVersions": "<12"
+    },
+    {
+      "description": "graphql 14 requires Nest 12",
+      "matchPackageNames": ["@nestjs/graphql"],
+      "allowedVersions": "<14"
     }
   ],
   "separateMinorPatch": true,

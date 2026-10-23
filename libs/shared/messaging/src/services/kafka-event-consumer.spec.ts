@@ -1,6 +1,6 @@
 import type { Consumer } from '@platformatic/kafka';
 import { ActorType, SYSTEM_ACTOR } from '@toxictoast/shared-kernel';
-import { ActorContext } from '@toxictoast/shared-system';
+import { ActorContext, CorrelationContext } from '@toxictoast/shared-system';
 import type { ConsumedEvent } from '../interfaces/index.js';
 import { KafkaEventConsumer } from './kafka-event-consumer.service.js';
 
@@ -58,14 +58,16 @@ const settle = (): Promise<void> => {
 
 describe('KafkaEventConsumer', () => {
   let actors: ActorContext;
+  let correlations: CorrelationContext;
 
   beforeEach(() => {
     actors = new ActorContext();
+    correlations = new CorrelationContext();
   });
 
   it('subscribes to the namespaces of its handlers', async () => {
     const { consumer, consume } = fakeConsumer([]);
-    const subject = new KafkaEventConsumer(consumer, actors, {
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
       handlers: {
         'moderation.decided': jest.fn(),
         'blog.post.publish': jest.fn(),
@@ -87,7 +89,7 @@ describe('KafkaEventConsumer', () => {
     const decided = message(JSON.stringify(event('decided')));
     const handler = jest.fn().mockResolvedValue(undefined);
     const { consumer } = fakeConsumer([decided]);
-    const subject = new KafkaEventConsumer(consumer, actors, {
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
       handlers: { 'moderation.decided': handler },
       onError: jest.fn(),
     });
@@ -107,7 +109,7 @@ describe('KafkaEventConsumer', () => {
       current = actors.current();
     });
     const { consumer } = fakeConsumer([decided]);
-    const subject = new KafkaEventConsumer(consumer, actors, {
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
       handlers: { 'moderation.decided': handler },
       onError: jest.fn(),
     });
@@ -130,7 +132,7 @@ describe('KafkaEventConsumer', () => {
       seen.push(actors.current());
     });
     const { consumer } = fakeConsumer([legacy, forged]);
-    const subject = new KafkaEventConsumer(consumer, actors, {
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
       handlers: { 'moderation.decided': handler },
       onError: jest.fn(),
     });
@@ -145,7 +147,7 @@ describe('KafkaEventConsumer', () => {
     const requested = message(JSON.stringify(event('requested')));
     const handler = jest.fn();
     const { consumer } = fakeConsumer([requested]);
-    const subject = new KafkaEventConsumer(consumer, actors, {
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
       handlers: { 'moderation.decided': handler },
       onError: jest.fn(),
     });
@@ -161,7 +163,7 @@ describe('KafkaEventConsumer', () => {
     const broken = message('{kaputt');
     const onError = jest.fn();
     const { consumer } = fakeConsumer([broken]);
-    const subject = new KafkaEventConsumer(consumer, actors, {
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
       handlers: { 'moderation.decided': jest.fn() },
       onError,
     });
@@ -182,7 +184,7 @@ describe('KafkaEventConsumer', () => {
       .mockResolvedValueOnce(undefined);
     const onError = jest.fn();
     const { consumer } = fakeConsumer([decided]);
-    const subject = new KafkaEventConsumer(consumer, actors, {
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
       handlers: { 'moderation.decided': handler },
       onError,
       retryDelayMs: 1,
@@ -201,7 +203,7 @@ describe('KafkaEventConsumer', () => {
     const decided = message(JSON.stringify(event('decided')));
     const handler = jest.fn().mockRejectedValue(new Error('database down'));
     const { consumer } = fakeConsumer([decided]);
-    const subject = new KafkaEventConsumer(consumer, actors, {
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
       handlers: { 'moderation.decided': handler },
       onError: jest.fn(),
       retryDelayMs: 1,
@@ -213,5 +215,27 @@ describe('KafkaEventConsumer', () => {
     await subject.stop();
 
     expect(decided.commit).not.toHaveBeenCalled();
+  });
+
+  it('runs the handler with the correlation id of the event', async () => {
+    const correlationId = '01a16a00-3111-7049-8d8d-0db609f31f2a';
+    const decided = message(
+      JSON.stringify({ ...event('decided'), correlation_id: correlationId }),
+    );
+    let seen: string | null = null;
+    const { consumer } = fakeConsumer([decided]);
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
+      handlers: {
+        'moderation.decided': async () => {
+          seen = correlations.current();
+        },
+      },
+      onError: jest.fn(),
+    });
+
+    await subject.start();
+    await settle();
+
+    expect(seen).toBe(correlationId);
   });
 });

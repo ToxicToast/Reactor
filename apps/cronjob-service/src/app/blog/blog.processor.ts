@@ -2,17 +2,23 @@ import { Inject, Logger, type OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import {
+  BLOG_GRPC_CLIENT,
   BlogPermission,
   MEDIA_SERVICE_NAME,
   type MediaServiceClient,
 } from '@toxictoast/contracts-grpc';
-import { ActorType } from '@toxictoast/shared-kernel';
-import { actorToMetadata } from '@toxictoast/shared-nest';
+import { ActorType, type DomainContext } from '@toxictoast/shared-kernel';
+import {
+  actorToMetadata,
+  addCorrelationMetadata,
+  TOKENS,
+} from '@toxictoast/shared-nest';
+import { CorrelationContext } from '@toxictoast/shared-system';
 import type { Nullable } from '@toxictoast/shared-types';
 import { UnrecoverableError, type Job } from 'bullmq';
 import { firstValueFrom } from 'rxjs';
 import { CRONJOB_TOKENS } from '../constants/index.js';
-import { BLOG_GRPC_CLIENT, BLOG_QUEUE, BlogJobs } from './constants/index.js';
+import { BLOG_QUEUE, BlogJobs } from './constants/index.js';
 
 @Processor(BLOG_QUEUE)
 export class BlogProcessor extends WorkerHost implements OnModuleInit {
@@ -22,6 +28,8 @@ export class BlogProcessor extends WorkerHost implements OnModuleInit {
   constructor(
     @Inject(BLOG_GRPC_CLIENT) private readonly client: ClientGrpc,
     @Inject(CRONJOB_TOKENS.ACTOR_ID) private readonly actorId: string,
+    @Inject(TOKENS.DOMAIN_CONTEXT) private readonly ctx: DomainContext,
+    private readonly correlations: CorrelationContext,
   ) {
     super();
   }
@@ -30,7 +38,13 @@ export class BlogProcessor extends WorkerHost implements OnModuleInit {
     this.media = this.client.getService<MediaServiceClient>(MEDIA_SERVICE_NAME);
   }
 
-  async process(job: Job): Promise<unknown> {
+  process(job: Job): Promise<unknown> {
+    return this.correlations.run(this.ctx.id.generate(), () => {
+      return this.dispatch(job);
+    });
+  }
+
+  private async dispatch(job: Job): Promise<unknown> {
     switch (job.name) {
       case BlogJobs.MEDIA_CLEANUP:
         return this.cleanupPendingMedia();
@@ -40,16 +54,17 @@ export class BlogProcessor extends WorkerHost implements OnModuleInit {
   }
 
   private async cleanupPendingMedia(): Promise<{ removed: number }> {
+    const metadata = addCorrelationMetadata(
+      actorToMetadata({
+        type: ActorType.SYSTEM,
+        id: this.actorId,
+        ip: null,
+        permissions: [BlogPermission.MEDIA_DELETE],
+      }),
+      this.correlations.current(),
+    );
     const response = await firstValueFrom(
-      this.mediaService().cleanupPendingMedia(
-        {},
-        actorToMetadata({
-          type: ActorType.SYSTEM,
-          id: this.actorId,
-          ip: null,
-          permissions: [BlogPermission.MEDIA_DELETE],
-        }),
-      ),
+      this.mediaService().cleanupPendingMedia({}, metadata),
     );
     this.logger.log(`Removed ${response.removed} pending media`);
     return { removed: response.removed };

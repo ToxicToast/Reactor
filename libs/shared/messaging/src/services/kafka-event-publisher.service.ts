@@ -21,6 +21,9 @@ export class KafkaEventPublisher implements EventPublisher {
             event_id: event.event_id,
             event_name: event.event_name,
             event_version: String(event.event_version),
+            ...(event.correlation_id
+              ? { correlation_id: event.correlation_id }
+              : {}),
           },
         };
       }),

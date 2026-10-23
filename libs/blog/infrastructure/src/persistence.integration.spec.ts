@@ -7,7 +7,7 @@ import {
 } from '@toxictoast/shared-persistence';
 import { TypeOrmTagRepository } from './repositories/index.js';
 import { PostgresTestDatabase } from './testing/index.js';
-import { ActorContext } from '@toxictoast/shared-system';
+import { ActorContext, CorrelationContext } from '@toxictoast/shared-system';
 
 const NOW = new Date('2026-10-20T10:00:00Z');
 
@@ -44,7 +44,11 @@ describe('Blog persistence', () => {
   beforeAll(async () => {
     await database.start();
     uow = new TypeOrmUnitOfWork(database.dataSource, database.context);
-    outbox = new TypeOrmOutbox(database.context, new ActorContext());
+    outbox = new TypeOrmOutbox(
+      database.context,
+      new ActorContext(),
+      new CorrelationContext(),
+    );
     tags = new TypeOrmTagRepository(database.dataSource, database.context);
   });
 

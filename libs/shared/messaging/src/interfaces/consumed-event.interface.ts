@@ -8,5 +8,6 @@ export interface ConsumedEvent {
   readonly aggregate_id: string;
   readonly occurred_at: string;
   readonly actor?: Optional<unknown>;
+  readonly correlation_id?: Optional<unknown>;
   readonly payload: unknown;
 }

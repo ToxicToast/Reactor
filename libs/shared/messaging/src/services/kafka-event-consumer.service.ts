@@ -1,16 +1,21 @@
 import type { Consumer, Message, MessagesStream } from '@platformatic/kafka';
 import {
   isActorIdentity,
+  isUuid,
   SYSTEM_ACTOR,
   type Actor,
 } from '@toxictoast/shared-kernel';
-import type { ActorContext } from '@toxictoast/shared-system';
+import type {
+  ActorContext,
+  CorrelationContext,
+} from '@toxictoast/shared-system';
 import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type {
   ConsumedEvent,
   KafkaEventConsumerOptions,
 } from '../interfaces/index.js';
 import { eventKey } from '../functions/index.js';
+import { randomUUID } from 'node:crypto';
 
 type StringMessage = Message<string, string, string, string>;
 type StringStream = MessagesStream<string, string, string, string>;
@@ -23,6 +28,7 @@ export class KafkaEventConsumer {
   constructor(
     private readonly consumer: Consumer<string, string, string, string>,
     private readonly actors: ActorContext,
+    private readonly correlations: CorrelationContext,
     private readonly options: KafkaEventConsumerOptions,
   ) {}
 
@@ -76,14 +82,19 @@ export class KafkaEventConsumer {
     }
 
     const actor = this.actorOf(event);
+    const correlationId = this.correlationOf(event);
     let delay = this.options.retryDelayMs ?? 1000;
     const maxDelay = this.options.maxRetryDelayMs ?? 30000;
     while (!this.stopping) {
       try {
-        await this.actors.run(actor, () => handler(event));
+        await this.correlations.run(correlationId, () => {
+          return this.actors.run(actor, () => handler(event));
+        });
         return true;
       } catch (error) {
-        this.options.onError(error, event);
+        this.correlations.run(correlationId, () => {
+          this.options.onError(error, event);
+        });
         await this.wait(delay);
         delay = Math.min(delay * 2, maxDelay);
       }
@@ -97,6 +108,13 @@ export class KafkaEventConsumer {
     }
     const { type, id, ip } = event.actor;
     return { type, id, ip, permissions: [] };
+  }
+
+  private correlationOf(event: ConsumedEvent): string {
+    if (isUuid(event.correlation_id)) {
+      return event.correlation_id;
+    }
+    return randomUUID();
   }
 
   private parse(message: StringMessage): Optional<ConsumedEvent> {

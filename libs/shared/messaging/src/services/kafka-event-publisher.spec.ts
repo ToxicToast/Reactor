@@ -11,6 +11,7 @@ const EVENT: PublishedEvent = {
   aggregate_id: '0192f3a0-0000-7000-8000-0000000000aa',
   occurred_at: new Date('2026-10-20T12:00:00Z'),
   actor: { type: ActorType.USER, id: 'user-1', ip: '203.0.113.7' },
+  correlation_id: null,
   payload: { title: 'Warhammer' },
 };
 
@@ -64,5 +65,18 @@ describe('KafkaEventPublisher', () => {
     send.mockRejectedValue(new Error('broker down'));
 
     await expect(publisher.publish([EVENT])).rejects.toThrow('broker down');
+  });
+
+  it('adds the correlation id as header when present', async () => {
+    const correlationId = '01a16a00-3111-7049-8d8d-0db609f31f2a';
+
+    await publisher.publish([{ ...EVENT, correlation_id: correlationId }]);
+
+    expect(send.mock.calls[0][0].messages[0].headers).toEqual({
+      event_id: EVENT.event_id,
+      event_name: 'publish',
+      event_version: '1',
+      correlation_id: correlationId,
+    });
   });
 });

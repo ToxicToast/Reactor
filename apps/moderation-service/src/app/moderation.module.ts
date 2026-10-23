@@ -10,6 +10,7 @@ import {
 } from '@toxictoast/moderation-infrastructure';
 import { provideClass, TOKENS } from '@toxictoast/shared-nest';
 import { MODERATION_TOKENS } from './constants/index.js';
+import { CorrelationProvider } from '@toxictoast/shared-kernel';
 
 const { CONTENT_CLASSIFIER, DECISION_PUBLISHER } = MODERATION_TOKENS;
 const { MODERATION_THRESHOLDS, NIM_CONFIG } = MODERATION_TOKENS;
@@ -33,7 +34,7 @@ const { MODERATION_THRESHOLDS, NIM_CONFIG } = MODERATION_TOKENS;
     provideClass(NimContentClassifier, [NIM_CONFIG], CONTENT_CLASSIFIER),
     provideClass(
       KafkaDecisionPublisher,
-      [TOKENS.EVENT_PUBLISHER, TOKENS.DOMAIN_CONTEXT],
+      [TOKENS.EVENT_PUBLISHER, TOKENS.DOMAIN_CONTEXT, CorrelationProvider],
       DECISION_PUBLISHER,
     ),
 

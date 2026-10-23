@@ -71,6 +71,9 @@
     },
     {
       "path": "./apps/cronjob-service"
+    },
+    {
+      "path": "./apps/gateway"
     }
   ],
   "compilerOptions": {}
