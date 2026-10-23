@@ -66,6 +66,29 @@
         "options": {
           "passWithNoTests": true
         }
+      },
+      "docker-build": {
+        "dependsOn": [
+          "prune"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "VERSION": "local",
+          "REGISTRY": "ghcr.io/toxictoast",
+          "command": "docker build -f apps/cronjob-service/Dockerfile -t {args.REGISTRY}/cronjob-service:{args.VERSION} -t {args.REGISTRY}/cronjob-service:latest apps/cronjob-service/dist"
+        }
+      },
+      "docker-push": {
+        "executor": "nx:run-commands",
+        "options": {
+          "VERSION": "local",
+          "REGISTRY": "ghcr.io/toxictoast",
+          "parallel": false,
+          "commands": [
+            "docker push {args.REGISTRY}/cronjob-service:{args.VERSION}",
+            "docker push {args.REGISTRY}/cronjob-service:latest"
+          ]
+        }
       }
     },
     "tags": [
