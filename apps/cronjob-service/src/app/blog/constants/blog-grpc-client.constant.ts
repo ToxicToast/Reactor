@@ -1,1 +1,0 @@
-export const BLOG_GRPC_CLIENT = 'BLOG_GRPC_CLIENT';

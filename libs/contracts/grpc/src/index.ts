@@ -5,3 +5,4 @@ export * from './generated/blog/v1/post.js';
 export * from './generated/blog/v1/comment.js';
 
 export * from './permissions/index.js';
+export * from './clients/index.js';

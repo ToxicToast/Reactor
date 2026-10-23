@@ -2,6 +2,7 @@ import { Inject, Logger, type OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import {
+  BLOG_GRPC_CLIENT,
   BlogPermission,
   MEDIA_SERVICE_NAME,
   type MediaServiceClient,
@@ -12,7 +13,7 @@ import type { Nullable } from '@toxictoast/shared-types';
 import { UnrecoverableError, type Job } from 'bullmq';
 import { firstValueFrom } from 'rxjs';
 import { CRONJOB_TOKENS } from '../constants/index.js';
-import { BLOG_GRPC_CLIENT, BLOG_QUEUE, BlogJobs } from './constants/index.js';
+import { BLOG_QUEUE, BlogJobs } from './constants/index.js';
 
 @Processor(BLOG_QUEUE)
 export class BlogProcessor extends WorkerHost implements OnModuleInit {
