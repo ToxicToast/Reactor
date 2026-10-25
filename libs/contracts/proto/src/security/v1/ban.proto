@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package security.v1;
+
+service BanService {
+  rpc ListBans(ListBansRequest) returns (ListBansResponse);
+  rpc UnbanIp(UnbanIpRequest) returns (UnbanIpResponse);
+}
+
+message Ban {
+  string id = 1;
+  string ip = 2;
+  int32 level = 3;
+  int32 failed_attempts = 4;
+  string banned_until = 5;
+  optional string lifted_at = 6;
+  optional string lifted_by = 7;
+  string created_at = 8;
+  optional string updated_at = 9;
+}
+
+message ListBansRequest {
+  bool active_only = 1;
+  optional int32 limit = 2;
+  optional int32 offset = 3;
+}
+
+message ListBansResponse {
+  repeated Ban bans = 1;
+}
+
+message UnbanIpRequest {
+  string ip = 1;
+}
+
+message UnbanIpResponse {
+  Ban ban = 1;
+}

@@ -4,5 +4,7 @@ export * from './generated/blog/v1/media.js';
 export * from './generated/blog/v1/post.js';
 export * from './generated/blog/v1/comment.js';
 
+export * from './generated/security/v1/ban.js';
+
 export * from './permissions/index.js';
 export * from './clients/index.js';

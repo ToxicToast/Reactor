@@ -11,3 +11,9 @@ export const BLOG_PROTO_FILES = [
   'blog/v1/post.proto',
   'blog/v1/comment.proto',
 ].map((file) => join(PROTO_ROOT, file));
+
+export const SECURITY_PACKAGE = 'security.v1';
+
+export const SECURITY_PROTO_FILES = ['security/v1/ban.proto'].map((file) =>
+  join(PROTO_ROOT, file),
+);

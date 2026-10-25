@@ -4,3 +4,5 @@ export * from './number-env.function.js';
 export * from './describe-error.function.js';
 export * from './boolean-env.function.js';
 export * from './decimal-env.function.js';
+export * from './list-env.function.js';
+export * from './redis-connection-from-env.function.js';

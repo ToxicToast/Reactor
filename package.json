@@ -7,7 +7,8 @@
     "serve:gateway": "nx serve gateway",
     "serve:blog": "nx serve blog-service",
     "serve:moderation": "nx serve moderation-service",
-    "serve:cronjob": "nx serve cronjob-service"
+    "serve:cronjob": "nx serve cronjob-service",
+    "serve:security": "nx serve security-service"
   },
   "private": true,
   "devDependencies": {

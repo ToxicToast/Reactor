@@ -32,7 +32,7 @@ jobs:
         run: npx nx format:check
 
       - name: 🚀 Lint, Typecheck, Test and Build Apps
-        run: npx nx affected -t lint typecheck test build --passWithNoTests --parallel=${{ env.MAX_PARALLEL }}
+        run: npx nx affected -t lint typecheck test build --parallel=${{ env.MAX_PARALLEL }}
 
       - name: 🚀 e2e Apps
         run: npx nx affected -t e2e --parallel=${{ env.MAX_PARALLEL }}

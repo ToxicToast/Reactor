@@ -9,10 +9,8 @@ import {
 } from '@toxictoast/shared-nest';
 import { BlogJobsModule } from './blog/blog-jobs.module.js';
 import { CronjobConfigModule } from './cronjob-config.module.js';
-import {
-  defaultJobOptionsFromEnv,
-  redisConnectionFromEnv,
-} from './functions/index.js';
+import { defaultJobOptionsFromEnv } from './functions/index.js';
+import { redisConnectionFromEnv } from '@toxictoast/shared-system';
 
 @Module({
   imports: [

@@ -1,3 +1,4 @@
+import type { Nullable } from '@toxictoast/shared-types';
 import type { EventActorV1 } from './event-actor.interface.js';
 
 export interface EventEnvelope<
@@ -12,5 +13,6 @@ export interface EventEnvelope<
   readonly aggregate_id: string;
   readonly occurred_at: string;
   readonly actor: EventActorV1;
+  readonly correlation_id: Nullable<string>;
   readonly payload: TPayload;
 }

@@ -2,3 +2,6 @@ export * from './blog-topics.constant.js';
 export * from './blog-comment-moderation-events.constant.js';
 export * from './blog-moderation-decision.constant.js';
 export * from './event-actor-types.constant.js';
+export * from './security-topics.constant.js';
+export * from './security-access-events.constant.js';
+export * from './security-ip-events.constant.js';
