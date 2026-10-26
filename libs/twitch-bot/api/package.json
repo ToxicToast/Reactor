@@ -1,0 +1,37 @@
+{
+  "name": "@toxictoast/twitch-bot-api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "nx": {
+    "name": "twitch-bot-api",
+    "tags": [
+      "scope:twitch-bot",
+      "type:api"
+    ]
+  },
+  "dependencies": {
+    "@toxictoast/contracts-grpc": "*",
+    "@toxictoast/shared-grpc": "*",
+    "@toxictoast/shared-kernel": "*",
+    "@toxictoast/shared-types": "*",
+    "@toxictoast/twitch-bot-application": "*",
+    "@toxictoast/twitch-bot-domain": "*",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/microservices": "^11.2.7",
+    "@grpc/grpc-js": "^1.14.6"
+  },
+  "devDependencies": {
+    "@toxictoast/shared-application": "*"
+  }
+}
