@@ -238,4 +238,24 @@ describe('KafkaEventConsumer', () => {
 
     expect(seen).toBe(correlationId);
   });
+
+  it('reads from the beginning and never commits in replay mode', async () => {
+    const decided = message(JSON.stringify(event('decided')));
+    const { consumer, consume } = fakeConsumer([decided]);
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
+      handlers: {
+        'moderation.decided': jest.fn().mockResolvedValue(undefined),
+      },
+      onError: jest.fn(),
+      replay: true,
+    });
+
+    await subject.start();
+    await settle();
+
+    expect(consume).toHaveBeenCalledWith(
+      expect.objectContaining({ mode: 'earliest' }),
+    );
+    expect(decided.commit).not.toHaveBeenCalled();
+  });
 });

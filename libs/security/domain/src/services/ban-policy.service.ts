@@ -1,6 +1,6 @@
 import { BlockList, isIP } from 'node:net';
-import { normalizeIp } from '../functions/index.js';
 import type { BanDecision, BanPolicyConfig } from '../interfaces/index.js';
+import { normalizeIp } from '@toxictoast/shared-kernel';
 
 const MINUTE_MS = 60 * 1000;
 const DAY_MS = 24 * 60 * MINUTE_MS;

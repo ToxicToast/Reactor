@@ -4,11 +4,11 @@ import {
   ValidationError,
   type DomainContext,
   type Factory,
+  normalizeIp,
 } from '@toxictoast/shared-kernel';
 import type { IpBanAnemic } from '../anemics/index.js';
 import type { IpBanData } from '../data/index.js';
 import { IpBanDomain } from '../domains/index.js';
-import { normalizeIp } from '../functions/index.js';
 
 export class IpBanFactory implements Factory<
   IpBanAnemic,

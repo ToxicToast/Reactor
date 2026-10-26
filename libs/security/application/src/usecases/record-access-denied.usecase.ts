@@ -4,12 +4,16 @@ import type {
   UseCase,
 } from '@toxictoast/shared-application';
 import {
-  normalizeIp,
   type BanPolicy,
   type IpBanFactory,
   type IpBanRepository,
 } from '@toxictoast/security-domain';
-import { Result, ValidationError, type Clock } from '@toxictoast/shared-kernel';
+import {
+  Result,
+  ValidationError,
+  type Clock,
+  normalizeIp,
+} from '@toxictoast/shared-kernel';
 import type {
   RecordAccessDeniedInput,
   RecordAccessDeniedOutput,

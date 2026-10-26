@@ -43,7 +43,7 @@ export class KafkaEventConsumer {
     this.stopping = false;
     this.stream = await this.consumer.consume({
       topics: this.topics,
-      mode: 'committed',
+      mode: this.options.replay ? 'earliest' : 'committed',
       fallbackMode: 'earliest',
       autocommit: false,
     });
@@ -65,7 +65,9 @@ export class KafkaEventConsumer {
       if (!handled) {
         return;
       }
-      await message.commit();
+      if (!this.options.replay) {
+        await message.commit();
+      }
     }
   }
 

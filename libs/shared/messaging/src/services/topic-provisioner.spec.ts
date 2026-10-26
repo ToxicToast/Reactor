@@ -11,6 +11,7 @@ const fakeAdmin = (existing: Array<string>) => {
       return [];
     }),
     close: jest.fn(async () => undefined),
+    incrementalAlterConfigs: jest.fn().mockResolvedValue(undefined),
   };
   return admin;
 };
@@ -75,5 +76,27 @@ describe('TopicProvisioner', () => {
 
     await expect(provisioner.provision()).rejects.toThrow('not authorized');
     expect(admin.close).toHaveBeenCalled();
+  });
+
+  it('sets the retention of configured topics, also when they exist', async () => {
+    const admin = fakeAdmin([]);
+    const provisioner = new TopicProvisioner(admin as never, ['security.ip'], {
+      ...OPTIONS,
+      retentionMs: { 'security.ip': 2592000000, 'other.topic': 1000 },
+    });
+
+    await provisioner.provision();
+
+    expect(admin.incrementalAlterConfigs).toHaveBeenCalledWith({
+      resources: [
+        {
+          resourceType: 2,
+          resourceName: 'security.ip',
+          configs: [
+            { name: 'retention.ms', configOperation: 0, value: '2592000000' },
+          ],
+        },
+      ],
+    });
   });
 });

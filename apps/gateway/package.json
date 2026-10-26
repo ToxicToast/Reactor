@@ -93,7 +93,9 @@
     "nestjs-zod": "^5.5.0",
     "zod": "^4.6.7",
     "cookie": "^1.0.0",
-    "http-proxy-middleware": "^3.0.0"
+    "http-proxy-middleware": "^3.0.0",
+    "@toxictoast/contracts-events": "*",
+    "@toxictoast/shared-messaging": "*"
   },
   "devDependencies": {
     "@nestjs/testing": "^11.0.0"

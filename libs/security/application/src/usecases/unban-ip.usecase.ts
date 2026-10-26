@@ -3,12 +3,16 @@ import type {
   UseCase,
 } from '@toxictoast/shared-application';
 import {
-  normalizeIp,
   type IpBanAnemic,
   type IpBanFactory,
   type IpBanRepository,
 } from '@toxictoast/security-domain';
-import { NotFoundError, Result, type Clock } from '@toxictoast/shared-kernel';
+import {
+  NotFoundError,
+  Result,
+  type Clock,
+  normalizeIp,
+} from '@toxictoast/shared-kernel';
 import type { UnbanIpInput } from '../data/index.js';
 
 export class UnbanIpUseCase implements UseCase<UnbanIpInput, IpBanAnemic> {

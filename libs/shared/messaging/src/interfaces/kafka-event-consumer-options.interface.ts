@@ -7,4 +7,5 @@ export interface KafkaEventConsumerOptions {
   readonly onError: (error: unknown, event: Optional<ConsumedEvent>) => void;
   readonly retryDelayMs?: Optional<number>;
   readonly maxRetryDelayMs?: Optional<number>;
+  readonly replay?: Optional<boolean>;
 }

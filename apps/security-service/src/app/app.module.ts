@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common';
-import { SecurityTopics } from '@toxictoast/contracts-events';
+import {
+  SECURITY_TOPIC_RETENTION_MS,
+  SecurityTopics,
+} from '@toxictoast/contracts-events';
 import { AccessDeniedHandler } from '@toxictoast/security-api';
 import {
   securityMigrations,
@@ -33,6 +36,7 @@ import { SecurityModule } from './security.module.js';
         },
       },
       topics: [...Object.values(SecurityTopics)],
+      topicRetentionMs: SECURITY_TOPIC_RETENTION_MS,
     }),
     HealthModule.forRoot({ database: true }),
     MetricsModule.forRoot({ outbox: true }),
