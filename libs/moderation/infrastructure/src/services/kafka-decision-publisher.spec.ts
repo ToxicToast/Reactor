@@ -1,5 +1,5 @@
 import { ModerationDecision } from '@toxictoast/moderation-domain';
-import type { DomainContext } from '@toxictoast/shared-kernel';
+import { ActorType, DomainContext } from '@toxictoast/shared-kernel';
 import type {
   EventPublisher,
   PublishedEvent,
@@ -16,6 +16,12 @@ const ctx: DomainContext = {
 
 const CID = '01a16a00-3111-7049-8d8d-0db609f31f2a';
 
+const ACTOR = {
+  type: ActorType.AI,
+  id: '0192f3a0-0000-7000-8000-0000000000a1',
+  ip: null,
+} as const;
+
 class RecordingPublisher implements EventPublisher {
   readonly published: Array<PublishedEvent> = [];
 
@@ -30,7 +36,7 @@ describe('KafkaDecisionPublisher', () => {
     const correlations = new CorrelationContext();
 
     await correlations.run(CID, () =>
-      new KafkaDecisionPublisher(recording, ctx, correlations).publish({
+      new KafkaDecisionPublisher(recording, ctx, correlations, ACTOR).publish({
         content_id: 'comment-1',
         decision: ModerationDecision.PENDING,
         note: 'spam (0.62): Links',
@@ -48,7 +54,7 @@ describe('KafkaDecisionPublisher', () => {
         event_version: 1,
         aggregate_id: 'comment-1',
         occurred_at: NOW,
-        actor: { type: 'ai', id: 'moderation-service', ip: null },
+        actor: ACTOR,
         correlation_id: CID,
         payload: {
           comment_id: 'comment-1',

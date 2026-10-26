@@ -176,6 +176,49 @@
       "attributes": {
         "pkce.code.challenge.method": "S256"
       }
+    },
+    {
+      "clientId": "azkaban-agent-writer",
+      "name": "Agent: Writer",
+      "description": "AI agent that drafts blog posts and tags",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "fullScopeAllowed": true
+    },
+    {
+      "clientId": "azkaban-agent-moderation",
+      "name": "Agent: Moderation",
+      "description": "AI moderation of comments, acts only through Kafka",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "fullScopeAllowed": true
+    }
+  ],
+  "users": [
+    {
+      "username": "service-account-azkaban-agent-writer",
+      "enabled": true,
+      "serviceAccountClientId": "azkaban-agent-writer",
+      "clientRoles": {
+        "azkaban-api": ["blog.post.write", "blog.tag.write"]
+      }
+    },
+    {
+      "username": "service-account-azkaban-agent-moderation",
+      "enabled": true,
+      "serviceAccountClientId": "azkaban-agent-moderation"
     }
   ]
 }
