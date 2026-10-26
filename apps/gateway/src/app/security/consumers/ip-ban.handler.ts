@@ -8,7 +8,7 @@ export class IpBanHandler {
 
   constructor(private readonly bans: BanList) {}
 
-  banned(payload: unknown): void {
+  async banned(payload: unknown): Promise<void> {
     if (!isIpBanPayload(payload)) {
       this.logger.warn('Ignoring invalid security.ip.banned payload');
       return;
@@ -16,7 +16,7 @@ export class IpBanHandler {
     this.bans.ban(payload);
   }
 
-  unbanned(payload: unknown): void {
+  async unbanned(payload: unknown): Promise<void> {
     if (!isIpBanPayload(payload)) {
       this.logger.warn('Ignoring invalid security.ip.unbanned payload');
       return;
