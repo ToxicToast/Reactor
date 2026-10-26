@@ -11,4 +11,5 @@ export interface KafkaEventConsumerOptions {
   readonly restartDelayMs?: Optional<number>;
   readonly maxRestartDelayMs?: Optional<number>;
   readonly replay?: Optional<boolean>;
+  readonly topics?: Optional<ReadonlyArray<string>>;
 }

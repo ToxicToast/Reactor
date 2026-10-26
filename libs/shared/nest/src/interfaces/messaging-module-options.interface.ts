@@ -10,4 +10,5 @@ export interface MessagingModuleOptions {
   readonly topicRetentionMs?: Optional<Readonly<Record<string, number>>>;
   readonly outbox?: Optional<boolean>;
   readonly replay?: Optional<boolean>;
+  readonly consumeTopics?: Optional<ReadonlyArray<string>>;
 }

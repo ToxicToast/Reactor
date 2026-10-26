@@ -1,0 +1,24 @@
+{
+  "name": "@toxictoast/audit-application",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "nx": {
+    "name": "audit-application",
+    "tags": [
+      "scope:audit",
+      "type:application"
+    ]
+  },
+  "dependencies": {}
+}

@@ -10,7 +10,8 @@
     "serve:blog": "nx serve blog-service",
     "serve:moderation": "nx serve moderation-service",
     "serve:cronjob": "nx serve cronjob-service",
-    "serve:security": "nx serve security-service"
+    "serve:security": "nx serve security-service",
+    "serve:audit": "nx serve audit-service"
   },
   "private": true,
   "devDependencies": {

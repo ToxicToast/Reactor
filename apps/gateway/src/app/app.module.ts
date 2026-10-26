@@ -27,6 +27,7 @@ import { BanListModule } from './security/ban-list.module.js';
 import { IpBanHandler } from './security/consumers/index.js';
 import { BanMiddleware } from './security/middlewares/index.js';
 import { BanAdminModule } from './security/bans/ban-admin.module.js';
+import { AuditAdminModule } from './audit/audit-admin.module.js';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { BanAdminModule } from './security/bans/ban-admin.module.js';
     AdminModule,
     BlogModule,
     BanAdminModule,
+    AuditAdminModule,
   ],
   providers: [
     // ── Auth ────────────────────────────────────

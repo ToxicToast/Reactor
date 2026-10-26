@@ -1,0 +1,1 @@
+export const AUDIT_GRPC_CLIENT = 'AUDIT_GRPC_CLIENT';

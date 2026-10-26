@@ -116,6 +116,7 @@ export class MessagingModule {
               correlations,
               {
                 handlers: handlers.useFactory(...deps),
+                topics: options.consumeTopics,
                 replay: options.replay,
                 onError: (error, event) => {
                   const name = event

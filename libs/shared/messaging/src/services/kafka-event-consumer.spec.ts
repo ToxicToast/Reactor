@@ -392,4 +392,53 @@ describe('KafkaEventConsumer', () => {
     expect(consume).toHaveBeenCalledTimes(1);
     expect(subject.isRunning).toBe(false);
   });
+
+  it('also subscribes to explicitly listed topics', async () => {
+    const { consumer, consume } = fakeConsumer([]);
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
+      handlers: { '*': jest.fn() },
+      topics: ['blog.tag', 'security.ip'],
+      onError: jest.fn(),
+    });
+
+    await subject.start();
+
+    expect(consume).toHaveBeenCalledWith(
+      expect.objectContaining({ topics: ['blog.tag', 'security.ip'] }),
+    );
+  });
+
+  it('passes events without own handler to the fallback handler', async () => {
+    const decided = message(JSON.stringify(event('decided')));
+    const fallback = jest.fn().mockResolvedValue(undefined);
+    const { consumer } = fakeConsumer([decided]);
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
+      handlers: { '*': fallback },
+      topics: ['moderation'],
+      onError: jest.fn(),
+    });
+
+    await subject.start();
+    await settle();
+
+    expect(fallback).toHaveBeenCalledWith(event('decided'));
+    expect(decided.commit).toHaveBeenCalled();
+  });
+
+  it('prefers an own handler over the fallback', async () => {
+    const decided = message(JSON.stringify(event('decided')));
+    const own = jest.fn().mockResolvedValue(undefined);
+    const fallback = jest.fn().mockResolvedValue(undefined);
+    const { consumer } = fakeConsumer([decided]);
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
+      handlers: { 'moderation.decided': own, '*': fallback },
+      onError: jest.fn(),
+    });
+
+    await subject.start();
+    await settle();
+
+    expect(own).toHaveBeenCalled();
+    expect(fallback).not.toHaveBeenCalled();
+  });
 });
