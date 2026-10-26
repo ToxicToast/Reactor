@@ -1,0 +1,1 @@
+export const CHATTER_INSERT_CHUNK = 1000;
