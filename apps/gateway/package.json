@@ -66,6 +66,29 @@
         "options": {
           "passWithNoTests": true
         }
+      },
+      "docker-build": {
+        "dependsOn": [
+          "prune"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "VERSION": "local",
+          "REGISTRY": "ghcr.io/toxictoast",
+          "command": "docker build -f apps/gateway/Dockerfile -t {args.REGISTRY}/gateway:{args.VERSION} -t {args.REGISTRY}/gateway:latest apps/gateway/dist"
+        }
+      },
+      "docker-push": {
+        "executor": "nx:run-commands",
+        "options": {
+          "VERSION": "local",
+          "REGISTRY": "ghcr.io/toxictoast",
+          "parallel": false,
+          "commands": [
+            "docker push {args.REGISTRY}/gateway:{args.VERSION}",
+            "docker push {args.REGISTRY}/gateway:latest"
+          ]
+        }
       }
     },
     "tags": [
