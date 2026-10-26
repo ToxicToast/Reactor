@@ -12,3 +12,4 @@ export * from './unauthenticated.function.js';
 export * from './permission-denied.function.js';
 export * from './require-permission.function.js';
 export * from './has-permission.function.js';
+export * from './parse-optional-uuid.function.js';

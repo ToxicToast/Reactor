@@ -11,9 +11,13 @@ import {
   type ListEventsResponse,
   type PurgeExpiredEventsResponse,
 } from '@toxictoast/contracts-grpc';
-import { parseDate, requirePermission, unwrap } from '@toxictoast/shared-grpc';
+import {
+  parseDate,
+  parseOptionalUuid,
+  requirePermission,
+  unwrap,
+} from '@toxictoast/shared-grpc';
 import { ActorProvider } from '@toxictoast/shared-kernel';
-import { parseOptionalUuid } from '../functions/index.js';
 import { AuditEventGrpcMapper } from '../mappers/index.js';
 
 @Controller()
