@@ -66,7 +66,8 @@
             "azkaban-api": [
               "cronjob.queues.manage",
               "security.ban.manage",
-              "audit.read"
+              "audit.read",
+              "twitch-bot.channel.manage"
             ]
           }
         }
@@ -127,6 +128,14 @@
         {
           "name": "audit.purge",
           "description": "Remove audit entries past their retention"
+        },
+        {
+          "name": "twitch-bot.channel.manage",
+          "description": "Connect and disconnect Twitch channels for the bot"
+        },
+        {
+          "name": "twitch-bot.sync",
+          "description": "Synchronise chatters and clips from Twitch"
         }
       ]
     }

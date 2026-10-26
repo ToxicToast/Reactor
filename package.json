@@ -15,6 +15,7 @@
     "serve:cronjob": "nx serve cronjob-service",
     "serve:security": "nx serve security-service",
     "serve:audit": "nx serve audit-service",
+    "serve:twitchbot": "nx serve twitch-bot",
     "prepare": "husky",
     "lint:staged": "lint-staged"
   },

@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package twitch_bot.v1;
+
+service TwitchBotService {
+  rpc StartAuthorization(StartAuthorizationRequest) returns (StartAuthorizationResponse);
+  rpc CompleteAuthorization(CompleteAuthorizationRequest) returns (CompleteAuthorizationResponse);
+  rpc ListChannels(ListChannelsRequest) returns (ListChannelsResponse);
+  rpc DisconnectChannel(DisconnectChannelRequest) returns (DisconnectChannelResponse);
+  rpc SyncChatters(SyncChattersRequest) returns (SyncChattersResponse);
+  rpc SyncClips(SyncClipsRequest) returns (SyncClipsResponse);
+}
+
+message Channel {
+  string id = 1;
+  string twitch_id = 2;
+  string login = 3;
+  string display_name = 4;
+  repeated string scopes = 5;
+  bool connected = 6;
+  string created_at = 7;
+  optional string updated_at = 8;
+}
+
+message StartAuthorizationRequest {
+  string state = 1;
+  string redirect_uri = 2;
+}
+
+message StartAuthorizationResponse {
+  string url = 1;
+}
+
+message CompleteAuthorizationRequest {
+  string code = 1;
+  string redirect_uri = 2;
+}
+
+message CompleteAuthorizationResponse {
+  Channel channel = 1;
+}
+
+message ListChannelsRequest {}
+
+message ListChannelsResponse {
+  repeated Channel channels = 1;
+}
+
+message DisconnectChannelRequest {
+  string id = 1;
+}
+
+message DisconnectChannelResponse {
+  Channel channel = 1;
+}
+
+message SyncChattersRequest {}
+
+message SyncChattersResponse {
+  int32 joined = 1;
+  int32 left = 2;
+}
+
+message SyncClipsRequest {}
+
+message SyncClipsResponse {
+  int32 created = 1;
+}

@@ -29,3 +29,11 @@ export const AUDIT_PACKAGE = 'audit.v1';
 export const AUDIT_PROTO_FILES = ['audit/v1/audit.proto'].map((file) =>
   join(PROTO_ROOT, file),
 );
+
+/* --------------------- */
+
+export const TWITCH_BOT_PACKAGE = 'twitch_bot.v1';
+
+export const TWITCH_BOT_PROTO_FILES = ['twitch_bot/v1/twitch_bot.proto'].map(
+  (file) => join(PROTO_ROOT, file),
+);
