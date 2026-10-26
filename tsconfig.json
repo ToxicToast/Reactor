@@ -116,6 +116,9 @@
     },
     {
       "path": "./libs/twitch-bot/api"
+    },
+    {
+      "path": "./apps/twitch-bot"
     }
   ],
   "compilerOptions": {}
