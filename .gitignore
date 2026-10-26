@@ -55,5 +55,7 @@ vitest.config.*.timestamp*
 test-output
 
 apps/*/.env
+libs/*/infrastructure/.env
 
 nx-output.txt
+nx-integration.txt

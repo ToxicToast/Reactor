@@ -150,6 +150,15 @@ export default [
                 'scope:types',
               ],
             },
+            {
+              sourceTag: 'scope:twitch-bot',
+              onlyDependOnLibsWithTags: [
+                'scope:twitch-bot',
+                'scope:contracts',
+                'scope:shared',
+                'scope:types',
+              ],
+            },
           ],
         },
       ],
