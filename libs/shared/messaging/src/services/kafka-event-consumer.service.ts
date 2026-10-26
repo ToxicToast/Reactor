@@ -27,6 +27,10 @@ export class KafkaEventConsumer {
   private stopping = false;
   private caughtUp = true;
   private readonly pending = new Map<string, bigint>();
+  private running = false;
+  private restarts = 0;
+  private restartAttempt = 0;
+  private restartTimer: Nullable<ReturnType<typeof setTimeout>> = null;
 
   constructor(
     private readonly consumer: Consumer<string, string, string, string>,
@@ -46,27 +50,92 @@ export class KafkaEventConsumer {
     return this.caughtUp;
   }
 
+  get isRunning(): boolean {
+    return this.running;
+  }
+
+  get restartCount(): number {
+    return this.restarts;
+  }
+
   async start(): Promise<void> {
     this.stopping = false;
-    if (this.options.replay) {
-      await this.trackEndOffsets();
-    }
-    this.stream = await this.consumer.consume({
-      topics: this.topics,
-      mode: this.options.replay ? 'earliest' : 'committed',
-      fallbackMode: 'earliest',
-      autocommit: false,
-    });
-    this.processing = this.process(this.stream);
+    await this.open();
   }
 
   async stop(): Promise<void> {
     this.stopping = true;
+    if (this.restartTimer) {
+      clearTimeout(this.restartTimer);
+      this.restartTimer = null;
+    }
     if (this.stream) {
       await this.stream.close();
     }
     await this.processing;
     await this.consumer.close(true);
+  }
+
+  private async open(): Promise<void> {
+    if (this.options.replay) {
+      await this.trackEndOffsets();
+    }
+    const stream = await this.consumer.consume({
+      topics: this.topics,
+      mode: this.options.replay ? 'earliest' : 'committed',
+      fallbackMode: 'earliest',
+      autocommit: false,
+    });
+
+    this.stream = stream;
+    this.running = true;
+    this.processing = this.process(stream).then(
+      () => this.onStreamEnded(null),
+      (error: unknown) => this.onStreamEnded(error),
+    );
+  }
+
+  private onStreamEnded(error: unknown): void {
+    this.running = false;
+    this.stream = null;
+    if (this.stopping) {
+      return;
+    }
+
+    this.options.onError(
+      error ?? new Error('Event stream ended unexpectedly'),
+      undefined,
+    );
+    this.scheduleRestart();
+  }
+
+  private scheduleRestart(): void {
+    const base = this.options.restartDelayMs ?? 1000;
+    const max = this.options.maxRestartDelayMs ?? 30000;
+    const delay = Math.min(base * 2 ** this.restartAttempt, max);
+    this.restartAttempt++;
+
+    this.restartTimer = setTimeout(() => {
+      this.restartTimer = null;
+      void this.restart();
+    }, delay);
+  }
+
+  private async restart(): Promise<void> {
+    if (this.stopping) {
+      return;
+    }
+    try {
+      await this.open();
+    } catch (error) {
+      this.options.onError(error, undefined);
+      this.scheduleRestart();
+      return;
+    }
+
+    this.restarts++;
+    this.restartAttempt = 0;
+    this.options.onRestart?.(this.restarts);
   }
 
   private async process(stream: StringStream): Promise<void> {

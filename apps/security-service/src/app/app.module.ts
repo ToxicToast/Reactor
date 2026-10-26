@@ -39,7 +39,7 @@ import { SecurityModule } from './security.module.js';
       topicRetentionMs: SECURITY_TOPIC_RETENTION_MS,
     }),
     HealthModule.forRoot({ database: true }),
-    MetricsModule.forRoot({ outbox: true }),
+    MetricsModule.forRoot({ outbox: true, consumer: true }),
     SecurityModule,
   ],
 })

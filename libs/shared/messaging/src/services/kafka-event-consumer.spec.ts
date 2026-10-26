@@ -42,16 +42,27 @@ const message = (value: string, offset = 0n): FakeMessage => {
   };
 };
 
+const fakeStream = (messages: Array<FakeMessage>) => {
+  let release: () => void = () => undefined;
+  const closed = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  return {
+    async *[Symbol.asyncIterator]() {
+      yield* messages;
+      await closed;
+    },
+    close: jest.fn(async () => {
+      release();
+    }),
+  };
+};
+
 const fakeConsumer = (
   messages: Array<FakeMessage>,
   offsets: { earliest: bigint; latest: bigint } = { earliest: 0n, latest: 0n },
 ) => {
-  const stream = {
-    async *[Symbol.asyncIterator]() {
-      yield* messages;
-    },
-    close: jest.fn().mockResolvedValue(undefined),
-  };
+  const stream = fakeStream(messages);
   const consumer = {
     consume: jest.fn().mockResolvedValue(stream),
     close: jest.fn().mockResolvedValue(undefined),
@@ -324,5 +335,61 @@ describe('KafkaEventConsumer', () => {
     await subject.start();
 
     expect(subject.isCaughtUp).toBe(true);
+  });
+
+  it('restarts itself when the stream dies', async () => {
+    const decided = message(JSON.stringify(event('decided')));
+    const broken = {
+      async *[Symbol.asyncIterator]() {
+        yield* [];
+        throw new Error('connection lost');
+      },
+      close: jest.fn().mockResolvedValue(undefined),
+    };
+    const healthy = fakeStream([decided]);
+    const consumer = {
+      consume: jest
+        .fn()
+        .mockResolvedValueOnce(broken)
+        .mockResolvedValue(healthy),
+      close: jest.fn().mockResolvedValue(undefined),
+    } as unknown as Consumer<string, string, string, string>;
+    const handler = jest.fn().mockResolvedValue(undefined);
+    const onError = jest.fn();
+    const onRestart = jest.fn();
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
+      handlers: { 'moderation.decided': handler },
+      onError,
+      onRestart,
+      restartDelayMs: 1,
+    });
+
+    await subject.start();
+    await settle();
+
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'connection lost' }),
+      undefined,
+    );
+    expect(onRestart).toHaveBeenCalledWith(1);
+    expect(handler).toHaveBeenCalledWith(event('decided'));
+    expect(subject.isRunning).toBe(true);
+    expect(subject.restartCount).toBe(1);
+  });
+
+  it('does not restart after stop', async () => {
+    const { consumer, consume } = fakeConsumer([]);
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
+      handlers: { 'moderation.decided': jest.fn() },
+      onError: jest.fn(),
+      restartDelayMs: 1,
+    });
+
+    await subject.start();
+    await subject.stop();
+    await settle();
+
+    expect(consume).toHaveBeenCalledTimes(1);
+    expect(subject.isRunning).toBe(false);
   });
 });

@@ -33,7 +33,7 @@ import { ModerationModule } from './moderation.module.js';
       },
     }),
     HealthModule.forRoot({ database: false }),
-    MetricsModule.forRoot({ outbox: false }),
+    MetricsModule.forRoot({ outbox: false, consumer: true }),
     ModerationModule,
   ],
 })
