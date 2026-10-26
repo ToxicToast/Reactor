@@ -35,7 +35,7 @@ import { BlogModule } from './blog.module.js';
       topics: [...Object.values(BlogTopics)],
     }),
     HealthModule.forRoot({ database: true }),
-    MetricsModule.forRoot({ outbox: true }),
+    MetricsModule.forRoot({ outbox: true, consumer: true }),
     BlogModule,
   ],
 })

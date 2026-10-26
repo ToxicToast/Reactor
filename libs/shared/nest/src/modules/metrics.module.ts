@@ -3,7 +3,7 @@ import { collectDefaultMetrics, Registry } from 'prom-client';
 import { TOKENS } from '../constants/index.js';
 import { MetricsController } from '../controllers/index.js';
 import type { MetricsModuleOptions } from '../interfaces/index.js';
-import { OutboxMetrics } from '../metrics/index.js';
+import { ConsumerMetrics, OutboxMetrics } from '../metrics/index.js';
 
 @Module({})
 export class MetricsModule {
@@ -20,6 +20,9 @@ export class MetricsModule {
     ];
     if (options.outbox) {
       providers.push(OutboxMetrics);
+    }
+    if (options.consumer) {
+      providers.push(ConsumerMetrics);
     }
 
     return {

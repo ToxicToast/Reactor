@@ -49,6 +49,12 @@
       "description": "graphql 14 requires Nest 12",
       "matchPackageNames": ["@nestjs/graphql"],
       "allowedVersions": "<14"
+    },
+    {
+      "description": "Nx 24 breaks the repo (e.g. removed @nx/jest:jest executor); stay on 23 and update with nx migrate",
+      "matchPackageNames": ["nx", "@nx/**"],
+      "allowedVersions": "<24",
+      "groupName": "nx"
     }
   ],
   "separateMinorPatch": true,

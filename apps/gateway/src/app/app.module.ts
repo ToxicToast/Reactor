@@ -32,7 +32,7 @@ import { BanAdminModule } from './security/bans/ban-admin.module.js';
   imports: [
     SystemModule,
     HealthModule.forRoot({ database: false, replay: true }),
-    MetricsModule.forRoot({ outbox: false }),
+    MetricsModule.forRoot({ outbox: false, consumer: true }),
     MessagingModule.forRoot({
       groupId: `gateway-${randomUUID()}`,
       outbox: false,

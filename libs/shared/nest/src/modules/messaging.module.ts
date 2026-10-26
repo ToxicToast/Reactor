@@ -119,9 +119,14 @@ export class MessagingModule {
                 replay: options.replay,
                 onError: (error, event) => {
                   const name = event
-                    ? `${event.event_namespace}.${event.event_name}`
-                    : 'unknown event';
-                  logger.error(`Handling ${name} failed`, describeError(error));
+                    ? `Handling ${event.event_namespace}.${event.event_name} failed`
+                    : 'Event consumer failed';
+                  logger.error(name, describeError(error));
+                },
+                onRestart: (restarts) => {
+                  logger.warn(
+                    `Event consumer restarted (${restarts} restarts so far)`,
+                  );
                 },
               },
             );
