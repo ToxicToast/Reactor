@@ -30,7 +30,7 @@ import { BanMiddleware } from './security/middlewares/index.js';
 @Module({
   imports: [
     SystemModule,
-    HealthModule.forRoot({ database: false }),
+    HealthModule.forRoot({ database: false, replay: true }),
     MetricsModule.forRoot({ outbox: false }),
     MessagingModule.forRoot({
       groupId: `gateway-${randomUUID()}`,

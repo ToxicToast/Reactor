@@ -153,7 +153,7 @@ export class MessagingModule {
         },
         MessagingLifecycle,
       ],
-      exports: [TOKENS.EVENT_PUBLISHER],
+      exports: [TOKENS.EVENT_PUBLISHER, TOKENS.EVENT_CONSUMER],
     };
   }
 }
