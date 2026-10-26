@@ -74,6 +74,21 @@
     },
     {
       "path": "./apps/gateway"
+    },
+    {
+      "path": "./libs/security/domain"
+    },
+    {
+      "path": "./libs/security/application"
+    },
+    {
+      "path": "./libs/security/infrastructure"
+    },
+    {
+      "path": "./libs/security/api"
+    },
+    {
+      "path": "./apps/security-service"
     }
   ],
   "compilerOptions": {}

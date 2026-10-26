@@ -4,6 +4,7 @@ import { CorrelationContext } from '@toxictoast/shared-system';
 import { ZodValidationException } from 'nestjs-zod';
 import { z } from 'zod';
 import { GrpcExceptionFilter } from './grpc-exception.filter.js';
+import type { AccessDeniedReporter } from '../../security/services/index.js';
 
 const CID = '01a16a00-3111-7049-8d8d-0db609f31f2a';
 
@@ -14,15 +15,24 @@ const grpcError = (code: status, details: string): Error => {
 describe('GrpcExceptionFilter', () => {
   let json: jest.Mock;
   let statusOf: jest.Mock;
+  let report: jest.Mock;
   let host: ArgumentsHost;
+  let filter: GrpcExceptionFilter;
   const correlations = new CorrelationContext();
-  const filter = new GrpcExceptionFilter(correlations);
+  const request = { ip: '203.0.113.7' };
 
   beforeEach(() => {
     json = jest.fn();
     statusOf = jest.fn().mockReturnValue({ json });
+    report = jest.fn();
+    filter = new GrpcExceptionFilter(correlations, {
+      report,
+    } as unknown as AccessDeniedReporter);
     host = {
-      switchToHttp: () => ({ getResponse: () => ({ status: statusOf }) }),
+      switchToHttp: () => ({
+        getRequest: () => request,
+        getResponse: () => ({ status: statusOf }),
+      }),
     } as unknown as ArgumentsHost;
   });
 
@@ -90,5 +100,14 @@ describe('GrpcExceptionFilter', () => {
       message: 'nope',
       correlation_id: CID,
     });
+  });
+
+  it('hands every error to the access reporter', () => {
+    filter.catch(
+      grpcError(status.UNAUTHENTICATED, 'a signed-in actor is required'),
+      host,
+    );
+
+    expect(report).toHaveBeenCalledWith(request, 401);
   });
 });

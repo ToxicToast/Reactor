@@ -1,17 +1,7 @@
 import { cronjobActorIdFromEnv } from './cronjob-actor-id-from-env.function.js';
 import { defaultJobOptionsFromEnv } from './default-job-options-from-env.function.js';
-import { redisConnectionFromEnv } from './redis-connection-from-env.function.js';
 
 describe('cronjob config', () => {
-  it('connects to a local redis by default', () => {
-    expect(redisConnectionFromEnv({})).toEqual({
-      host: 'localhost',
-      port: 6379,
-      password: undefined,
-      db: 0,
-    });
-  });
-
   it('retries three times with exponential backoff by default', () => {
     expect(defaultJobOptionsFromEnv({})).toMatchObject({
       attempts: 4,

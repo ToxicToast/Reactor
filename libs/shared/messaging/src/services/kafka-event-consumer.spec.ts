@@ -26,14 +26,26 @@ const event = (name: string, actor: unknown = AI): ConsumedEvent => {
 
 interface FakeMessage {
   value: string;
+  topic: string;
+  partition: number;
+  offset: bigint;
   commit: jest.Mock;
 }
 
-const message = (value: string): FakeMessage => {
-  return { value, commit: jest.fn().mockResolvedValue(undefined) };
+const message = (value: string, offset = 0n): FakeMessage => {
+  return {
+    value,
+    topic: 'moderation',
+    partition: 0,
+    offset,
+    commit: jest.fn().mockResolvedValue(undefined),
+  };
 };
 
-const fakeConsumer = (messages: Array<FakeMessage>) => {
+const fakeConsumer = (
+  messages: Array<FakeMessage>,
+  offsets: { earliest: bigint; latest: bigint } = { earliest: 0n, latest: 0n },
+) => {
   const stream = {
     async *[Symbol.asyncIterator]() {
       yield* messages;
@@ -43,6 +55,10 @@ const fakeConsumer = (messages: Array<FakeMessage>) => {
   const consumer = {
     consume: jest.fn().mockResolvedValue(stream),
     close: jest.fn().mockResolvedValue(undefined),
+    listOffsets: jest.fn(async ({ timestamp }: { timestamp: bigint }) => {
+      const offset = timestamp === -2n ? offsets.earliest : offsets.latest;
+      return new Map([['moderation', [offset]]]);
+    }),
   };
   return {
     consumer: consumer as unknown as Consumer<string, string, string, string>,
@@ -237,5 +253,76 @@ describe('KafkaEventConsumer', () => {
     await settle();
 
     expect(seen).toBe(correlationId);
+  });
+
+  it('reads from the beginning and never commits in replay mode', async () => {
+    const decided = message(JSON.stringify(event('decided')));
+    const { consumer, consume } = fakeConsumer([decided]);
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
+      handlers: {
+        'moderation.decided': jest.fn().mockResolvedValue(undefined),
+      },
+      onError: jest.fn(),
+      replay: true,
+    });
+
+    await subject.start();
+    await settle();
+
+    expect(consume).toHaveBeenCalledWith(
+      expect.objectContaining({ mode: 'earliest' }),
+    );
+    expect(decided.commit).not.toHaveBeenCalled();
+  });
+
+  it('is caught up once the replay reaches the end of every partition', async () => {
+    const first = message(JSON.stringify(event('decided')), 0n);
+    const second = message(JSON.stringify(event('decided')), 1n);
+    const { consumer } = fakeConsumer([first, second], {
+      earliest: 0n,
+      latest: 2n,
+    });
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
+      handlers: {
+        'moderation.decided': jest.fn().mockResolvedValue(undefined),
+      },
+      onError: jest.fn(),
+      replay: true,
+    });
+
+    await subject.start();
+    await settle();
+
+    expect(subject.isCaughtUp).toBe(true);
+  });
+
+  it('is not caught up while messages are still missing', async () => {
+    const first = message(JSON.stringify(event('decided')), 0n);
+    const { consumer } = fakeConsumer([first], { earliest: 0n, latest: 2n });
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
+      handlers: {
+        'moderation.decided': jest.fn().mockResolvedValue(undefined),
+      },
+      onError: jest.fn(),
+      replay: true,
+    });
+
+    await subject.start();
+    await settle();
+
+    expect(subject.isCaughtUp).toBe(false);
+  });
+
+  it('does not wait for partitions whose messages all expired', async () => {
+    const { consumer } = fakeConsumer([], { earliest: 5n, latest: 5n });
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
+      handlers: { 'moderation.decided': jest.fn() },
+      onError: jest.fn(),
+      replay: true,
+    });
+
+    await subject.start();
+
+    expect(subject.isCaughtUp).toBe(true);
   });
 });

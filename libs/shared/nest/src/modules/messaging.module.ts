@@ -116,6 +116,7 @@ export class MessagingModule {
               correlations,
               {
                 handlers: handlers.useFactory(...deps),
+                replay: options.replay,
                 onError: (error, event) => {
                   const name = event
                     ? `${event.event_namespace}.${event.event_name}`
@@ -145,13 +146,14 @@ export class MessagingModule {
               {
                 partitions: numberEnv('KAFKA_TOPIC_PARTITIONS', 3),
                 replicas: numberEnv('KAFKA_TOPIC_REPLICAS', 1),
+                retentionMs: options.topicRetentionMs,
               },
             );
           },
         },
         MessagingLifecycle,
       ],
-      exports: [TOKENS.EVENT_PUBLISHER],
+      exports: [TOKENS.EVENT_PUBLISHER, TOKENS.EVENT_CONSUMER],
     };
   }
 }

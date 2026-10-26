@@ -63,7 +63,7 @@
         "composite": true,
         "composites": {
           "client": {
-            "azkaban-api": ["cronjob.queues.manage"]
+            "azkaban-api": ["cronjob.queues.manage", "security.ban.manage"]
           }
         }
       }
@@ -111,6 +111,10 @@
         {
           "name": "cronjob.queues.manage",
           "description": "View, retry and remove jobs in the job queues"
+        },
+        {
+          "name": "security.ban.manage",
+          "description": "Lift bans and view the ban list"
         }
       ]
     }

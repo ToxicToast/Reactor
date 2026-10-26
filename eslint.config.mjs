@@ -132,6 +132,15 @@ export default [
                 'scope:types',
               ],
             },
+            {
+              sourceTag: 'scope:security',
+              onlyDependOnLibsWithTags: [
+                'scope:security',
+                'scope:contracts',
+                'scope:shared',
+                'scope:types',
+              ],
+            },
           ],
         },
       ],

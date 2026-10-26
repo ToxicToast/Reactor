@@ -1,9 +1,10 @@
-import { numberEnv, optionalEnv } from '@toxictoast/shared-system';
-import type { ConnectionOptions } from 'bullmq';
+import type { RedisConnection } from '../interfaces/index.js';
+import { numberEnv } from './number-env.function.js';
+import { optionalEnv } from './optional-env.function.js';
 
 export const redisConnectionFromEnv = (
   source: NodeJS.ProcessEnv = process.env,
-): ConnectionOptions => {
+): RedisConnection => {
   return {
     host: optionalEnv('REDIS_HOST', undefined, source) ?? 'localhost',
     port: numberEnv('REDIS_PORT', 6379, source),

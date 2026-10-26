@@ -23,6 +23,12 @@
   ],
   "references": [
     {
+      "path": "../../libs/shared/messaging/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/contracts/events/tsconfig.lib.json"
+    },
+    {
       "path": "../../libs/shared/types/tsconfig.lib.json"
     },
     {

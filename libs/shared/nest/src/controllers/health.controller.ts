@@ -5,13 +5,17 @@ import {
   type HealthCheckResult,
   type HealthIndicatorFunction,
 } from '@nestjs/terminus';
-import { DatabaseHealthIndicator } from '../indicators/index.js';
+import {
+  ConsumerHealthIndicator,
+  DatabaseHealthIndicator,
+} from '../indicators/index.js';
 
 @Controller('health')
 export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
     @Optional() private readonly database?: DatabaseHealthIndicator,
+    @Optional() private readonly consumer?: ConsumerHealthIndicator,
   ) {}
 
   @Get('live')
@@ -27,6 +31,10 @@ export class HealthController {
     if (this.database) {
       const database = this.database;
       checks.push(() => database.isHealthy());
+    }
+    if (this.consumer) {
+      const consumer = this.consumer;
+      checks.push(() => consumer.isHealthy());
     }
     return this.health.check(checks);
   }
