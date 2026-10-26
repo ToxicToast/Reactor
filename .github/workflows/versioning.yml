@@ -10,7 +10,7 @@ env:
 
 jobs:
   prepare:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     name: 'Prepare Version'
@@ -19,13 +19,13 @@ jobs:
       node_version: ${{ env.NODE_VERSION }}
       max_parallel: ${{ env.MAX_PARALLEL }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: 🪐 Minor version for each merge (Dry Run)
         id: taggerDryRun
-        uses: anothrNick/github-tag-action@1.71.0
+        uses: anothrNick/github-tag-action@1.75.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
@@ -74,18 +74,18 @@ jobs:
 
   notify:
     needs: [docker]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     name: 'Notify'
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: 🪐 Minor version for each merge
         id: tagger
-        uses: anothrNick/github-tag-action@1.71.0
+        uses: anothrNick/github-tag-action@1.75.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
@@ -101,7 +101,7 @@ jobs:
           OUTPUT: RELEASE_NOTES.md
 
       - name: 🚀 Create GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.tagger.outputs.new_tag }}
           name: ${{ steps.tagger.outputs.new_tag }}
