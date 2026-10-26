@@ -2,6 +2,9 @@
   "name": "@toxictoast/source",
   "version": "0.0.0",
   "license": "MIT",
+  "lint-staged": {
+    "*.{ts,js,tsx,jsx,mjs,cts,json,yml,yaml,md,html,css}": "prettier --write"
+  },
   "scripts": {
     "nx": "nx",
     "nx:migrate": "nx migrate latest --interactive",
@@ -11,7 +14,9 @@
     "serve:moderation": "nx serve moderation-service",
     "serve:cronjob": "nx serve cronjob-service",
     "serve:security": "nx serve security-service",
-    "serve:audit": "nx serve audit-service"
+    "serve:audit": "nx serve audit-service",
+    "prepare": "husky",
+    "lint:staged": "lint-staged"
   },
   "private": true,
   "devDependencies": {
@@ -55,11 +60,13 @@
     "eslint-plugin-playwright": "^1.6.2",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "5.0.0",
+    "husky": "^9.1.7",
     "jest": "~30.3.0",
     "jest-environment-node": "~30.3.0",
     "jest-util": "~30.3.0",
     "jiti": "2.4.2",
     "jsdom": "^27.1.0",
+    "lint-staged": "^17.6.0",
     "nx": "23.3.1",
     "prettier": "^3.8.1",
     "testcontainers": "^12.2.1",
