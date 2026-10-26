@@ -1,0 +1,1 @@
+export const TWITCH_STATE_TTL_SECONDS = 600;

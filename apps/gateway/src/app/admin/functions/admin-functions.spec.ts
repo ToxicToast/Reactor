@@ -1,3 +1,5 @@
+import { ActorType } from '@toxictoast/shared-kernel';
+import { adminActor } from './admin-actor.function.js';
 import { pkceChallenge } from './pkce-challenge.function.js';
 import { safeReturnTo } from './safe-return-to.function.js';
 
@@ -16,6 +18,10 @@ describe('safeReturnTo', () => {
     );
   });
 
+  it('keeps paths inside the twitch admin', () => {
+    expect(safeReturnTo('/admin/twitch/connect')).toBe('/admin/twitch/connect');
+  });
+
   it.each([
     ['https://evil.example'],
     ['//evil.example'],
@@ -23,5 +29,21 @@ describe('safeReturnTo', () => {
     [undefined],
   ])('falls back for %p', (value) => {
     expect(safeReturnTo(value)).toBe('/admin/queues');
+  });
+});
+
+describe('adminActor', () => {
+  it('turns the session into a user actor', () => {
+    expect(
+      adminActor(
+        { sub: 'admin-1', permissions: ['twitch-bot.channel.manage'] },
+        '127.0.0.1',
+      ),
+    ).toEqual({
+      type: ActorType.USER,
+      id: 'admin-1',
+      ip: '127.0.0.1',
+      permissions: ['twitch-bot.channel.manage'],
+    });
   });
 });
