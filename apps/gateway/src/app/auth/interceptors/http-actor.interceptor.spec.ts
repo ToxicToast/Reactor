@@ -34,6 +34,11 @@ describe('HttpActorInterceptor', () => {
     const verifier = {
       verify,
       audience: 'azkaban-api',
+      config: {
+        issuer: 'http://localhost:8180/realms/azkaban',
+        audience: 'azkaban-api',
+        agentClientPrefix: 'azkaban-agent-',
+      },
     } as unknown as KeycloakTokenVerifier;
     interceptor = new HttpActorInterceptor(actors, verifier);
     next = {

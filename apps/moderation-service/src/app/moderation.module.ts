@@ -4,6 +4,7 @@ import { ModerateContentUseCase } from '@toxictoast/moderation-application';
 import { ModerationPolicy } from '@toxictoast/moderation-domain';
 import {
   KafkaDecisionPublisher,
+  moderationActorFromEnv,
   moderationThresholdsFromEnv,
   NimContentClassifier,
   nimConfigFromEnv,
@@ -13,7 +14,8 @@ import { MODERATION_TOKENS } from './constants/index.js';
 import { CorrelationProvider } from '@toxictoast/shared-kernel';
 
 const { CONTENT_CLASSIFIER, DECISION_PUBLISHER } = MODERATION_TOKENS;
-const { MODERATION_THRESHOLDS, NIM_CONFIG } = MODERATION_TOKENS;
+const { MODERATION_ACTOR, MODERATION_THRESHOLDS, NIM_CONFIG } =
+  MODERATION_TOKENS;
 
 @Module({
   providers: [
@@ -26,6 +28,10 @@ const { MODERATION_THRESHOLDS, NIM_CONFIG } = MODERATION_TOKENS;
       provide: NIM_CONFIG,
       useFactory: () => nimConfigFromEnv(),
     },
+    {
+      provide: MODERATION_ACTOR,
+      useFactory: () => moderationActorFromEnv(),
+    },
 
     // ── Domain ──────────────────────────────────
     provideClass(ModerationPolicy, [MODERATION_THRESHOLDS]),
@@ -34,7 +40,12 @@ const { MODERATION_THRESHOLDS, NIM_CONFIG } = MODERATION_TOKENS;
     provideClass(NimContentClassifier, [NIM_CONFIG], CONTENT_CLASSIFIER),
     provideClass(
       KafkaDecisionPublisher,
-      [TOKENS.EVENT_PUBLISHER, TOKENS.DOMAIN_CONTEXT, CorrelationProvider],
+      [
+        TOKENS.EVENT_PUBLISHER,
+        TOKENS.DOMAIN_CONTEXT,
+        CorrelationProvider,
+        MODERATION_ACTOR,
+      ],
       DECISION_PUBLISHER,
     ),
 

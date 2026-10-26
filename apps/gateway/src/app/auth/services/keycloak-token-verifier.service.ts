@@ -5,7 +5,7 @@ import type { KeycloakConfig } from '../interfaces/index.js';
 export class KeycloakTokenVerifier {
   private readonly jwks: ReturnType<typeof createRemoteJWKSet>;
 
-  constructor(private readonly config: KeycloakConfig) {
+  constructor(readonly config: KeycloakConfig) {
     this.jwks = createRemoteJWKSet(
       new URL(`${config.issuer}/protocol/openid-connect/certs`),
     );

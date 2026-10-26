@@ -1,3 +1,4 @@
+import { moderationActorFromEnv } from './moderation-actor-from-env.function.js';
 import { moderationThresholdsFromEnv } from './moderation-thresholds-from-env.function.js';
 import { nimConfigFromEnv } from './nim-config-from-env.function.js';
 
@@ -42,5 +43,19 @@ describe('moderationThresholdsFromEnv', () => {
     expect(() =>
       moderationThresholdsFromEnv({ MODERATION_SPAM_THRESHOLD: value }),
     ).toThrow('MODERATION_SPAM_THRESHOLD');
+  });
+});
+
+describe('moderationActorFromEnv', () => {
+  it('acts as ai with the uuid of its service account', () => {
+    expect(
+      moderationActorFromEnv({
+        MODERATION_ACTOR_ID: '0192f3a0-0000-7000-8000-0000000000a1',
+      }),
+    ).toEqual({
+      type: 'ai',
+      id: '0192f3a0-0000-7000-8000-0000000000a1',
+      ip: null,
+    });
   });
 });

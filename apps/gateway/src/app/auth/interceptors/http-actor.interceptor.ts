@@ -47,7 +47,7 @@ export class HttpActorInterceptor implements NestInterceptor {
     }
 
     const payload = await this.verifier.verify(token);
-    return actorFromToken(payload, this.verifier.audience, ip);
+    return actorFromToken(payload, this.verifier.config, ip);
   }
 
   private tokenOf(header: string | undefined): Nullable<string> {

@@ -82,7 +82,7 @@ export class AdminAuthController {
     const token = await this.oidc.exchangeCode(code, login.verifier);
     const actor = actorFromToken(
       await this.verifier.verify(token),
-      this.verifier.audience,
+      this.verifier.config,
       request.ip ?? null,
     );
     if (!actor.id) {
