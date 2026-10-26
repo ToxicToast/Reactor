@@ -89,6 +89,21 @@
     },
     {
       "path": "./apps/security-service"
+    },
+    {
+      "path": "./libs/audit/domain"
+    },
+    {
+      "path": "./libs/audit/application"
+    },
+    {
+      "path": "./libs/audit/infrastructure"
+    },
+    {
+      "path": "./libs/audit/api"
+    },
+    {
+      "path": "./apps/audit-service"
     }
   ],
   "compilerOptions": {}

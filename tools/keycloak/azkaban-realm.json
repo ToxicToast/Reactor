@@ -63,7 +63,11 @@
         "composite": true,
         "composites": {
           "client": {
-            "azkaban-api": ["cronjob.queues.manage", "security.ban.manage"]
+            "azkaban-api": [
+              "cronjob.queues.manage",
+              "security.ban.manage",
+              "audit.read"
+            ]
           }
         }
       }
@@ -115,6 +119,14 @@
         {
           "name": "security.ban.manage",
           "description": "Lift bans and view the ban list"
+        },
+        {
+          "name": "audit.read",
+          "description": "Search the audit log"
+        },
+        {
+          "name": "audit.purge",
+          "description": "Remove audit entries past their retention"
         }
       ]
     }

@@ -14,6 +14,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { ADMIN_PATHS } from './app/admin/constants/index.js';
 import { AdminSessionMiddleware } from './app/admin/middlewares/index.js';
+import { proxyErrorHandler } from './app/admin/functions/index.js';
 
 const bootstrap = async (): Promise<void> => {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -34,6 +35,9 @@ const bootstrap = async (): Promise<void> => {
       target: requiredEnv('CRONJOB_URL'),
       changeOrigin: true,
       pathFilter: ADMIN_PATHS.QUEUES,
+      on: {
+        error: proxyErrorHandler,
+      },
     }),
   );
 

@@ -7,3 +7,4 @@ export * from './outbox-stats.interface.js';
 export * from './grpc-metadata.interface.js';
 export * from './grpc-client-config.interface.js';
 export * from './grpc-client-module-options.interface.js';
+export * from './persistence-module-options.interface.js';

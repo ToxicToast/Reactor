@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package audit.v1;
+
+service AuditService {
+  rpc ListEvents(ListEventsRequest) returns (ListEventsResponse);
+  rpc PurgeExpiredEvents(PurgeExpiredEventsRequest) returns (PurgeExpiredEventsResponse);
+}
+
+message AuditActor {
+  string type = 1;
+  optional string id = 2;
+  optional string ip = 3;
+}
+
+message AuditEvent {
+  string event_id = 1;
+  string event_namespace = 2;
+  string event_name = 3;
+  int32 event_version = 4;
+  string aggregate_id = 5;
+  string occurred_at = 6;
+  AuditActor actor = 7;
+  optional string correlation_id = 8;
+  string payload_json = 9;
+  string recorded_at = 10;
+}
+
+message ListEventsRequest {
+  optional string correlation_id = 1;
+  optional string actor_id = 2;
+  optional string actor_type = 3;
+  optional string aggregate_id = 4;
+  optional string event_namespace = 5;
+  optional string from = 6;
+  optional string to = 7;
+  optional int32 limit = 8;
+  optional int32 offset = 9;
+}
+
+message ListEventsResponse {
+  repeated AuditEvent events = 1;
+}
+
+message PurgeExpiredEventsRequest {}
+
+message PurgeExpiredEventsResponse {
+  int32 removed = 1;
+}

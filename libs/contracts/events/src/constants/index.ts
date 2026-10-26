@@ -6,3 +6,4 @@ export * from './security-topics.constant.js';
 export * from './security-access-events.constant.js';
 export * from './security-ip-events.constant.js';
 export * from './security-topic-retention.constant.js';
+export * from './event-topics.constant.js';

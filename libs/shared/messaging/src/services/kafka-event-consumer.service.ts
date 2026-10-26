@@ -16,7 +16,7 @@ import type {
 } from '../interfaces/index.js';
 import { eventKey } from '../functions/index.js';
 import { randomUUID } from 'node:crypto';
-import { KAFKA_ADMIN } from '../constants/index.js';
+import { FALLBACK_HANDLER, KAFKA_ADMIN } from '../constants/index.js';
 
 type StringMessage = Message<string, string, string, string>;
 type StringStream = MessagesStream<string, string, string, string>;
@@ -40,10 +40,10 @@ export class KafkaEventConsumer {
   ) {}
 
   get topics(): Array<string> {
-    const namespaces = Object.keys(this.options.handlers).map((key) => {
-      return key.slice(0, key.lastIndexOf('.'));
-    });
-    return [...new Set(namespaces)];
+    const namespaces = Object.keys(this.options.handlers)
+      .filter((key) => key !== FALLBACK_HANDLER)
+      .map((key) => key.slice(0, key.lastIndexOf('.')));
+    return [...new Set([...namespaces, ...(this.options.topics ?? [])])];
   }
 
   get isCaughtUp(): boolean {
@@ -159,7 +159,9 @@ export class KafkaEventConsumer {
     }
 
     const handler =
-      this.options.handlers[eventKey(event.event_namespace, event.event_name)];
+      this.options.handlers[
+        eventKey(event.event_namespace, event.event_name)
+      ] ?? this.options.handlers[FALLBACK_HANDLER];
     if (!handler) {
       return true;
     }

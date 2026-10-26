@@ -141,6 +141,15 @@ export default [
                 'scope:types',
               ],
             },
+            {
+              sourceTag: 'scope:audit',
+              onlyDependOnLibsWithTags: [
+                'scope:audit',
+                'scope:contracts',
+                'scope:shared',
+                'scope:types',
+              ],
+            },
           ],
         },
       ],

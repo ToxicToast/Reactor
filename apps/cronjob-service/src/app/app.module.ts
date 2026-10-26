@@ -7,10 +7,11 @@ import {
   MetricsModule,
   SystemModule,
 } from '@toxictoast/shared-nest';
+import { redisConnectionFromEnv } from '@toxictoast/shared-system';
+import { AuditJobsModule } from './audit/audit-jobs.module.js';
 import { BlogJobsModule } from './blog/blog-jobs.module.js';
 import { CronjobConfigModule } from './cronjob-config.module.js';
 import { defaultJobOptionsFromEnv } from './functions/index.js';
-import { redisConnectionFromEnv } from '@toxictoast/shared-system';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { redisConnectionFromEnv } from '@toxictoast/shared-system';
       adapter: ExpressAdapter,
     }),
     BlogJobsModule,
+    AuditJobsModule,
   ],
 })
 export class AppModule {}

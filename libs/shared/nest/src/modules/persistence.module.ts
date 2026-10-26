@@ -1,9 +1,10 @@
-import { Module, type DynamicModule } from '@nestjs/common';
+import { Module, type DynamicModule, type Provider } from '@nestjs/common';
 import {
   DomainPersistence,
   type Outbox,
   type UnitOfWork,
 } from '@toxictoast/shared-application';
+import { ActorProvider, CorrelationProvider } from '@toxictoast/shared-kernel';
 import {
   dataSourceOptionsFromEnv,
   TransactionContext,
@@ -13,12 +14,40 @@ import {
 } from '@toxictoast/shared-persistence';
 import { DataSource } from 'typeorm';
 import { TOKENS } from '../constants/index.js';
+import type { PersistenceModuleOptions } from '../interfaces/index.js';
 import { DataSourceLifecycle } from '../lifecycles/index.js';
-import { ActorProvider, CorrelationProvider } from '@toxictoast/shared-kernel';
+
+const outboxProviders = (): Array<Provider> => {
+  return [
+    {
+      provide: TOKENS.OUTBOX,
+      inject: [TransactionContext, ActorProvider, CorrelationProvider],
+      useFactory: (
+        context: TransactionContext,
+        actors: ActorProvider,
+        correlations: CorrelationProvider,
+      ): Outbox => {
+        return new TypeOrmOutbox(context, actors, correlations);
+      },
+    },
+    {
+      provide: DomainPersistence,
+      inject: [TOKENS.OUTBOX, TOKENS.UNIT_OF_WORK],
+      useFactory: (outbox: Outbox, uow: UnitOfWork) => {
+        return new DomainPersistence(outbox, uow);
+      },
+    },
+  ];
+};
 
 @Module({})
 export class PersistenceModule {
-  static forRoot(config: DataSourceConfig): DynamicModule {
+  static forRoot(
+    config: DataSourceConfig,
+    options: PersistenceModuleOptions = {},
+  ): DynamicModule {
+    const withOutbox = options.outbox !== false;
+
     return {
       module: PersistenceModule,
       global: true,
@@ -48,32 +77,14 @@ export class PersistenceModule {
             return new TypeOrmUnitOfWork(dataSource, context);
           },
         },
-        {
-          provide: TOKENS.OUTBOX,
-          inject: [TransactionContext, ActorProvider, CorrelationProvider],
-          useFactory: (
-            context: TransactionContext,
-            actors: ActorProvider,
-            correlations: CorrelationProvider,
-          ): Outbox => {
-            return new TypeOrmOutbox(context, actors, correlations);
-          },
-        },
-        {
-          provide: DomainPersistence,
-          inject: [TOKENS.OUTBOX, TOKENS.UNIT_OF_WORK],
-          useFactory: (outbox: Outbox, uow: UnitOfWork) => {
-            return new DomainPersistence(outbox, uow);
-          },
-        },
+        ...(withOutbox ? outboxProviders() : []),
         DataSourceLifecycle,
       ],
       exports: [
         DataSource,
         TransactionContext,
         TOKENS.UNIT_OF_WORK,
-        TOKENS.OUTBOX,
-        DomainPersistence,
+        ...(withOutbox ? [TOKENS.OUTBOX, DomainPersistence] : []),
       ],
     };
   }
