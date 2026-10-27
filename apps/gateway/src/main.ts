@@ -15,6 +15,8 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { ADMIN_PATHS } from './app/admin/constants/index.js';
 import { AdminSessionMiddleware } from './app/admin/middlewares/index.js';
 import { proxyErrorHandler } from './app/admin/functions/index.js';
+import { CORS_HEADERS, CORS_METHODS } from './app/cors/constants/index.js';
+import { corsConfigFromEnv } from './app/cors/functions/index.js';
 
 const bootstrap = async (): Promise<void> => {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -23,6 +25,19 @@ const bootstrap = async (): Promise<void> => {
   app.useLogger(new CorrelationLogger(app.get(CorrelationContext)));
   app.enableShutdownHooks();
   app.set('trust proxy', numberEnv('TRUST_PROXY_HOPS', 0));
+
+  const cors = corsConfigFromEnv();
+  if (cors.origins.length > 0) {
+    app.enableCors({
+      origin: [...cors.origins],
+      credentials: cors.allowCredentials,
+      methods: [...CORS_METHODS],
+      allowedHeaders: [...CORS_HEADERS.ALLOWED],
+      exposedHeaders: [...CORS_HEADERS.EXPOSED],
+      maxAge: cors.maxAgeSeconds,
+    });
+  }
+
   const adminSession = app.get(AdminSessionMiddleware);
   app.use(
     ADMIN_PATHS.QUEUES,
