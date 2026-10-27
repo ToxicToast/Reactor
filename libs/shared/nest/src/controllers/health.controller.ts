@@ -8,6 +8,7 @@ import {
 import {
   ConsumerHealthIndicator,
   DatabaseHealthIndicator,
+  ProbeHealthIndicator,
 } from '../indicators/index.js';
 
 @Controller('health')
@@ -16,6 +17,7 @@ export class HealthController {
     private readonly health: HealthCheckService,
     @Optional() private readonly database?: DatabaseHealthIndicator,
     @Optional() private readonly consumer?: ConsumerHealthIndicator,
+    @Optional() private readonly probes?: ProbeHealthIndicator,
   ) {}
 
   @Get('live')
@@ -35,6 +37,9 @@ export class HealthController {
     if (this.consumer) {
       const consumer = this.consumer;
       checks.push(() => consumer.isHealthy());
+    }
+    if (this.probes) {
+      checks.push(...this.probes.checks());
     }
     return this.health.check(checks);
   }

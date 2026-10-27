@@ -22,3 +22,10 @@ export const createStaticAuthProvider = async (
   const auth = await import('@twurple/auth');
   return new auth.StaticAuthProvider(clientId, token);
 };
+
+export const requestAppToken = async (
+  config: TwitchConfig,
+): Promise<AccessToken> => {
+  const auth = await import('@twurple/auth');
+  return auth.getAppToken(config.clientId, config.clientSecret);
+};

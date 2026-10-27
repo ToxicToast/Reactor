@@ -2,6 +2,7 @@ export * from './start-authorization.usecase.js';
 export * from './complete-authorization.usecase.js';
 export * from './list-channels.usecase.js';
 export * from './disconnect-channel.usecase.js';
+export * from './revoke-channel.usecase.js';
 export * from './resume-subscriptions.usecase.js';
 export * from './publish-twitch-event.usecase.js';
 export * from './sync-chatters.usecase.js';

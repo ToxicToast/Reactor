@@ -18,10 +18,18 @@ import type {
   TwitchChannelAnemic,
   TwitchChannelId,
 } from '@toxictoast/twitch-bot-domain';
+import {
+  LOST_AUTHORIZATION_STATUSES,
+  NOOP_TWITCH_BOT_METRICS,
+} from '../constants/index.js';
 import { createEventSubListener } from '../factories/index.js';
-import type { ActiveSubscription } from '../interfaces/index.js';
+import type {
+  ActiveSubscription,
+  TwitchBotMetrics,
+} from '../interfaces/index.js';
 import { EventSubPayloadMapper } from '../mappers/index.js';
 import type { TwitchConnection } from './twitch-connection.service.js';
+import type { TwitchSocketTracker } from './twitch-socket-tracker.service.js';
 
 export class TwurpleEventSubscriber implements TwitchEventSubscriber {
   private readonly mapper = new EventSubPayloadMapper();
@@ -31,14 +39,17 @@ export class TwurpleEventSubscriber implements TwitchEventSubscriber {
   constructor(
     private readonly connection: TwitchConnection,
     private readonly publisher: PublishTwitchEventUseCase,
+    private readonly sockets: TwitchSocketTracker,
+    private readonly metrics: TwitchBotMetrics = NOOP_TWITCH_BOT_METRICS,
     private readonly onError: (error: unknown, context: string) => void = () =>
       undefined,
   ) {}
 
   async start(channel: TwitchChannelAnemic): Promise<void> {
-    await this.stop(channel.id);
+    this.unsubscribe(channel.id);
     await this.connection.reload(channel);
     const listener = await this.ensureListener();
+    this.sockets.track(channel.twitch_id, channel.login);
     this.active.set(channel.id, {
       channel,
       subscriptions: this.subscribe(listener, channel),
@@ -46,15 +57,11 @@ export class TwurpleEventSubscriber implements TwitchEventSubscriber {
   }
 
   async stop(channelId: TwitchChannelId): Promise<void> {
-    const active = this.active.get(channelId);
+    const active = this.unsubscribe(channelId);
     if (!active) {
       return;
     }
-
-    for (const subscription of active.subscriptions) {
-      subscription.stop();
-    }
-    this.active.delete(channelId);
+    this.sockets.forget(active.channel.twitch_id);
     await this.connection.forget(active.channel);
   }
 
@@ -69,6 +76,20 @@ export class TwurpleEventSubscriber implements TwitchEventSubscriber {
     }
   }
 
+  private unsubscribe(
+    channelId: TwitchChannelId,
+  ): Nullable<ActiveSubscription> {
+    const active = this.active.get(channelId);
+    if (!active) {
+      return null;
+    }
+    for (const subscription of active.subscriptions) {
+      subscription.stop();
+    }
+    this.active.delete(channelId);
+    return active;
+  }
+
   private ensureListener(): Promise<EventSubWsListener> {
     if (!this.listener) {
       this.listener = this.createListener().catch((error: unknown) => {
@@ -81,15 +102,33 @@ export class TwurpleEventSubscriber implements TwitchEventSubscriber {
 
   private async createListener(): Promise<EventSubWsListener> {
     const listener = await createEventSubListener(await this.connection.api());
+
+    listener.onUserSocketReady((userId) => {
+      this.sockets.connected(userId);
+    });
+    listener.onUserSocketDisconnect((userId, error) => {
+      this.sockets.disconnected(userId);
+      if (error) {
+        this.onError(error, `EventSub socket of ${userId} disconnected`);
+      }
+    });
     listener.onSubscriptionCreateFailure((subscription, error) => {
+      this.metrics.subscriptionFailed();
       this.onError(error, `Creating subscription ${subscription.id} failed`);
     });
     listener.onRevoke((subscription, status) => {
+      this.metrics.subscriptionRevoked(status);
+      const userId = subscription.authUserId;
+      if (userId && LOST_AUTHORIZATION_STATUSES.has(status)) {
+        this.connection.reportAuthorizationLost(userId, status);
+        return;
+      }
       this.onError(
         new Error(status),
         `Twitch revoked subscription ${subscription.id}`,
       );
     });
+
     listener.start();
     return listener;
   }
@@ -101,9 +140,11 @@ export class TwurpleEventSubscriber implements TwitchEventSubscriber {
     const id = channel.twitch_id;
     const mapper = this.mapper;
     const emit = (topic: string, name: string, payload: object): void => {
+      this.metrics.eventReceived(channel.login, topic, name);
       this.publisher
         .execute({ channel, topic, name, payload })
         .catch((error: unknown) => {
+          this.metrics.eventPublishFailed(channel.login, topic, name);
           this.onError(error, `Publishing ${topic}.${name} failed`);
         });
     };

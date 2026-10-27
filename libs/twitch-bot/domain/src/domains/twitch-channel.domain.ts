@@ -4,6 +4,7 @@ import type { TwitchChannelData } from '../data/index.js';
 import {
   ConnectChannelEvent,
   DisconnectChannelEvent,
+  RevokeChannelEvent,
 } from '../events/index.js';
 import { normalizeTwitchChannelData } from '../functions/index.js';
 
@@ -46,6 +47,17 @@ export class TwitchChannelDomain extends BaseDomain<TwitchChannelAnemic> {
     this.state.connected = false;
     this.touch();
     this.raise(DisconnectChannelEvent);
+    return Result.ok();
+  }
+
+  revoke(): Result<void> {
+    if (!this.state.connected) {
+      return Result.fail(new ConflictError('Channel is not connected'));
+    }
+
+    this.state.connected = false;
+    this.touch();
+    this.raise(RevokeChannelEvent);
     return Result.ok();
   }
 

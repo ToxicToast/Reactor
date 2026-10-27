@@ -26,6 +26,9 @@
       "path": "../../libs/shared/application/tsconfig.lib.json"
     },
     {
+      "path": "../../libs/shared/kernel/tsconfig.lib.json"
+    },
+    {
       "path": "../../libs/twitch-bot/infrastructure/tsconfig.lib.json"
     },
     {

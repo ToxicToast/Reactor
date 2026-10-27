@@ -14,6 +14,7 @@ import {
   twitchBotMigrations,
   twitchBotSchemas,
 } from '@toxictoast/twitch-bot-infrastructure';
+import { TwitchReadinessProbe } from './probes/index.js';
 import { TwitchBotModule } from './twitch-bot.module.js';
 
 @Module({
@@ -28,7 +29,14 @@ import { TwitchBotModule } from './twitch-bot.module.js';
       topics: [...Object.values(TwitchTopics)],
       topicRetentionMs: TWITCH_TOPIC_RETENTION_MS,
     }),
-    HealthModule.forRoot({ database: true }),
+    HealthModule.forRoot({
+      database: true,
+      probes: {
+        imports: [TwitchBotModule],
+        inject: [TwitchReadinessProbe],
+        useFactory: (twitch: TwitchReadinessProbe) => [twitch],
+      },
+    }),
     MetricsModule.forRoot({ outbox: true, consumer: false }),
     TwitchBotModule,
   ],

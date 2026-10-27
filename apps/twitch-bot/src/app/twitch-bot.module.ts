@@ -1,5 +1,6 @@
 import { Logger, Module } from '@nestjs/common';
 import { DomainPersistence } from '@toxictoast/shared-application';
+import type { Clock } from '@toxictoast/shared-kernel';
 import { provideClass, TOKENS } from '@toxictoast/shared-nest';
 import { TransactionContext } from '@toxictoast/shared-persistence';
 import { describeError } from '@toxictoast/shared-system';
@@ -10,6 +11,7 @@ import {
   ListChannelsUseCase,
   PublishTwitchEventUseCase,
   ResumeSubscriptionsUseCase,
+  RevokeChannelUseCase,
   StartAuthorizationUseCase,
   SyncChattersUseCase,
   SyncClipsUseCase,
@@ -21,10 +23,13 @@ import {
   type TwitchChannelRepository,
 } from '@toxictoast/twitch-bot-domain';
 import {
+  requestAppToken,
   TokenCipher,
   tokenCipherKeyFromEnv,
   TwitchConnection,
+  TwitchCredentialsCheck,
   twitchConfigFromEnv,
+  TwitchSocketTracker,
   TwurpleChatterSource,
   TwurpleClipSource,
   TwurpleEventSubscriber,
@@ -33,21 +38,29 @@ import {
   TypeOrmPublishedClipLedger,
   TypeOrmTwitchChannelRepository,
   TypeOrmTwitchTokenStore,
+  type TwitchBotMetrics,
   type TwitchConfig,
 } from '@toxictoast/twitch-bot-infrastructure';
 import { DataSource } from 'typeorm';
 import { TWITCH_BOT_TOKENS } from './constants/index.js';
 import { TwitchSubscriptionLifecycle } from './lifecycles/index.js';
+import { PrometheusTwitchBotMetrics } from './metrics/index.js';
+import { TwitchReadinessProbe } from './probes/index.js';
 
 const { TWITCH_CONFIG, TOKEN_CIPHER } = TWITCH_BOT_TOKENS;
 const { TWITCH_CHANNEL_REPOSITORY, CHATTER_REPOSITORY } = TWITCH_BOT_TOKENS;
 const { TWITCH_TOKEN_STORE, PUBLISHED_CLIP_LEDGER } = TWITCH_BOT_TOKENS;
 const { TWITCH_AUTH_CLIENT, TWITCH_CHATTER_SOURCE } = TWITCH_BOT_TOKENS;
 const { TWITCH_CLIP_SOURCE, TWITCH_EVENT_SUBSCRIBER } = TWITCH_BOT_TOKENS;
+const { TWITCH_BOT_METRICS } = TWITCH_BOT_TOKENS;
 const { CLOCK, DOMAIN_CONTEXT, OUTBOX, UNIT_OF_WORK } = TOKENS;
+const { METRICS_REGISTRY } = TOKENS;
 const DATABASE = [DataSource, TransactionContext];
 
 const logger = new Logger('Twitch');
+const logError = (error: unknown, context: string): void => {
+  logger.error(context, describeError(error));
+};
 
 @Module({
   controllers: [TwitchBotGrpcController],
@@ -83,20 +96,40 @@ const logger = new Logger('Twitch');
       [...DATABASE, CLOCK],
       PUBLISHED_CLIP_LEDGER,
     ),
+    provideClass(TwitchSocketTracker, [CLOCK]),
+    provideClass(
+      PrometheusTwitchBotMetrics,
+      [METRICS_REGISTRY, TwitchSocketTracker],
+      TWITCH_BOT_METRICS,
+    ),
+    {
+      provide: TwitchCredentialsCheck,
+      inject: [TWITCH_CONFIG, CLOCK],
+      useFactory: (config: TwitchConfig, clock: Clock) => {
+        return new TwitchCredentialsCheck(() => requestAppToken(config), clock);
+      },
+    },
     {
       provide: TwitchConnection,
-      inject: [TWITCH_CONFIG, TWITCH_CHANNEL_REPOSITORY, TWITCH_TOKEN_STORE],
+      inject: [
+        TWITCH_CONFIG,
+        TWITCH_CHANNEL_REPOSITORY,
+        TWITCH_TOKEN_STORE,
+        TWITCH_BOT_METRICS,
+      ],
       useFactory: (
         config: TwitchConfig,
         channels: TwitchChannelRepository,
         tokens: TwitchTokenStore,
+        metrics: TwitchBotMetrics,
       ) => {
-        return new TwitchConnection(config, channels, tokens, (error) => {
-          logger.error(
-            'Storing a refreshed Twitch token failed',
-            describeError(error),
-          );
-        });
+        return new TwitchConnection(
+          config,
+          channels,
+          tokens,
+          metrics,
+          logError,
+        );
       },
     },
     provideClass(TwurpleTwitchAuthClient, [TWITCH_CONFIG], TWITCH_AUTH_CLIENT),
@@ -108,20 +141,32 @@ const logger = new Logger('Twitch');
     provideClass(TwurpleClipSource, [TwitchConnection], TWITCH_CLIP_SOURCE),
     {
       provide: TWITCH_EVENT_SUBSCRIBER,
-      inject: [TwitchConnection, PublishTwitchEventUseCase],
+      inject: [
+        TwitchConnection,
+        PublishTwitchEventUseCase,
+        TwitchSocketTracker,
+        TWITCH_BOT_METRICS,
+      ],
       useFactory: (
         connection: TwitchConnection,
         publisher: PublishTwitchEventUseCase,
+        sockets: TwitchSocketTracker,
+        metrics: TwitchBotMetrics,
       ) => {
         return new TwurpleEventSubscriber(
           connection,
           publisher,
-          (error, context) => {
-            logger.error(context, describeError(error));
-          },
+          sockets,
+          metrics,
+          logError,
         );
       },
     },
+    provideClass(TwitchReadinessProbe, [
+      TwitchCredentialsCheck,
+      TwitchSocketTracker,
+      CLOCK,
+    ]),
 
     // ── Use Cases ───────────────────────────────
     provideClass(PublishTwitchEventUseCase, [
@@ -140,6 +185,13 @@ const logger = new Logger('Twitch');
     ]),
     provideClass(ListChannelsUseCase, [TWITCH_CHANNEL_REPOSITORY]),
     provideClass(DisconnectChannelUseCase, [
+      TwitchChannelFactory,
+      TWITCH_CHANNEL_REPOSITORY,
+      DomainPersistence,
+      TWITCH_TOKEN_STORE,
+      TWITCH_EVENT_SUBSCRIBER,
+    ]),
+    provideClass(RevokeChannelUseCase, [
       TwitchChannelFactory,
       TWITCH_CHANNEL_REPOSITORY,
       DomainPersistence,
@@ -171,5 +223,6 @@ const logger = new Logger('Twitch');
     // ── Lifecycles ──────────────────────────────
     TwitchSubscriptionLifecycle,
   ],
+  exports: [TwitchReadinessProbe],
 })
 export class TwitchBotModule {}

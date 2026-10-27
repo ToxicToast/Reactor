@@ -5,8 +5,15 @@ import {
   type OnApplicationBootstrap,
   type OnApplicationShutdown,
 } from '@nestjs/common';
-import { ResumeSubscriptionsUseCase } from '@toxictoast/twitch-bot-application';
-import type { TwurpleEventSubscriber } from '@toxictoast/twitch-bot-infrastructure';
+import { describeError } from '@toxictoast/shared-system';
+import {
+  ResumeSubscriptionsUseCase,
+  RevokeChannelUseCase,
+} from '@toxictoast/twitch-bot-application';
+import {
+  TwitchConnection,
+  type TwurpleEventSubscriber,
+} from '@toxictoast/twitch-bot-infrastructure';
 import { TWITCH_BOT_TOKENS } from '../constants/index.js';
 
 @Injectable()
@@ -17,11 +24,22 @@ export class TwitchSubscriptionLifecycle
 
   constructor(
     private readonly resumeSubscriptionsUseCase: ResumeSubscriptionsUseCase,
+    private readonly revokeChannelUseCase: RevokeChannelUseCase,
+    private readonly connection: TwitchConnection,
     @Inject(TWITCH_BOT_TOKENS.TWITCH_EVENT_SUBSCRIBER)
     private readonly subscriber: TwurpleEventSubscriber,
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
+    this.connection.onAuthorizationLost((twitchId, reason) => {
+      this.revoke(twitchId, reason).catch((error: unknown) => {
+        this.logger.error(
+          `Revoking Twitch channel ${twitchId} failed`,
+          describeError(error),
+        );
+      });
+    });
+
     const result = await this.resumeSubscriptionsUseCase.execute();
     if (result.isFailure) {
       this.logger.error(
@@ -46,5 +64,20 @@ export class TwitchSubscriptionLifecycle
 
   async onApplicationShutdown(): Promise<void> {
     await this.subscriber.close();
+  }
+
+  private async revoke(twitchId: string, reason: string): Promise<void> {
+    const result = await this.revokeChannelUseCase.execute({
+      twitch_id: twitchId,
+    });
+    if (result.isFailure) {
+      this.logger.warn(
+        `Twitch authorization of ${twitchId} lost (${reason}), but the channel could not be revoked: ${result.error.message}`,
+      );
+      return;
+    }
+    this.logger.warn(
+      `Twitch authorization of ${result.value.login} lost (${reason}), channel disconnected, connect it again under /admin/twitch/connect`,
+    );
   }
 }

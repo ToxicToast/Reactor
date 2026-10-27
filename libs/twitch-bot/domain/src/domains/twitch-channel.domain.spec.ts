@@ -89,6 +89,31 @@ describe('TwitchChannelDomain', () => {
     });
   });
 
+  describe('revoke', () => {
+    it('disconnects the channel and raises a revoked event', () => {
+      const channel = createChannel();
+
+      const result = channel.revoke();
+
+      expect(result.isSuccess).toBe(true);
+      expect(channel.isConnected).toBe(false);
+      expect(channel.toEvents().map((e) => e.event_name)).toEqual([
+        'channel_revoked',
+      ]);
+    });
+
+    it('refuses to revoke a disconnected channel', () => {
+      const channel = createChannel();
+      channel.disconnect();
+      channel.toEvents();
+
+      const result = channel.revoke();
+
+      expect(result.isFailure).toBe(true);
+      expect(result.error.code).toBe('CONFLICT');
+    });
+  });
+
   describe('reconnect', () => {
     it('takes over new profile data and scopes and connects again', () => {
       const channel = createChannel();

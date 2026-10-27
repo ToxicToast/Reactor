@@ -1,9 +1,11 @@
 import { Module, type DynamicModule, type Provider } from '@nestjs/common';
 import { TerminusModule } from '@nestjs/terminus';
+import { TOKENS } from '../constants/index.js';
 import { HealthController } from '../controllers/index.js';
 import {
   ConsumerHealthIndicator,
   DatabaseHealthIndicator,
+  ProbeHealthIndicator,
 } from '../indicators/index.js';
 import type { HealthModuleOptions } from '../interfaces/index.js';
 
@@ -17,10 +19,20 @@ export class HealthModule {
     if (options.replay) {
       providers.push(ConsumerHealthIndicator);
     }
+    if (options.probes) {
+      providers.push(
+        {
+          provide: TOKENS.READINESS_PROBES,
+          inject: options.probes.inject,
+          useFactory: options.probes.useFactory,
+        },
+        ProbeHealthIndicator,
+      );
+    }
 
     return {
       module: HealthModule,
-      imports: [TerminusModule],
+      imports: [TerminusModule, ...(options.probes?.imports ?? [])],
       controllers: [HealthController],
       providers,
     };
