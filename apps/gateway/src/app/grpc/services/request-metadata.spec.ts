@@ -1,14 +1,14 @@
 import { ActorType } from '@toxictoast/shared-kernel';
 import { ActorContext, CorrelationContext } from '@toxictoast/shared-system';
-import { ActorMetadata } from './actor-metadata.service.js';
+import { RequestMetadata } from './request-metadata.service.js';
 
 const CID = '01a16a00-3111-7049-8d8d-0db609f31f2a';
 
-describe('ActorMetadata', () => {
+describe('RequestMetadata', () => {
   it('builds the metadata from the actor and correlation id of the request', () => {
     const actors = new ActorContext();
     const correlations = new CorrelationContext();
-    const metadata = new ActorMetadata(actors, correlations);
+    const metadata = new RequestMetadata(actors, correlations);
 
     const result = correlations.run(CID, () =>
       actors.run(

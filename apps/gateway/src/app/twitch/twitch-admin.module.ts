@@ -8,7 +8,7 @@ import { GrpcClientModule, provideClass } from '@toxictoast/shared-nest';
 import { AdminModule } from '../admin/admin.module.js';
 import { GATEWAY_TOKENS } from '../constants/index.js';
 import { GrpcModule } from '../grpc/grpc.module.js';
-import { ActorMetadata } from '../grpc/services/index.js';
+import { RequestMetadata } from '../grpc/services/index.js';
 import {
   TwitchChannelsController,
   TwitchConnectController,
@@ -33,7 +33,7 @@ import { TwitchGateway } from './twitch.gateway.js';
       provide: GATEWAY_TOKENS.TWITCH_ADMIN_CONFIG,
       useFactory: () => twitchAdminConfigFromEnv(),
     },
-    provideClass(TwitchGateway, [TWITCH_BOT_GRPC_CLIENT, ActorMetadata]),
+    provideClass(TwitchGateway, [TWITCH_BOT_GRPC_CLIENT, RequestMetadata]),
   ],
 })
 export class TwitchAdminModule {}

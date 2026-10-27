@@ -1,7 +1,7 @@
 import { Metadata } from '@grpc/grpc-js';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { lastValueFrom, of } from 'rxjs';
-import type { ActorMetadata } from '../../grpc/services/index.js';
+import type { RequestMetadata } from '../../grpc/services/index.js';
 import { TagGateway } from './tag.gateway.js';
 
 describe('TagGateway', () => {
@@ -12,7 +12,7 @@ describe('TagGateway', () => {
   };
   const gateway = new TagGateway(
     { getService: () => client } as unknown as ClientGrpc,
-    { current: () => metadata } as unknown as ActorMetadata,
+    { current: () => metadata } as unknown as RequestMetadata,
   );
 
   beforeAll(() => {
