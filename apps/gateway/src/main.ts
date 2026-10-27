@@ -25,6 +25,7 @@ const bootstrap = async (): Promise<void> => {
   app.useLogger(new CorrelationLogger(app.get(CorrelationContext)));
   app.enableShutdownHooks();
   app.set('trust proxy', numberEnv('TRUST_PROXY_HOPS', 0));
+  app.disable('x-powered-by');
 
   const cors = corsConfigFromEnv();
   if (cors.origins.length > 0) {
