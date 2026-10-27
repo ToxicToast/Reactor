@@ -38,7 +38,7 @@
     "@toxictoast/shared-persistence": "*",
     "@toxictoast/shared-system": "*",
     "@toxictoast/shared-types": "*",
-    "ioredis": "^5.11.1",
+    "ioredis": "^6.0.0",
     "typeorm": "^1.1.2"
   }
 }
