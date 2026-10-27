@@ -15,6 +15,7 @@
     "serve:cronjob": "nx serve cronjob-service",
     "serve:security": "nx serve security-service",
     "serve:audit": "nx serve audit-service",
+    "serve:twitchbot": "nx serve twitch-bot",
     "prepare": "husky",
     "lint:staged": "lint-staged"
   },
@@ -104,6 +105,10 @@
     "@nestjs/swagger": "^11.4.7",
     "@nestjs/terminus": "^11.1.1",
     "@platformatic/kafka": "^2.14.0",
+    "@twurple/api": "^8.2.0",
+    "@twurple/auth": "^8.2.0",
+    "@twurple/eventsub-base": "^8.2.0",
+    "@twurple/eventsub-ws": "^8.2.0",
     "axios": "^1.6.0",
     "bullmq": "^5.81.5",
     "jose": "^5.10.0",

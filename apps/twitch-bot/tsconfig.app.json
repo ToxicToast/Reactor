@@ -1,0 +1,59 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "types": ["node"],
+    "rootDir": "src",
+    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "target": "es2021"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "out-tsc",
+    "dist",
+    "jest.config.ts",
+    "jest.config.cts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "eslint.config.js",
+    "eslint.config.cjs",
+    "eslint.config.mjs"
+  ],
+  "references": [
+    {
+      "path": "../../libs/shared/application/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/shared/kernel/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/twitch-bot/infrastructure/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/twitch-bot/domain/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/twitch-bot/application/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/twitch-bot/api/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/shared/system/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/shared/persistence/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/shared/nest/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/contracts/proto/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/contracts/events/tsconfig.lib.json"
+    }
+  ]
+}

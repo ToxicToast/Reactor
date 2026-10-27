@@ -8,3 +8,6 @@ export * from './grpc-metadata.interface.js';
 export * from './grpc-client-config.interface.js';
 export * from './grpc-client-module-options.interface.js';
 export * from './persistence-module-options.interface.js';
+export * from './readiness-result.interface.js';
+export * from './readiness-probe.interface.js';
+export * from './readiness-probes-provider.interface.js';

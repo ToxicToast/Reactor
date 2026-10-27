@@ -28,6 +28,7 @@ import { IpBanHandler } from './security/consumers/index.js';
 import { BanMiddleware } from './security/middlewares/index.js';
 import { BanAdminModule } from './security/bans/ban-admin.module.js';
 import { AuditAdminModule } from './audit/audit-admin.module.js';
+import { TwitchAdminModule } from './twitch/twitch-admin.module.js';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { AuditAdminModule } from './audit/audit-admin.module.js';
     BlogModule,
     BanAdminModule,
     AuditAdminModule,
+    TwitchAdminModule,
   ],
   providers: [
     // ── Auth ────────────────────────────────────

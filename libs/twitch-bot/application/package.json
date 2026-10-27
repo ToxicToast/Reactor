@@ -1,0 +1,29 @@
+{
+  "name": "@toxictoast/twitch-bot-application",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "nx": {
+    "name": "twitch-bot-application",
+    "tags": [
+      "scope:twitch-bot",
+      "type:application"
+    ]
+  },
+  "dependencies": {
+    "@toxictoast/shared-application": "*",
+    "@toxictoast/shared-kernel": "*",
+    "@toxictoast/shared-types": "*",
+    "@toxictoast/twitch-bot-domain": "*"
+  }
+}

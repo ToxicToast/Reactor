@@ -104,6 +104,21 @@
     },
     {
       "path": "./apps/audit-service"
+    },
+    {
+      "path": "./libs/twitch-bot/domain"
+    },
+    {
+      "path": "./libs/twitch-bot/application"
+    },
+    {
+      "path": "./libs/twitch-bot/infrastructure"
+    },
+    {
+      "path": "./libs/twitch-bot/api"
+    },
+    {
+      "path": "./apps/twitch-bot"
     }
   ],
   "compilerOptions": {}

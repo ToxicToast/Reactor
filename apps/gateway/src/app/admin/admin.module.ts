@@ -24,5 +24,6 @@ const { ADMIN_AUTH_CONFIG, KEYCLOAK_CONFIG } = GATEWAY_TOKENS;
     provideClass(KeycloakOidcClient, [KEYCLOAK_CONFIG, ADMIN_AUTH_CONFIG]),
     AdminSessionMiddleware,
   ],
+  exports: [ADMIN_AUTH_CONFIG, SealedCookie],
 })
 export class AdminModule {}
