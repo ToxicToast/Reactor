@@ -3,7 +3,7 @@ import { AUDIT_GRPC_CLIENT } from '@toxictoast/contracts-grpc';
 import { AUDIT_PACKAGE, AUDIT_PROTO_FILES } from '@toxictoast/contracts-proto';
 import { GrpcClientModule, provideClass } from '@toxictoast/shared-nest';
 import { GrpcModule } from '../grpc/grpc.module.js';
-import { ActorMetadata } from '../grpc/services/index.js';
+import { RequestMetadata } from '../grpc/services/index.js';
 import { AuditController } from './audit.controller.js';
 import { AuditGateway } from './audit.gateway.js';
 
@@ -18,6 +18,6 @@ import { AuditGateway } from './audit.gateway.js';
     }),
   ],
   controllers: [AuditController],
-  providers: [provideClass(AuditGateway, [AUDIT_GRPC_CLIENT, ActorMetadata])],
+  providers: [provideClass(AuditGateway, [AUDIT_GRPC_CLIENT, RequestMetadata])],
 })
 export class AuditAdminModule {}

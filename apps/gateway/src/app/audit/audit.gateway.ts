@@ -8,14 +8,14 @@ import {
 } from '@toxictoast/contracts-grpc';
 import type { Nullable } from '@toxictoast/shared-types';
 import type { Observable } from 'rxjs';
-import type { ActorMetadata } from '../grpc/services/index.js';
+import type { RequestMetadata } from '../grpc/services/index.js';
 
 export class AuditGateway implements OnModuleInit {
   private client: Nullable<AuditServiceClient> = null;
 
   constructor(
     private readonly grpc: ClientGrpc,
-    private readonly metadata: ActorMetadata,
+    private readonly metadata: RequestMetadata,
   ) {}
 
   onModuleInit(): void {

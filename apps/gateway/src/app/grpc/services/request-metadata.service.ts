@@ -8,7 +8,7 @@ import type {
   CorrelationContext,
 } from '@toxictoast/shared-system';
 
-export class ActorMetadata {
+export class RequestMetadata {
   constructor(
     private readonly actors: ActorContext,
     private readonly correlations: CorrelationContext,

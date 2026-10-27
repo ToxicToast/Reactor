@@ -1,1 +1,1 @@
-export * from './actor-metadata.service.js';
+export * from './request-metadata.service.js';
