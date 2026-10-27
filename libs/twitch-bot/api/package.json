@@ -27,8 +27,8 @@
     "@toxictoast/shared-types": "*",
     "@toxictoast/twitch-bot-application": "*",
     "@toxictoast/twitch-bot-domain": "*",
-    "@nestjs/common": "^11.0.0",
-    "@nestjs/microservices": "^11.2.7",
+    "@nestjs/common": "^12.0.0",
+    "@nestjs/microservices": "^12.0.0",
     "@grpc/grpc-js": "^1.14.6"
   },
   "devDependencies": {
