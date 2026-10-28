@@ -4,7 +4,7 @@ import {
   BlogTopics,
 } from '@toxictoast/contracts-events';
 import { ModerationRequestedHandler } from '@toxictoast/moderation-api';
-import { eventKey } from '@toxictoast/shared-messaging';
+import { eventKey } from '@toxictoast/shared-kernel';
 import {
   HealthModule,
   MessagingModule,

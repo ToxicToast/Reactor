@@ -132,12 +132,12 @@ export class RecordTwitchEventUseCase implements UseCase<
   }
 
   private async notify(input: RecordTwitchEventInput): Promise<void> {
-    this.feed.publishEvent(input.event);
+    await this.feed.publishEvent(input.event);
     if (
       input.observation &&
       LIVE_OBSERVATION_KINDS.has(input.observation.kind)
     ) {
-      this.feed.publishLive(await this.liveStatus.read());
+      await this.feed.publishLive(await this.liveStatus.read());
     }
   }
 }

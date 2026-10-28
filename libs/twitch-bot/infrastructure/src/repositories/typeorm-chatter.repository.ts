@@ -1,19 +1,24 @@
-import type { TransactionContext } from '@toxictoast/shared-persistence';
+import {
+  TypeOrmTableRepository,
+  type TransactionContext,
+} from '@toxictoast/shared-persistence';
 import type {
   Chatter,
   ChatterRepository,
   TwitchChannelId,
 } from '@toxictoast/twitch-bot-domain';
-import type { DataSource, Repository } from 'typeorm';
+import type { DataSource } from 'typeorm';
 import { CHATTER_INSERT_CHUNK } from '../constants/index.js';
 import type { TwitchChatterRow } from '../interfaces/index.js';
 import { TwitchChatterSchema } from '../schemas/index.js';
 
-export class TypeOrmChatterRepository implements ChatterRepository {
-  constructor(
-    private readonly dataSource: DataSource,
-    private readonly context: TransactionContext,
-  ) {}
+export class TypeOrmChatterRepository
+  extends TypeOrmTableRepository<TwitchChatterRow>
+  implements ChatterRepository
+{
+  constructor(dataSource: DataSource, context: TransactionContext) {
+    super(dataSource, context, TwitchChatterSchema);
+  }
 
   async findByChannel(channelId: TwitchChannelId): Promise<Array<Chatter>> {
     const rows = await this.repository().find({
@@ -42,11 +47,5 @@ export class TypeOrmChatterRepository implements ChatterRepository {
     for (let start = 0; start < rows.length; start += CHATTER_INSERT_CHUNK) {
       await repository.insert(rows.slice(start, start + CHATTER_INSERT_CHUNK));
     }
-  }
-
-  private repository(): Repository<TwitchChatterRow> {
-    return this.context
-      .manager(this.dataSource)
-      .getRepository(TwitchChatterSchema);
   }
 }

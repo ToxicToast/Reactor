@@ -8,11 +8,11 @@ export class RecordingTwitchFeed implements TwitchFeed {
   readonly events: Array<RecordedTwitchEvent> = [];
   readonly live: Array<ReadonlyArray<LiveChannel>> = [];
 
-  publishEvent(event: RecordedTwitchEvent): void {
+  async publishEvent(event: RecordedTwitchEvent): Promise<void> {
     this.events.push(event);
   }
 
-  publishLive(channels: ReadonlyArray<LiveChannel>): void {
+  async publishLive(channels: ReadonlyArray<LiveChannel>): Promise<void> {
     this.live.push(channels);
   }
 }
