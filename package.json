@@ -86,7 +86,8 @@
   },
   "workspaces": [
     "apps/*",
-    "libs/*/*"
+    "libs/*/*",
+    "libs/shared/webhooks/*"
   ],
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1153.0",

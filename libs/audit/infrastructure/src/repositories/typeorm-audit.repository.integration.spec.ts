@@ -1,11 +1,11 @@
 import { auditEntry } from '@toxictoast/audit-application';
-import { PostgresTestDatabase } from '../testing/index.js';
+import { AuditTestDatabase } from '../testing/index.js';
 import { TypeOrmAuditRepository } from './typeorm-audit.repository.js';
 
 const ID = (n: number): string => `0192f3a0-0000-7000-8000-00000000000${n}`;
 
 describe('TypeOrmAuditRepository', () => {
-  const database = new PostgresTestDatabase();
+  const database = new AuditTestDatabase();
   let audit: TypeOrmAuditRepository;
 
   beforeAll(async () => {

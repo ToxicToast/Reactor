@@ -1,5 +1,6 @@
 import type { TransactionContext } from '@toxictoast/shared-persistence';
 import type { Clock } from '@toxictoast/shared-kernel';
+import type { SecretCipher } from '@toxictoast/shared-system';
 import type { Nullable } from '@toxictoast/shared-types';
 import type {
   TwitchToken,
@@ -10,7 +11,6 @@ import type { DataSource, Repository } from 'typeorm';
 import type { TwitchTokenRow } from '../interfaces/index.js';
 import { TwitchTokenMapper } from '../mappers/index.js';
 import { TwitchTokenSchema } from '../schemas/index.js';
-import type { TokenCipher } from '../services/token-cipher.service.js';
 
 export class TypeOrmTwitchTokenStore implements TwitchTokenStore {
   private readonly mapper: TwitchTokenMapper;
@@ -18,7 +18,7 @@ export class TypeOrmTwitchTokenStore implements TwitchTokenStore {
   constructor(
     private readonly dataSource: DataSource,
     private readonly context: TransactionContext,
-    cipher: TokenCipher,
+    cipher: SecretCipher,
     private readonly clock: Clock,
   ) {
     this.mapper = new TwitchTokenMapper(cipher);

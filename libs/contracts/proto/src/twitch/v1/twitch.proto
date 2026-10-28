@@ -1,0 +1,314 @@
+syntax = "proto3";
+
+package twitch.v1;
+
+service TwitchService {
+  rpc ListStatsChannels(ListStatsChannelsRequest) returns (ListStatsChannelsResponse);
+  rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse);
+  rpc GetSession(GetSessionRequest) returns (GetSessionResponse);
+  rpc GetLeaderboard(GetLeaderboardRequest) returns (GetLeaderboardResponse);
+  rpc GetTimeline(GetTimelineRequest) returns (GetTimelineResponse);
+  rpc ListRewards(ListRewardsRequest) returns (ListRewardsResponse);
+  rpc ListPolls(ListPollsRequest) returns (ListPollsResponse);
+  rpc WatchLive(WatchLiveRequest) returns (stream WatchLiveResponse);
+  rpc WatchEvents(WatchEventsRequest) returns (stream WatchEventsResponse);
+  rpc CreateTwitchWebhook(CreateTwitchWebhookRequest) returns (CreateTwitchWebhookResponse);
+  rpc ListTwitchWebhooks(ListTwitchWebhooksRequest) returns (ListTwitchWebhooksResponse);
+  rpc UpdateTwitchWebhook(UpdateTwitchWebhookRequest) returns (UpdateTwitchWebhookResponse);
+  rpc DeleteTwitchWebhook(DeleteTwitchWebhookRequest) returns (DeleteTwitchWebhookResponse);
+  rpc RotateTwitchWebhookSecret(RotateTwitchWebhookSecretRequest) returns (RotateTwitchWebhookSecretResponse);
+  rpc ListTwitchWebhookDeliveries(ListTwitchWebhookDeliveriesRequest) returns (ListTwitchWebhookDeliveriesResponse);
+}
+
+enum LeaderboardMetric {
+  LEADERBOARD_METRIC_UNSPECIFIED = 0;
+  LEADERBOARD_METRIC_MESSAGES = 1;
+  LEADERBOARD_METRIC_WATCH_TIME = 2;
+  LEADERBOARD_METRIC_BITS = 3;
+  LEADERBOARD_METRIC_GIFTED_SUBS = 4;
+  LEADERBOARD_METRIC_REDEMPTIONS = 5;
+}
+
+enum TimelineMetric {
+  TIMELINE_METRIC_UNSPECIFIED = 0;
+  TIMELINE_METRIC_STREAM_SECONDS = 1;
+  TIMELINE_METRIC_MESSAGES = 2;
+  TIMELINE_METRIC_UNIQUE_CHATTERS = 3;
+  TIMELINE_METRIC_PEAK_CHATTERS = 4;
+  TIMELINE_METRIC_FOLLOWS = 5;
+  TIMELINE_METRIC_SUBSCRIPTIONS = 6;
+  TIMELINE_METRIC_RESUBSCRIPTIONS = 7;
+  TIMELINE_METRIC_GIFTED_SUBS = 8;
+  TIMELINE_METRIC_BITS = 9;
+  TIMELINE_METRIC_RAIDS = 10;
+  TIMELINE_METRIC_REDEMPTIONS = 11;
+}
+
+enum TimelineInterval {
+  TIMELINE_INTERVAL_UNSPECIFIED = 0;
+  TIMELINE_INTERVAL_DAY = 1;
+  TIMELINE_INTERVAL_WEEK = 2;
+  TIMELINE_INTERVAL_MONTH = 3;
+}
+
+enum TwitchWebhookDeliveryStatus {
+  TWITCH_WEBHOOK_DELIVERY_STATUS_UNSPECIFIED = 0;
+  TWITCH_WEBHOOK_DELIVERY_STATUS_PENDING = 1;
+  TWITCH_WEBHOOK_DELIVERY_STATUS_DELIVERED = 2;
+  TWITCH_WEBHOOK_DELIVERY_STATUS_FAILED = 3;
+}
+
+message StatsChannel {
+  string channel_id = 1;
+  string login = 2;
+  string display_name = 3;
+  bool live = 4;
+  optional string current_session_id = 5;
+  optional string last_session_at = 6;
+}
+
+message StreamSession {
+  string id = 1;
+  string channel_id = 2;
+  string channel_login = 3;
+  string channel_name = 4;
+  string stream_id = 5;
+  string started_at = 6;
+  optional string ended_at = 7;
+  optional int32 duration_seconds = 8;
+  int32 peak_chatters = 9;
+  int32 messages = 10;
+  int32 unique_chatters = 11;
+  int32 follows = 12;
+  int32 subscriptions = 13;
+  int32 resubscriptions = 14;
+  int32 gifted_subs = 15;
+  int32 bits = 16;
+  int32 raids = 17;
+  int32 raid_viewers = 18;
+  int32 redemptions = 19;
+}
+
+message LeaderboardEntry {
+  string user_id = 1;
+  string user_login = 2;
+  string user_name = 3;
+  int32 value = 4;
+}
+
+message TimelinePoint {
+  string bucket_start = 1;
+  int32 value = 2;
+}
+
+message RewardStat {
+  string reward_id = 1;
+  string title = 2;
+  int32 cost = 3;
+  int32 redemptions = 4;
+  int32 points_spent = 5;
+}
+
+message TwitchPollChoice {
+  string id = 1;
+  string title = 2;
+  int32 votes = 3;
+}
+
+message TwitchPoll {
+  string poll_id = 1;
+  string channel_id = 2;
+  string title = 3;
+  repeated TwitchPollChoice choices = 4;
+  string status = 5;
+  string started_at = 6;
+  optional string ends_at = 7;
+  optional string ended_at = 8;
+}
+
+message LiveChannel {
+  string channel_id = 1;
+  string login = 2;
+  string display_name = 3;
+  bool live = 4;
+  optional string session_id = 5;
+  optional string started_at = 6;
+  int32 chatters = 7;
+}
+
+message TwitchEvent {
+  string event_id = 1;
+  string topic = 2;
+  string name = 3;
+  string channel_id = 4;
+  string occurred_at = 5;
+  string payload_json = 6;
+}
+
+message TwitchWebhook {
+  string id = 1;
+  string url = 2;
+  repeated string events = 3;
+  optional string description = 4;
+  bool active = 5;
+  string created_at = 6;
+  optional string updated_at = 7;
+}
+
+message TwitchWebhookDelivery {
+  string id = 1;
+  string webhook_id = 2;
+  string event_key = 3;
+  string event_id = 4;
+  TwitchWebhookDeliveryStatus status = 5;
+  int32 attempts = 6;
+  optional int32 last_status_code = 7;
+  optional string last_error = 8;
+  optional string next_attempt_at = 9;
+  optional string delivered_at = 10;
+  string created_at = 11;
+}
+
+message ListStatsChannelsRequest {}
+
+message ListStatsChannelsResponse {
+  repeated StatsChannel channels = 1;
+}
+
+message ListSessionsRequest {
+  string channel_id = 1;
+  optional string from = 2;
+  optional string to = 3;
+  optional int32 limit = 4;
+  optional int32 offset = 5;
+}
+
+message ListSessionsResponse {
+  repeated StreamSession sessions = 1;
+}
+
+message GetSessionRequest {
+  string id = 1;
+}
+
+message GetSessionResponse {
+  StreamSession session = 1;
+}
+
+message GetLeaderboardRequest {
+  string channel_id = 1;
+  LeaderboardMetric metric = 2;
+  optional string from = 3;
+  optional string to = 4;
+  optional int32 limit = 5;
+}
+
+message GetLeaderboardResponse {
+  repeated LeaderboardEntry entries = 1;
+}
+
+message GetTimelineRequest {
+  string channel_id = 1;
+  TimelineMetric metric = 2;
+  TimelineInterval interval = 3;
+  string from = 4;
+  string to = 5;
+}
+
+message GetTimelineResponse {
+  repeated TimelinePoint points = 1;
+}
+
+message ListRewardsRequest {
+  string channel_id = 1;
+  optional string from = 2;
+  optional string to = 3;
+}
+
+message ListRewardsResponse {
+  repeated RewardStat rewards = 1;
+}
+
+message ListPollsRequest {
+  string channel_id = 1;
+  optional string from = 2;
+  optional string to = 3;
+  optional int32 limit = 4;
+  optional int32 offset = 5;
+}
+
+message ListPollsResponse {
+  repeated TwitchPoll polls = 1;
+}
+
+message WatchLiveRequest {}
+
+message WatchLiveResponse {
+  repeated LiveChannel channels = 1;
+}
+
+message WatchEventsRequest {
+  optional string channel_id = 1;
+  repeated string topics = 2;
+}
+
+message WatchEventsResponse {
+  TwitchEvent event = 1;
+}
+
+message CreateTwitchWebhookRequest {
+  string url = 1;
+  repeated string events = 2;
+  optional string description = 3;
+}
+
+message CreateTwitchWebhookResponse {
+  TwitchWebhook webhook = 1;
+  string secret = 2;
+}
+
+message ListTwitchWebhooksRequest {}
+
+message ListTwitchWebhooksResponse {
+  repeated TwitchWebhook webhooks = 1;
+}
+
+message UpdateTwitchWebhookRequest {
+  string id = 1;
+  string url = 2;
+  repeated string events = 3;
+  optional string description = 4;
+  bool active = 5;
+}
+
+message UpdateTwitchWebhookResponse {
+  TwitchWebhook webhook = 1;
+}
+
+message DeleteTwitchWebhookRequest {
+  string id = 1;
+}
+
+message DeleteTwitchWebhookResponse {
+  TwitchWebhook webhook = 1;
+}
+
+message RotateTwitchWebhookSecretRequest {
+  string id = 1;
+}
+
+message RotateTwitchWebhookSecretResponse {
+  TwitchWebhook webhook = 1;
+  string secret = 2;
+}
+
+message ListTwitchWebhookDeliveriesRequest {
+  string webhook_id = 1;
+  optional TwitchWebhookDeliveryStatus status = 2;
+  optional int32 limit = 3;
+  optional int32 offset = 4;
+}
+
+message ListTwitchWebhookDeliveriesResponse {
+  repeated TwitchWebhookDelivery deliveries = 1;
+}

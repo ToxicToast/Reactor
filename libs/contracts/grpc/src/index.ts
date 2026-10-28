@@ -9,6 +9,7 @@ export * from './generated/security/v1/ban.js';
 export * from './generated/audit/v1/audit.js';
 
 export * from './generated/twitch_bot/v1/twitch_bot.js';
+export * from './generated/twitch/v1/twitch.js';
 
 export * from './permissions/index.js';
 export * from './clients/index.js';

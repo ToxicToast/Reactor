@@ -37,3 +37,11 @@ export const TWITCH_BOT_PACKAGE = 'twitch_bot.v1';
 export const TWITCH_BOT_PROTO_FILES = ['twitch_bot/v1/twitch_bot.proto'].map(
   (file) => join(PROTO_ROOT, file),
 );
+
+/* --------------------- */
+
+export const TWITCH_PACKAGE = 'twitch.v1';
+
+export const TWITCH_PROTO_FILES = ['twitch/v1/twitch.proto'].map((file) =>
+  join(PROTO_ROOT, file),
+);

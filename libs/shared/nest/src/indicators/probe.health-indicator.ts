@@ -5,6 +5,7 @@ import {
 } from '@nestjs/terminus';
 import { TOKENS } from '../constants/index.js';
 import type { ReadinessProbe } from '../interfaces/index.js';
+import { errorMessage } from '@toxictoast/shared-system';
 
 @Injectable()
 export class ProbeHealthIndicator {
@@ -25,9 +26,7 @@ export class ProbeHealthIndicator {
           }
           return indicator.down(result.details);
         } catch (error: unknown) {
-          return indicator.down({
-            message: error instanceof Error ? error.message : String(error),
-          });
+          return indicator.down({ message: errorMessage(error) });
         }
       };
     });

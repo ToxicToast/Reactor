@@ -3,7 +3,11 @@ import { DomainPersistence } from '@toxictoast/shared-application';
 import type { Clock } from '@toxictoast/shared-kernel';
 import { provideClass, TOKENS } from '@toxictoast/shared-nest';
 import { TransactionContext } from '@toxictoast/shared-persistence';
-import { describeError } from '@toxictoast/shared-system';
+import {
+  describeError,
+  SecretCipher,
+  secretKeyEnv,
+} from '@toxictoast/shared-system';
 import { TwitchBotGrpcController } from '@toxictoast/twitch-bot-api';
 import {
   CompleteAuthorizationUseCase,
@@ -24,8 +28,6 @@ import {
 } from '@toxictoast/twitch-bot-domain';
 import {
   requestAppToken,
-  TokenCipher,
-  tokenCipherKeyFromEnv,
   TwitchConnection,
   TwitchCredentialsCheck,
   twitchConfigFromEnv,
@@ -72,7 +74,7 @@ const logError = (error: unknown, context: string): void => {
     },
     {
       provide: TOKEN_CIPHER,
-      useFactory: () => new TokenCipher(tokenCipherKeyFromEnv()),
+      useFactory: () => new SecretCipher(secretKeyEnv('TWITCH_TOKEN_KEY')),
     },
 
     // ── Domain ──────────────────────────────────

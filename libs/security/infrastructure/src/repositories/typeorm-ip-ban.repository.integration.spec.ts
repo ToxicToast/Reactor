@@ -1,11 +1,11 @@
 import { ipBanAnemic } from '@toxictoast/security-application';
-import { PostgresTestDatabase } from '../testing/index.js';
+import { SecurityTestDatabase } from '../testing/index.js';
 import { TypeOrmIpBanRepository } from './typeorm-ip-ban.repository.js';
 
 const NOW = new Date('2026-10-23T12:10:00Z');
 
 describe('TypeOrmIpBanRepository', () => {
-  const database = new PostgresTestDatabase();
+  const database = new SecurityTestDatabase();
   let bans: TypeOrmIpBanRepository;
 
   beforeAll(async () => {

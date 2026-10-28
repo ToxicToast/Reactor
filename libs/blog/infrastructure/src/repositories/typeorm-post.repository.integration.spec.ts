@@ -8,7 +8,7 @@ import {
   type TagId,
 } from '@toxictoast/blog-domain';
 import { TypeOrmUnitOfWork } from '@toxictoast/shared-persistence';
-import { PostgresTestDatabase } from '../testing/index.js';
+import { BlogTestDatabase } from '../testing/index.js';
 import { TypeOrmPostRepository } from './typeorm-post.repository.js';
 
 const NOW = new Date('2026-10-20T10:00:00Z');
@@ -41,7 +41,7 @@ const post = (overrides: Partial<PostAnemic> = {}): PostAnemic => {
 };
 
 describe('TypeOrmPostRepository', () => {
-  const database = new PostgresTestDatabase();
+  const database = new BlogTestDatabase();
   let posts: TypeOrmPostRepository;
   let uow: TypeOrmUnitOfWork;
 

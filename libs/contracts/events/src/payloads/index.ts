@@ -25,3 +25,4 @@ export * from './twitch-poll-choice.payload.js';
 export * from './twitch-poll.payload.js';
 export * from './twitch-clip.payload.js';
 export * from './twitch-presence.payload.js';
+export * from './twitch-session.payload.js';

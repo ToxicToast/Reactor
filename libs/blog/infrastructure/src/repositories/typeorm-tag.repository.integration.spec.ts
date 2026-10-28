@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { TagAnemic, TagId } from '@toxictoast/blog-domain';
-import { PostgresTestDatabase } from '../testing/index.js';
+import { BlogTestDatabase } from '../testing/index.js';
 import { TypeOrmTagRepository } from './typeorm-tag.repository.js';
 
 const NOW = new Date('2026-10-20T10:00:00Z');
@@ -19,7 +19,7 @@ const tag = (overrides: Partial<TagAnemic> = {}): TagAnemic => {
 };
 
 describe('TypeOrmTagRepository', () => {
-  const database = new PostgresTestDatabase();
+  const database = new BlogTestDatabase();
   let tags: TypeOrmTagRepository;
 
   beforeAll(async () => {

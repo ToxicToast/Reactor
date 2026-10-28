@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { CategoryAnemic, CategoryId } from '@toxictoast/blog-domain';
-import { PostgresTestDatabase } from '../testing/index.js';
+import { BlogTestDatabase } from '../testing/index.js';
 import { TypeOrmCategoryRepository } from './typeorm-category.repository.js';
 
 const NOW = new Date('2026-10-20T10:00:00Z');
@@ -21,7 +21,7 @@ const category = (overrides: Partial<CategoryAnemic> = {}): CategoryAnemic => {
 };
 
 describe('TypeOrmCategoryRepository', () => {
-  const database = new PostgresTestDatabase();
+  const database = new BlogTestDatabase();
   let categories: TypeOrmCategoryRepository;
 
   beforeAll(async () => {

@@ -119,6 +119,15 @@
     },
     {
       "path": "./apps/twitch-bot"
+    },
+    {
+      "path": "./libs/shared/webhooks/application"
+    },
+    {
+      "path": "./libs/shared/webhooks/domain"
+    },
+    {
+      "path": "./libs/shared/webhooks/infrastructure"
     }
   ],
   "compilerOptions": {}

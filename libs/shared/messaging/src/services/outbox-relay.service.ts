@@ -1,32 +1,43 @@
 import type { Clock } from '@toxictoast/shared-kernel';
-import { OutboxSchema, type OutboxRow } from '@toxictoast/shared-persistence';
-import { In, type DataSource, type EntityManager } from 'typeorm';
+import {
+  OutboxSchema,
+  type AdvisoryLock,
+  type OutboxRow,
+} from '@toxictoast/shared-persistence';
+import type { PollingResult, PollingTask } from '@toxictoast/shared-system';
+import { In, type EntityManager } from 'typeorm';
+import {
+  EMPTY_OUTBOX_RELAY_RESULT,
+  OUTBOX_RELAY_LOCK,
+} from '../constants/index.js';
 import type {
   EventPublisher,
   OutboxRelayResult,
   PublishedEvent,
 } from '../interfaces/index.js';
 
-export class OutboxRelay {
+export class OutboxRelay implements PollingTask {
   constructor(
-    private readonly dataSource: DataSource,
+    private readonly lock: AdvisoryLock,
     private readonly publisher: EventPublisher,
     private readonly clock: Clock,
     readonly batchSize = 100,
   ) {}
 
+  async run(): Promise<PollingResult> {
+    const result = await this.relay();
+    return { processed: result.published, error: result.error };
+  }
+
   relay(): Promise<OutboxRelayResult> {
-    return this.dataSource.transaction((manager) => this.relayBatch(manager));
+    return this.lock.runExclusive(
+      OUTBOX_RELAY_LOCK,
+      (manager) => this.relayBatch(manager),
+      EMPTY_OUTBOX_RELAY_RESULT,
+    );
   }
 
   private async relayBatch(manager: EntityManager): Promise<OutboxRelayResult> {
-    const lock: Array<{ locked: boolean }> = await manager.query(
-      `SELECT pg_try_advisory_xact_lock(hashtext('outbox_relay')) AS locked`,
-    );
-    if (!lock[0]?.locked) {
-      return { published: 0, failed: 0, error: null };
-    }
-
     const outbox = manager.getRepository(OutboxSchema);
     const rows = await outbox
       .createQueryBuilder('o')
@@ -36,7 +47,7 @@ export class OutboxRelay {
       .limit(this.batchSize)
       .getMany();
     if (rows.length === 0) {
-      return { published: 0, failed: 0, error: null };
+      return EMPTY_OUTBOX_RELAY_RESULT;
     }
 
     const ids = rows.map((row) => row.event_id);

@@ -4,8 +4,8 @@ import {
   twitchChannelAnemic,
 } from '@toxictoast/twitch-bot-application';
 import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
-import { TokenCipher } from '../services/index.js';
-import { PostgresTestDatabase } from '../testing/index.js';
+import { SecretCipher } from '@toxictoast/shared-system';
+import { TwitchBotTestDatabase } from '../testing/index.js';
 import { TypeOrmChatterRepository } from './typeorm-chatter.repository.js';
 import { TypeOrmPublishedClipLedger } from './typeorm-published-clip.ledger.js';
 import { TypeOrmTwitchChannelRepository } from './typeorm-twitch-channel.repository.js';
@@ -23,7 +23,7 @@ const chatter = (id: string) => ({
 });
 
 describe('twitch-bot persistence', () => {
-  const database = new PostgresTestDatabase();
+  const database = new TwitchBotTestDatabase();
   let channels: TypeOrmTwitchChannelRepository;
   let chatters: TypeOrmChatterRepository;
   let tokens: TypeOrmTwitchTokenStore;
@@ -42,7 +42,7 @@ describe('twitch-bot persistence', () => {
     tokens = new TypeOrmTwitchTokenStore(
       database.dataSource,
       database.context,
-      new TokenCipher(randomBytes(32)),
+      new SecretCipher(randomBytes(32)),
       clock,
     );
     ledger = new TypeOrmPublishedClipLedger(

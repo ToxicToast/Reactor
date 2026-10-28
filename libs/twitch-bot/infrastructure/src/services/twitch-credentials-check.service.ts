@@ -2,6 +2,7 @@ import type { Clock } from '@toxictoast/shared-kernel';
 import type { Nullable } from '@toxictoast/shared-types';
 import { TWITCH_CREDENTIALS_TTL } from '../constants';
 import type { TwitchCredentialsStatus } from '../interfaces';
+import { errorMessage } from '@toxictoast/shared-system';
 
 export class TwitchCredentialsCheck {
   private last: Nullable<TwitchCredentialsStatus> = null;
@@ -32,7 +33,7 @@ export class TwitchCredentialsCheck {
     } catch (error: unknown) {
       status = {
         valid: false,
-        message: error instanceof Error ? error.message : String(error),
+        message: errorMessage(error),
         checked_at: this.clock.now(),
       };
     }
