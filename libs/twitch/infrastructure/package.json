@@ -1,0 +1,34 @@
+{
+  "name": "@toxictoast/twitch-infrastructure",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "nx": {
+    "name": "twitch-infrastructure",
+    "tags": [
+      "scope:twitch",
+      "type:infrastructure"
+    ],
+    "targets": {
+      "integration": {}
+    }
+  },
+  "dependencies": {
+    "@toxictoast/shared-persistence": "*",
+    "@toxictoast/shared-types": "*",
+    "@toxictoast/shared-webhooks-infrastructure": "*",
+    "@toxictoast/twitch-application": "*",
+    "@toxictoast/twitch-domain": "*",
+    "ioredis": "^5.11.1",
+    "typeorm": "^1.1.2"
+  }
+}
