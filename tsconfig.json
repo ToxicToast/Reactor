@@ -131,6 +131,9 @@
     },
     {
       "path": "./libs/twitch/domain"
+    },
+    {
+      "path": "./libs/twitch/application"
     }
   ],
   "compilerOptions": {}

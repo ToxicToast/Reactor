@@ -6,7 +6,7 @@ import {
   type WebhookId,
   type WebhookRepository,
 } from '@toxictoast/shared-webhooks-domain';
-import { paginate } from './paginate.function.js';
+import { paginate } from '@toxictoast/shared-application';
 
 export class InMemoryWebhookRepository implements WebhookRepository {
   readonly items = new Map<WebhookId, WebhookAnemic>();

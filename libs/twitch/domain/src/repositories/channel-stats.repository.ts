@@ -1,4 +1,4 @@
-import type { StatsRange, TimelinePoint } from '../interfaces/index.js';
+import type { ClosedDayRange, TimelinePoint } from '../interfaces/index.js';
 import type {
   ChannelDayCounters,
   StatsIntervalValue,
@@ -16,6 +16,6 @@ export interface ChannelStatsRepository {
     channelId: string,
     metric: TimelineMetric,
     interval: StatsIntervalValue,
-    range: Required<StatsRange>,
+    range: ClosedDayRange,
   ): Promise<Array<TimelinePoint>>;
 }

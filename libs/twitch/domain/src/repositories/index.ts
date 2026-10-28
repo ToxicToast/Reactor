@@ -5,3 +5,4 @@ export * from './chatter-activity.repository.js';
 export * from './presence.repository.js';
 export * from './reward-stats.repository.js';
 export * from './poll.repository.js';
+export * from './channel-directory.repository.js';
