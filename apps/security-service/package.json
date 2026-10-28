@@ -112,10 +112,8 @@
     "@toxictoast/shared-application": "*",
     "@toxictoast/shared-nest": "*",
     "@toxictoast/shared-persistence": "*",
-    "@toxictoast/shared-system": "*",
     "@nestjs/microservices": "^11.2.7",
     "@grpc/grpc-js": "^1.14.6",
-    "ioredis": "^5.11.1",
     "typeorm": "^1.1.2"
   },
   "devDependencies": {

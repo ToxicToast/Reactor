@@ -11,3 +11,4 @@ export * from './persistence-module-options.interface.js';
 export * from './readiness-result.interface.js';
 export * from './readiness-probe.interface.js';
 export * from './readiness-probes-provider.interface.js';
+export * from './redis-module-options.interface.js';

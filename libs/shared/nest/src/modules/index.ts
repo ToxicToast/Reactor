@@ -5,3 +5,4 @@ export * from './messaging.module.js';
 export * from './health.module.js';
 export * from './metrics.module.js';
 export * from './grpc-client.module.js';
+export * from './redis.module.js';

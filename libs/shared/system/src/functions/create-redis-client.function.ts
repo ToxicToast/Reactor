@@ -1,5 +1,5 @@
-import type { RedisConnection } from '@toxictoast/shared-system';
 import { Redis } from 'ioredis';
+import type { RedisConnection } from '../interfaces/index.js';
 
 export const createRedisClient = (connection: RedisConnection): Redis => {
   return new Redis({
