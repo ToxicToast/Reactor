@@ -1,0 +1,6 @@
+import type { RewardRef, RewardStat, StatsRange } from '../interfaces/index.js';
+
+export interface RewardStatsRepository {
+  increment(channelId: string, reward: RewardRef, day: string): Promise<void>;
+  list(channelId: string, range: StatsRange): Promise<Array<RewardStat>>;
+}

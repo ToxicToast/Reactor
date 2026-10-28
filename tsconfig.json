@@ -128,6 +128,9 @@
     },
     {
       "path": "./libs/shared/webhooks/infrastructure"
+    },
+    {
+      "path": "./libs/twitch/domain"
     }
   ],
   "compilerOptions": {}

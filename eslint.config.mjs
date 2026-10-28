@@ -159,6 +159,15 @@ export default [
                 'scope:types',
               ],
             },
+            {
+              sourceTag: 'scope:twitch',
+              onlyDependOnLibsWithTags: [
+                'scope:twitch',
+                'scope:contracts',
+                'scope:shared',
+                'scope:types',
+              ],
+            },
           ],
         },
       ],
