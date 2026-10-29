@@ -19,11 +19,21 @@
       "type:infrastructure"
     ],
     "targets": {
+      "migration-generate": {
+        "command": "tsx --env-file=libs/twitch/infrastructure/.env node_modules/typeorm/cli.js migration:generate -d libs/twitch/infrastructure/typeorm.data-source.ts libs/twitch/infrastructure/src/migrations/{args.name}"
+      },
+      "migration-run": {
+        "command": "tsx --env-file=libs/twitch/infrastructure/.env node_modules/typeorm/cli.js migration:run -d libs/twitch/infrastructure/typeorm.data-source.ts"
+      },
+      "migration-revert": {
+        "command": "tsx --env-file=libs/twitch/infrastructure/.env node_modules/typeorm/cli.js migration:revert -d libs/twitch/infrastructure/typeorm.data-source.ts"
+      },
       "integration": {}
     }
   },
   "dependencies": {
     "@toxictoast/shared-persistence": "*",
+    "@toxictoast/shared-system": "*",
     "@toxictoast/shared-types": "*",
     "@toxictoast/shared-webhooks-infrastructure": "*",
     "@toxictoast/twitch-application": "*",

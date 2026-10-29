@@ -37,7 +37,10 @@
     "@nestjs/core": "^11.0.0",
     "rxjs": "^7.8.2",
     "@grpc/grpc-js": "^1.14.6",
-    "ioredis": "^5.11.1"
+    "ioredis": "^5.11.1",
+    "@toxictoast/shared-webhooks-application": "*",
+    "@toxictoast/shared-webhooks-domain": "*",
+    "@toxictoast/shared-webhooks-infrastructure": "*"
   },
   "devDependencies": {
     "@nestjs/testing": "^11.0.0"

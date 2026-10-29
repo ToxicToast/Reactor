@@ -9,3 +9,4 @@ export * from './counter-columns.function.js';
 export * from './primary-column.function.js';
 export * from './decode-feed-event.function.js';
 export * from './decode-live-channels.function.js';
+export * from './twitch-stats-config-from-env.function.js';

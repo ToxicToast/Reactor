@@ -16,6 +16,7 @@
     "serve:security": "nx serve security-service",
     "serve:audit": "nx serve audit-service",
     "serve:twitchbot": "nx serve twitch-bot",
+    "serve:twitch": "nx serve twitch-service",
     "prepare": "husky",
     "lint:staged": "lint-staged"
   },

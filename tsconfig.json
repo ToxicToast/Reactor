@@ -140,6 +140,9 @@
     },
     {
       "path": "./libs/twitch/api"
+    },
+    {
+      "path": "./apps/twitch-service"
     }
   ],
   "compilerOptions": {}
