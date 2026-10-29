@@ -38,3 +38,10 @@ export interface GetTimelineInput extends ChannelQuery {
   readonly from: Date;
   readonly to: Date;
 }
+
+export interface ListChatMessagesInput extends RangeQuery, PageQuery {
+  readonly user_id?: Optional<string>;
+  readonly session_id?: Optional<string>;
+  readonly query?: Optional<string>;
+  readonly include_deleted?: Optional<boolean>;
+}

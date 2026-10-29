@@ -7,3 +7,4 @@ export * from './get-leaderboard.usecase.js';
 export * from './get-timeline.usecase.js';
 export * from './list-rewards.usecase.js';
 export * from './list-polls.usecase.js';
+export * from './list-chat-messages.usecase.js';

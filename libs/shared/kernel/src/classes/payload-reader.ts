@@ -24,7 +24,6 @@ const isList = (value: unknown): value is ReadonlyArray<unknown> => {
   return Array.isArray(value);
 };
 
-/** Liest Felder typsicher aus einem unbekannten Payload und wirft bei falschen Typen. */
 export class PayloadReader {
   private readonly values: PayloadRecord;
 
@@ -70,6 +69,15 @@ export class PayloadReader {
   list(key: string): Array<PayloadReader> {
     return this.read(key, isList, 'a list').map((item) => {
       return new PayloadReader(item);
+    });
+  }
+
+  stringList(key: string): Array<string> {
+    return this.read(key, isList, 'a list').map((item, index) => {
+      if (!isString(item)) {
+        throw new InvalidPayloadError(`${key}[${index}] must be a string`);
+      }
+      return item;
     });
   }
 

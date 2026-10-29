@@ -1,6 +1,7 @@
 import { OutboxSchema } from '@toxictoast/shared-persistence';
 import { webhookSchemas } from '@toxictoast/shared-webhooks-infrastructure';
 import { TwitchChannelDaySchema } from './twitch-channel-day.schema.js';
+import { TwitchChatMessageSchema } from './twitch-chat-message.schema.js';
 import { TwitchChatterDaySchema } from './twitch-chatter-day.schema.js';
 import { TwitchEventSchema } from './twitch-event.schema.js';
 import { TwitchKnownChannelSchema } from './twitch-known-channel.schema.js';
@@ -26,6 +27,7 @@ export const twitchSchemas = [
   TwitchPollSchema,
   TwitchKnownChannelSchema,
   TwitchEventSchema,
+  TwitchChatMessageSchema,
   OutboxSchema,
   ...webhookSchemas,
 ];

@@ -6,3 +6,4 @@ export * from './presence.repository.js';
 export * from './reward-stats.repository.js';
 export * from './poll.repository.js';
 export * from './channel-directory.repository.js';
+export * from './chat-message.repository.js';

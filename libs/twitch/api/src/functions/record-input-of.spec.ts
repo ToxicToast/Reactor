@@ -1,10 +1,24 @@
 import { InvalidPayloadError, PayloadReader } from '@toxictoast/shared-kernel';
-import { ObservationKinds } from '@toxictoast/twitch-domain';
+import { ChatChangeKinds } from '@toxictoast/twitch-application';
+import {
+  ChatDeletionReasons,
+  ObservationKinds,
+} from '@toxictoast/twitch-domain';
 import type { IncomingTwitchEvent } from '../interfaces/index.js';
 import { incomingTwitchEvent, TEST_VIEWER } from '../testing/index.js';
 import { recordInputOf } from './record-input-of.function.js';
 
 const OCCURRED_AT = new Date('2026-10-28T20:00:00.000Z');
+
+const CHAT_PAYLOAD = {
+  ...TEST_VIEWER,
+  message_id: 'message-1',
+  text: 'Hallo Chat',
+  color: '#FF7F50',
+  badges: ['subscriber'],
+  bits: 50,
+  reply_to_message_id: null,
+};
 
 const inputOf = (event: IncomingTwitchEvent) => {
   return recordInputOf(event, new PayloadReader(event.payload));
@@ -13,10 +27,7 @@ const inputOf = (event: IncomingTwitchEvent) => {
 describe('recordInputOf', () => {
   it('maps a chat message with defaults', () => {
     const input = inputOf(
-      incomingTwitchEvent('twitch.chat', 'message', {
-        ...TEST_VIEWER,
-        bits: 50,
-      }),
+      incomingTwitchEvent('twitch.chat', 'message', CHAT_PAYLOAD),
     );
 
     expect(input.event).toMatchObject({
@@ -41,6 +52,47 @@ describe('recordInputOf', () => {
       poll: null,
       stream_id: null,
     });
+    expect(input.chat).toEqual({
+      kind: ChatChangeKinds.POSTED,
+      message: {
+        message_id: 'message-1',
+        channel_id: '123456',
+        ...TEST_VIEWER,
+        text: 'Hallo Chat',
+        color: '#FF7F50',
+        badges: ['subscriber'],
+        bits: 50,
+        reply_to_message_id: null,
+        sent_at: OCCURRED_AT,
+      },
+    });
+  });
+
+  it('maps deletions, bans and timeouts to chat changes', () => {
+    const deleted = inputOf(
+      incomingTwitchEvent('twitch.chat', 'message_deleted', {
+        ...TEST_VIEWER,
+        message_id: 'message-1',
+      }),
+    );
+    const timeout = inputOf(
+      incomingTwitchEvent('twitch.moderation', 'timeout', TEST_VIEWER),
+    );
+
+    expect(deleted.chat).toEqual({
+      kind: ChatChangeKinds.DELETED,
+      channel_id: '123456',
+      message_id: 'message-1',
+      at: OCCURRED_AT,
+    });
+    expect(timeout.chat).toEqual({
+      kind: ChatChangeKinds.CLEARED,
+      channel_id: '123456',
+      user_id: '42',
+      reason: ChatDeletionReasons.TIMED_OUT,
+      at: OCCURRED_AT,
+    });
+    expect(timeout.observation).toBeNull();
   });
 
   it('starts sessions at the stream start, not at the observation', () => {

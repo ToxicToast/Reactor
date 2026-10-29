@@ -305,6 +305,39 @@ export interface ListTwitchWebhookDeliveriesResponse {
   deliveries: TwitchWebhookDelivery[];
 }
 
+export interface ChatMessage {
+  message_id: string;
+  channel_id: string;
+  user_id: string;
+  user_login: string;
+  user_name: string;
+  text: string;
+  color?: string | undefined;
+  badges: string[];
+  bits: number;
+  reply_to_message_id?: string | undefined;
+  session_id?: string | undefined;
+  sent_at: string;
+  deleted_at?: string | undefined;
+  deleted_reason?: string | undefined;
+}
+
+export interface ListChatMessagesRequest {
+  channel_id: string;
+  user_id?: string | undefined;
+  session_id?: string | undefined;
+  query?: string | undefined;
+  from?: string | undefined;
+  to?: string | undefined;
+  include_deleted: boolean;
+  limit?: number | undefined;
+  offset?: number | undefined;
+}
+
+export interface ListChatMessagesResponse {
+  messages: ChatMessage[];
+}
+
 export interface TwitchServiceClient {
   listStatsChannels(request: ListStatsChannelsRequest, metadata?: Metadata): Observable<ListStatsChannelsResponse>;
 
@@ -319,6 +352,8 @@ export interface TwitchServiceClient {
   listRewards(request: ListRewardsRequest, metadata?: Metadata): Observable<ListRewardsResponse>;
 
   listPolls(request: ListPollsRequest, metadata?: Metadata): Observable<ListPollsResponse>;
+
+  listChatMessages(request: ListChatMessagesRequest, metadata?: Metadata): Observable<ListChatMessagesResponse>;
 
   watchLive(request: WatchLiveRequest, metadata?: Metadata): Observable<WatchLiveResponse>;
 
@@ -388,6 +423,11 @@ export interface TwitchServiceController {
     metadata?: Metadata,
   ): Promise<ListPollsResponse> | Observable<ListPollsResponse> | ListPollsResponse;
 
+  listChatMessages(
+    request: ListChatMessagesRequest,
+    metadata?: Metadata,
+  ): Promise<ListChatMessagesResponse> | Observable<ListChatMessagesResponse> | ListChatMessagesResponse;
+
   watchLive(request: WatchLiveRequest, metadata?: Metadata): Observable<WatchLiveResponse>;
 
   watchEvents(request: WatchEventsRequest, metadata?: Metadata): Observable<WatchEventsResponse>;
@@ -439,6 +479,7 @@ export function TwitchServiceControllerMethods() {
       "getTimeline",
       "listRewards",
       "listPolls",
+      "listChatMessages",
       "watchLive",
       "watchEvents",
       "createTwitchWebhook",

@@ -36,6 +36,16 @@ describe('PayloadReader', () => {
     expect(() => new PayloadReader('nope')).toThrow(InvalidPayloadError);
     expect(() => new PayloadReader([1, 2])).toThrow(InvalidPayloadError);
   });
+
+  it('reads lists of strings', () => {
+    const badges = new PayloadReader({
+      badges: ['vip', 'subscriber'],
+      bad: [1],
+    });
+
+    expect(badges.stringList('badges')).toEqual(['vip', 'subscriber']);
+    expect(() => badges.stringList('bad')).toThrow('bad[0] must be a string');
+  });
 });
 
 describe('readPayload', () => {

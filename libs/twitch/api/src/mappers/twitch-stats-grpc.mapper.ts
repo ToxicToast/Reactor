@@ -1,4 +1,5 @@
 import type {
+  ChatMessage as ProtoChatMessage,
   LiveChannel as ProtoLiveChannel,
   StatsChannel as ProtoStatsChannel,
   StreamSession as ProtoStreamSession,
@@ -13,6 +14,7 @@ import type {
 } from '@toxictoast/twitch-application';
 import {
   SESSION_COUNTER_KEYS,
+  type ChatMessage,
   type StoredPoll,
   type StreamSessionAnemic,
 } from '@toxictoast/twitch-domain';
@@ -56,6 +58,25 @@ export class TwitchStatsGrpcMapper {
       started_at: poll.started_at.toISOString(),
       ends_at: toIso(poll.ends_at),
       ended_at: toIso(poll.ended_at),
+    };
+  }
+
+  toChatMessage(message: ChatMessage): ProtoChatMessage {
+    return {
+      message_id: message.message_id,
+      channel_id: message.channel_id,
+      user_id: message.user_id,
+      user_login: message.user_login,
+      user_name: message.user_name,
+      text: message.text,
+      color: message.color ?? undefined,
+      badges: [...message.badges],
+      bits: message.bits,
+      reply_to_message_id: message.reply_to_message_id ?? undefined,
+      session_id: message.session_id ?? undefined,
+      sent_at: message.sent_at.toISOString(),
+      deleted_at: toIso(message.deleted_at),
+      deleted_reason: message.deleted_reason ?? undefined,
     };
   }
 

@@ -6,4 +6,5 @@ export * from './typeorm-presence.repository.js';
 export * from './typeorm-reward-stats.repository.js';
 export * from './typeorm-poll.repository.js';
 export * from './typeorm-channel-directory.repository.js';
+export * from './typeorm-chat-message.repository.js';
 export * from './typeorm-twitch-event-log.js';

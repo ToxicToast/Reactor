@@ -5,3 +5,6 @@ export * from './stats-channel.interface.js';
 export * from './twitch-feed.interface.js';
 export * from './twitch-feed-source.interface.js';
 export * from './twitch-stats-config.interface.js';
+export * from './chat-message-posted.interface.js';
+export * from './chat-message-deleted.interface.js';
+export * from './chat-user-cleared.interface.js';

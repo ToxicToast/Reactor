@@ -14,3 +14,5 @@ export * from './reward-stat.interface.js';
 export * from './stored-poll.interface.js';
 export * from './presence-entry.interface.js';
 export * from './known-channel.interface.js';
+export * from './chat-message.interface.js';
+export * from './chat-message-filter.interface.js';

@@ -30,11 +30,14 @@ import {
   type WatchEventsRequest,
   type WatchEventsResponse,
   type WatchLiveResponse,
+  ListChatMessagesRequest,
+  ListChatMessagesResponse,
 } from '@toxictoast/contracts-grpc';
 import {
   mapEnum,
   mapOptionalEnum,
   parseId,
+  parseOptionalUuid,
   requireDate,
   requirePermission,
   unwrap,
@@ -53,6 +56,7 @@ import {
   GetLiveStatusUseCase,
   GetSessionUseCase,
   GetTimelineUseCase,
+  ListChatMessagesUseCase,
   ListPollsUseCase,
   ListRewardsUseCase,
   ListSessionsUseCase,
@@ -93,6 +97,7 @@ export class TwitchGrpcController implements TwitchServiceController {
     private readonly getTimelineUseCase: GetTimelineUseCase,
     private readonly listRewardsUseCase: ListRewardsUseCase,
     private readonly listPollsUseCase: ListPollsUseCase,
+    private readonly listChatMessagesUseCase: ListChatMessagesUseCase,
     private readonly createWebhookUseCase: CreateWebhookUseCase,
     private readonly listWebhooksUseCase: ListWebhooksUseCase,
     private readonly updateWebhookUseCase: UpdateWebhookUseCase,
@@ -179,6 +184,29 @@ export class TwitchGrpcController implements TwitchServiceController {
       }),
     );
     return { polls: polls.map((poll) => this.stats.toPoll(poll)) };
+  }
+
+  /** Chat-Texte sind kein öffentlicher Stats-Wert, deshalb wie WatchEvents nur mit twitch.stats.read. */
+  async listChatMessages(
+    request: ListChatMessagesRequest,
+  ): Promise<ListChatMessagesResponse> {
+    requirePermission(this.actors.current(), TwitchPermission.STATS_READ);
+    const messages = unwrap(
+      await this.listChatMessagesUseCase.execute({
+        ...rangeQueryOf(request),
+        user_id: request.user_id
+          ? parseChannelId(request.user_id, 'user_id')
+          : undefined,
+        session_id: parseOptionalUuid(request.session_id, 'session_id'),
+        query: request.query,
+        include_deleted: request.include_deleted,
+        limit: request.limit,
+        offset: request.offset,
+      }),
+    );
+    return {
+      messages: messages.map((message) => this.stats.toChatMessage(message)),
+    };
   }
 
   // ── Streams ───────────────────────────────────

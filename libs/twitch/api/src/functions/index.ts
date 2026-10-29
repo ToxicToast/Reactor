@@ -7,6 +7,8 @@ export * from './pick-counters.function.js';
 export * from './parse-channel-id.function.js';
 export * from './range-query-of.function.js';
 export * from './event-filter-of.function.js';
+export * from './mapper-for.function.js';
 export * from './observation-of.function.js';
+export * from './chat-change-of.function.js';
 export * from './recorded-event-of.function.js';
 export * from './record-input-of.function.js';

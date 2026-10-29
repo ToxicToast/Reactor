@@ -1,6 +1,7 @@
 export * from './test-context.js';
 export * from './range-filters.js';
 export * from './observation.fixture.js';
+export * from './chat-message.fixture.js';
 export * from './in-memory-stream-session.repository.js';
 export * from './in-memory-channel-stats.repository.js';
 export * from './in-memory-viewer-stats.repository.js';
@@ -9,6 +10,7 @@ export * from './in-memory-presence.repository.js';
 export * from './in-memory-reward-stats.repository.js';
 export * from './in-memory-poll.repository.js';
 export * from './in-memory-channel-directory.repository.js';
+export * from './in-memory-chat-message.repository.js';
 export * from './in-memory-twitch-event-log.js';
 export * from './recording-twitch-feed.js';
 export * from './twitch-test-harness.js';

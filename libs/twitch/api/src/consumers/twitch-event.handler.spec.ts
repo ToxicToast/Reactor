@@ -13,12 +13,21 @@ describe('TwitchEventHandler', () => {
 
   it('records valid events', async () => {
     await handler.handle(
-      incomingTwitchEvent('twitch.chat', 'message', TEST_VIEWER),
+      incomingTwitchEvent('twitch.chat', 'message', {
+        ...TEST_VIEWER,
+        message_id: 'message-1',
+        text: 'Hallo',
+        color: null,
+        badges: [],
+        bits: 0,
+        reply_to_message_id: null,
+      }),
     );
 
     expect(harness.channelStats.counters('123456', '2026-10-28').messages).toBe(
       1,
     );
+    expect(harness.chatMessages.items.get('message-1')?.text).toBe('Hallo');
     expect(harness.eventLog.events.size).toBe(1);
   });
 

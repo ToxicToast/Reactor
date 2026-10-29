@@ -1,17 +1,17 @@
-import { eventKey, type PayloadReader } from '@toxictoast/shared-kernel';
+import type { PayloadReader } from '@toxictoast/shared-kernel';
 import type { Nullable } from '@toxictoast/shared-types';
 import type { TwitchObservation } from '@toxictoast/twitch-domain';
 import { OBSERVATION_MAPPERS } from '../constants/observation-mappers.constant.js';
 import type { IncomingTwitchEvent } from '../interfaces/index.js';
 import { channelOf } from './channel-of.function.js';
+import { mapperFor } from './mapper-for.function.js';
 
 export const observationOf = (
   event: IncomingTwitchEvent,
   payload: PayloadReader,
   occurredAt: Date,
 ): Nullable<TwitchObservation> => {
-  const mapper =
-    OBSERVATION_MAPPERS[eventKey(event.event_namespace, event.event_name)];
+  const mapper = mapperFor(OBSERVATION_MAPPERS, event);
   if (!mapper) {
     return null;
   }

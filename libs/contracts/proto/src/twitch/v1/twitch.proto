@@ -10,6 +10,7 @@ service TwitchService {
   rpc GetTimeline(GetTimelineRequest) returns (GetTimelineResponse);
   rpc ListRewards(ListRewardsRequest) returns (ListRewardsResponse);
   rpc ListPolls(ListPollsRequest) returns (ListPollsResponse);
+  rpc ListChatMessages(ListChatMessagesRequest) returns (ListChatMessagesResponse);
   rpc WatchLive(WatchLiveRequest) returns (stream WatchLiveResponse);
   rpc WatchEvents(WatchEventsRequest) returns (stream WatchEventsResponse);
   rpc CreateTwitchWebhook(CreateTwitchWebhookRequest) returns (CreateTwitchWebhookResponse);
@@ -311,4 +312,37 @@ message ListTwitchWebhookDeliveriesRequest {
 
 message ListTwitchWebhookDeliveriesResponse {
   repeated TwitchWebhookDelivery deliveries = 1;
+}
+
+message ChatMessage {
+  string message_id = 1;
+  string channel_id = 2;
+  string user_id = 3;
+  string user_login = 4;
+  string user_name = 5;
+  string text = 6;
+  optional string color = 7;
+  repeated string badges = 8;
+  int32 bits = 9;
+  optional string reply_to_message_id = 10;
+  optional string session_id = 11;
+  string sent_at = 12;
+  optional string deleted_at = 13;
+  optional string deleted_reason = 14;
+}
+
+message ListChatMessagesRequest {
+  string channel_id = 1;
+  optional string user_id = 2;
+  optional string session_id = 3;
+  optional string query = 4;
+  optional string from = 5;
+  optional string to = 6;
+  bool include_deleted = 7;
+  optional int32 limit = 8;
+  optional int32 offset = 9;
+}
+
+message ListChatMessagesResponse {
+  repeated ChatMessage messages = 1;
 }

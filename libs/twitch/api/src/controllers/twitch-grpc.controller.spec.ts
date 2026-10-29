@@ -24,15 +24,18 @@ import {
 } from '@toxictoast/shared-webhooks-application';
 import { WebhookFactory } from '@toxictoast/shared-webhooks-domain';
 import {
+  ChatChangeKinds,
   GetLeaderboardUseCase,
   GetLiveStatusUseCase,
   GetSessionUseCase,
   GetTimelineUseCase,
+  ListChatMessagesUseCase,
   ListPollsUseCase,
   ListRewardsUseCase,
   ListSessionsUseCase,
   ListStatsChannelsUseCase,
   observation,
+  postedChatMessage,
   TWITCH_TEST_CHANNEL,
   TwitchTestHarness,
   viewer,
@@ -81,6 +84,7 @@ describe('TwitchGrpcController', () => {
       new GetTimelineUseCase(harness.channelStats, harness.config),
       new ListRewardsUseCase(harness.rewards, harness.config),
       new ListPollsUseCase(harness.polls),
+      new ListChatMessagesUseCase(harness.chatMessages),
       new CreateWebhookUseCase(webhookFactory, harness.webhooks, secrets),
       new ListWebhooksUseCase(harness.webhooks),
       new UpdateWebhookUseCase(webhookFactory, harness.webhooks),
@@ -117,6 +121,39 @@ describe('TwitchGrpcController', () => {
           stream_id: 'stream-1',
           messages: 1,
           ended_at: undefined,
+        }),
+      ]);
+    });
+
+    it('requires the stats permission for the chat log', async () => {
+      expect(
+        await grpcCode(
+          controller.listChatMessages({
+            channel_id: CHANNEL_ID,
+            include_deleted: false,
+          }),
+        ),
+      ).toBe(status.UNAUTHENTICATED);
+    });
+
+    it('lists chat messages for readers', async () => {
+      actors.actor = testActor([TwitchPermission.STATS_READ]);
+      await harness.chat({
+        kind: ChatChangeKinds.POSTED,
+        message: postedChatMessage('m1', { text: 'Hallo Chat' }),
+      });
+
+      const response = await controller.listChatMessages({
+        channel_id: CHANNEL_ID,
+        query: 'hallo',
+        include_deleted: false,
+      });
+
+      expect(response.messages).toEqual([
+        expect.objectContaining({
+          message_id: 'm1',
+          text: 'Hallo Chat',
+          deleted_at: undefined,
         }),
       ]);
     });

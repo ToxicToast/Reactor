@@ -9,11 +9,13 @@ import {
   TwitchGrpcController,
 } from '@toxictoast/twitch-api';
 import {
+  ChatLogRecorder,
   CounterRecorder,
   GetLeaderboardUseCase,
   GetLiveStatusUseCase,
   GetSessionUseCase,
   GetTimelineUseCase,
+  ListChatMessagesUseCase,
   ListPollsUseCase,
   ListRewardsUseCase,
   ListSessionsUseCase,
@@ -29,6 +31,7 @@ import {
   twitchStatsConfigFromEnv,
   TypeOrmChannelDirectoryRepository,
   TypeOrmChannelStatsRepository,
+  TypeOrmChatMessageRepository,
   TypeOrmChatterActivityRepository,
   TypeOrmPollRepository,
   TypeOrmPresenceRepository,
@@ -41,13 +44,20 @@ import { DataSource } from 'typeorm';
 import { TWITCH_SERVICE_TOKENS } from './constants/index.js';
 import { TwitchFeedLifecycle } from './lifecycles/index.js';
 
-const { STATS_CONFIG, TWITCH_EVENT_LOG } = TWITCH_SERVICE_TOKENS;
-const { STREAM_SESSION_REPOSITORY, CHANNEL_STATS_REPOSITORY } =
-  TWITCH_SERVICE_TOKENS;
-const { VIEWER_STATS_REPOSITORY, CHATTER_ACTIVITY_REPOSITORY } =
-  TWITCH_SERVICE_TOKENS;
-const { PRESENCE_REPOSITORY, REWARD_STATS_REPOSITORY } = TWITCH_SERVICE_TOKENS;
-const { POLL_REPOSITORY, CHANNEL_DIRECTORY_REPOSITORY } = TWITCH_SERVICE_TOKENS;
+const {
+  STATS_CONFIG,
+  TWITCH_EVENT_LOG,
+  STREAM_SESSION_REPOSITORY,
+  CHANNEL_STATS_REPOSITORY,
+  VIEWER_STATS_REPOSITORY,
+  CHATTER_ACTIVITY_REPOSITORY,
+  PRESENCE_REPOSITORY,
+  REWARD_STATS_REPOSITORY,
+  POLL_REPOSITORY,
+  CHANNEL_DIRECTORY_REPOSITORY,
+  CHAT_MESSAGE_REPOSITORY,
+} = TWITCH_SERVICE_TOKENS;
+
 const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER } = TOKENS;
 const DATABASE = [DataSource, TransactionContext];
 
@@ -92,6 +102,11 @@ const DATABASE = [DataSource, TransactionContext];
     ),
     provideClass(TypeOrmPollRepository, DATABASE, POLL_REPOSITORY),
     provideClass(
+      TypeOrmChatMessageRepository,
+      DATABASE,
+      CHAT_MESSAGE_REPOSITORY,
+    ),
+    provideClass(
       TypeOrmChannelDirectoryRepository,
       DATABASE,
       CHANNEL_DIRECTORY_REPOSITORY,
@@ -129,6 +144,10 @@ const DATABASE = [DataSource, TransactionContext];
       REWARD_STATS_REPOSITORY,
       STATS_CONFIG,
     ]),
+    provideClass(ChatLogRecorder, [
+      CHAT_MESSAGE_REPOSITORY,
+      STREAM_SESSION_REPOSITORY,
+    ]),
 
     // ── Use Cases ───────────────────────────────
     provideClass(RecordTwitchEventUseCase, [
@@ -140,11 +159,13 @@ const DATABASE = [DataSource, TransactionContext];
       SessionTracker,
       PresenceTracker,
       CounterRecorder,
+      ChatLogRecorder,
       DispatchWebhookEventUseCase,
       LiveStatusReader,
       RedisTwitchFeed,
       UNIT_OF_WORK,
     ]),
+    provideClass(ListChatMessagesUseCase, [CHAT_MESSAGE_REPOSITORY]),
     provideClass(ListStatsChannelsUseCase, [
       CHANNEL_DIRECTORY_REPOSITORY,
       STREAM_SESSION_REPOSITORY,
