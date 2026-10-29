@@ -3,13 +3,18 @@ import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
 } from '@toxictoast/shared-application';
+import type { Result } from '@toxictoast/shared-kernel';
 import {
   DispatchWebhookEventUseCase,
   InMemoryWebhookDeliveryRepository,
   InMemoryWebhookRepository,
 } from '@toxictoast/shared-webhooks-application';
 import { WebhookDeliveryFactory } from '@toxictoast/shared-webhooks-domain';
-import { StreamSessionFactory } from '@toxictoast/twitch-domain';
+import {
+  StreamSessionFactory,
+  type TwitchObservation,
+} from '@toxictoast/twitch-domain';
+import type { RecordTwitchEventOutput } from '../data/index.js';
 import {
   CounterRecorder,
   LiveStatusReader,
@@ -91,4 +96,22 @@ export class TwitchTestHarness {
     this.feed,
     this.uow,
   );
+
+  observe(
+    observation: TwitchObservation,
+    topic = 'twitch.chat',
+    name = 'message',
+  ): Promise<Result<RecordTwitchEventOutput>> {
+    return this.record.execute({
+      event: {
+        event_id: observation.event_id,
+        topic,
+        name,
+        channel_id: observation.channel.channel_id,
+        occurred_at: observation.occurred_at,
+        payload: { channel_login: observation.channel.channel_login },
+      },
+      observation,
+    });
+  }
 }

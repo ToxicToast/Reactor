@@ -4,3 +4,4 @@ export * from './not-found.error.js';
 export * from './validation.error.js';
 export * from './value.error.js';
 export * from './forbidden.error.js';
+export * from './invalid-payload.error.js';

@@ -16,21 +16,12 @@ describe('twitch stats queries', () => {
   let harness: TwitchTestHarness;
 
   const message = (userId: string, time: string) => {
-    const input = observation({
-      user: viewer(userId),
-      occurred_at: new Date(`2026-10-${time}Z`),
-    });
-    return harness.record.execute({
-      event: {
-        event_id: input.event_id,
-        topic: 'twitch.chat',
-        name: 'message',
-        channel_id: CHANNEL_ID,
-        occurred_at: input.occurred_at,
-        payload: {},
-      },
-      observation: input,
-    });
+    return harness.observe(
+      observation({
+        user: viewer(userId),
+        occurred_at: new Date(`2026-10-${time}Z`),
+      }),
+    );
   };
 
   beforeEach(() => {
@@ -104,17 +95,7 @@ describe('twitch stats queries', () => {
       kind: ObservationKinds.STREAM_ONLINE,
       stream_id: 'stream-1',
     });
-    await harness.record.execute({
-      event: {
-        event_id: online.event_id,
-        topic: 'twitch.stream',
-        name: 'online',
-        channel_id: CHANNEL_ID,
-        occurred_at: online.occurred_at,
-        payload: {},
-      },
-      observation: online,
-    });
+    await harness.observe(online, 'twitch.stream', 'online');
 
     const result = await new ListStatsChannelsUseCase(
       harness.directory,

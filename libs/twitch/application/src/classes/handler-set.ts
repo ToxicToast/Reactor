@@ -1,4 +1,4 @@
-import type { FeedHandler, Unsubscribe } from '@toxictoast/twitch-application';
+import type { FeedHandler, Unsubscribe } from '../types/index.js';
 
 export class HandlerSet<T> {
   private readonly handlers = new Set<FeedHandler<T>>();

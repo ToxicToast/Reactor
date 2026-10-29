@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { RecordAccessDeniedUseCase } from '@toxictoast/security-application';
-import { isAccessDeniedPayload } from '../functions/index.js';
+import { readPayload } from '@toxictoast/shared-kernel';
 
 @Injectable()
 export class AccessDeniedHandler {
@@ -11,17 +11,24 @@ export class AccessDeniedHandler {
   ) {}
 
   async handle(payload: unknown): Promise<void> {
-    if (!isAccessDeniedPayload(payload)) {
-      this.logger.warn('Ignoring invalid security.access.denied payload');
+    const ip = readPayload(payload, (reader) => {
+      // status_code wird nur geprüft, damit fremde Payloads nicht als Denial zählen
+      reader.number('status_code');
+      return reader.string('ip');
+    });
+    if (ip.isFailure) {
+      this.logger.warn(
+        `Ignoring invalid security.access.denied payload: ${ip.error.message}`,
+      );
       return;
     }
 
     const result = await this.recordAccessDeniedUseCase.execute({
-      ip: payload.ip,
+      ip: ip.value,
     });
     if (result.isFailure) {
       this.logger.warn(
-        `Access denial for ${payload.ip} not recorded: ${result.error.message}`,
+        `Access denial for ${ip.value} not recorded: ${result.error.message}`,
       );
       return;
     }

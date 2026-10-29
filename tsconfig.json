@@ -137,6 +137,9 @@
     },
     {
       "path": "./libs/twitch/infrastructure"
+    },
+    {
+      "path": "./libs/twitch/api"
     }
   ],
   "compilerOptions": {}

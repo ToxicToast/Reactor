@@ -23,17 +23,7 @@ describe('RecordTwitchEventUseCase', () => {
     topic = 'twitch.chat',
     name = 'message',
   ) => {
-    return harness.record.execute({
-      event: {
-        event_id: input.event_id,
-        topic,
-        name,
-        channel_id: input.channel.channel_id,
-        occurred_at: input.occurred_at,
-        payload: { channel_login: input.channel.channel_login },
-      },
-      observation: input,
-    });
+    return harness.observe(input, topic, name);
   };
 
   const goOnline = (time = '20:00:00') => {

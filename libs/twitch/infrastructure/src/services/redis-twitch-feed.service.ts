@@ -1,13 +1,13 @@
-import type {
-  FeedHandler,
-  LiveChannel,
-  RecordedTwitchEvent,
-  TwitchFeed,
-  TwitchFeedSource,
-  Unsubscribe,
+import {
+  HandlerSet,
+  type FeedHandler,
+  type LiveChannel,
+  type RecordedTwitchEvent,
+  type TwitchFeed,
+  type TwitchFeedSource,
+  type Unsubscribe,
 } from '@toxictoast/twitch-application';
 import type { Redis } from 'ioredis';
-import { HandlerSet } from '../classes/index.js';
 import { TWITCH_FEED_TOPICS } from '../constants/index.js';
 import { decodeFeedEvent, decodeLiveChannels } from '../functions/index.js';
 
