@@ -5,13 +5,20 @@ import {
   TWITCH_PROTO_FILES,
 } from '@toxictoast/contracts-proto';
 import { GrpcClientModule, provideClass } from '@toxictoast/shared-nest';
+import { AdminModule } from '../../admin/admin.module.js';
 import { GrpcModule } from '../../grpc/grpc.module.js';
 import { RequestMetadata } from '../../grpc/services/index.js';
-import { TwitchStatsController } from './controllers/index.js';
+import {
+  TwitchChatController,
+  TwitchEventsController,
+  TwitchStatsController,
+  TwitchWebhooksController,
+} from './controllers/index.js';
 import { TwitchServiceGateway } from './twitch-service.gateway.js';
 
 @Module({
   imports: [
+    AdminModule,
     GrpcModule,
     GrpcClientModule.register({
       name: TWITCH_GRPC_CLIENT,
@@ -20,7 +27,12 @@ import { TwitchServiceGateway } from './twitch-service.gateway.js';
       urlEnv: 'TWITCH_GRPC_URL',
     }),
   ],
-  controllers: [TwitchStatsController],
+  controllers: [
+    TwitchStatsController,
+    TwitchChatController,
+    TwitchWebhooksController,
+    TwitchEventsController,
+  ],
   providers: [
     provideClass(TwitchServiceGateway, [TWITCH_GRPC_CLIENT, RequestMetadata]),
   ],

@@ -5,7 +5,11 @@ import { GATEWAY_TOKENS } from '../constants/index.js';
 import { AdminAuthController } from './controllers/index.js';
 import { adminAuthConfigFromEnv } from './functions/index.js';
 import { AdminSessionMiddleware } from './middlewares/index.js';
-import { KeycloakOidcClient, SealedCookie } from './services/index.js';
+import {
+  AdminSessions,
+  KeycloakOidcClient,
+  SealedCookie,
+} from './services/index.js';
 
 const { ADMIN_AUTH_CONFIG, KEYCLOAK_CONFIG } = GATEWAY_TOKENS;
 
@@ -21,9 +25,10 @@ const { ADMIN_AUTH_CONFIG, KEYCLOAK_CONFIG } = GATEWAY_TOKENS;
 
     // ── Services ────────────────────────────────
     provideClass(SealedCookie, [ADMIN_AUTH_CONFIG]),
+    provideClass(AdminSessions, [SealedCookie]),
     provideClass(KeycloakOidcClient, [KEYCLOAK_CONFIG, ADMIN_AUTH_CONFIG]),
     AdminSessionMiddleware,
   ],
-  exports: [ADMIN_AUTH_CONFIG, SealedCookie],
+  exports: [ADMIN_AUTH_CONFIG, SealedCookie, AdminSessions],
 })
 export class AdminModule {}

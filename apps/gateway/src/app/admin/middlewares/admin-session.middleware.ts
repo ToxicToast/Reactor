@@ -1,26 +1,23 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { parse } from 'cookie';
 import type { NextFunction, Request, Response } from 'express';
 import {
-  ADMIN_COOKIES,
+  ADMIN_MESSAGES,
   ADMIN_PATHS,
   AdminPermission,
 } from '../constants/index.js';
-import type { AdminSession } from '../interfaces/index.js';
-import { SealedCookie } from '../services/index.js';
+import { missingPermissionMessage } from '../functions/index.js';
+import { AdminSessions } from '../services/index.js';
 
 @Injectable()
 export class AdminSessionMiddleware {
-  constructor(private readonly cookies: SealedCookie) {}
+  constructor(private readonly sessions: AdminSessions) {}
 
   async use(
     request: Request,
     response: Response,
     next: NextFunction,
   ): Promise<void> {
-    const session = await this.cookies.open<AdminSession>(
-      parse(request.headers.cookie ?? '')[ADMIN_COOKIES.SESSION],
-    );
+    const session = await this.sessions.open(request);
 
     if (!session) {
       if (request.method === 'GET' && request.accepts('html')) {
@@ -30,7 +27,7 @@ export class AdminSessionMiddleware {
       }
       response.status(HttpStatus.UNAUTHORIZED).json({
         status_code: HttpStatus.UNAUTHORIZED,
-        message: 'admin session required',
+        message: ADMIN_MESSAGES.SESSION_REQUIRED,
       });
       return;
     }
@@ -38,7 +35,7 @@ export class AdminSessionMiddleware {
     if (!session.permissions.includes(AdminPermission.QUEUES_MANAGE)) {
       response.status(HttpStatus.FORBIDDEN).json({
         status_code: HttpStatus.FORBIDDEN,
-        message: `missing permission ${AdminPermission.QUEUES_MANAGE}`,
+        message: missingPermissionMessage(AdminPermission.QUEUES_MANAGE),
       });
       return;
     }

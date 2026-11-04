@@ -2,9 +2,12 @@ import {
   LeaderboardMetric,
   TimelineInterval,
   TimelineMetric,
+  TwitchWebhookDeliveryStatus,
 } from '@toxictoast/contracts-grpc';
 import { LeaderboardQueryDto } from './leaderboard-query.dto.js';
 import { TimelineQueryDto } from './timeline-query.dto.js';
+import { EventsStreamQueryDto } from './events-stream-query.dto.js';
+import { WebhookDeliveriesQueryDto } from './webhook-deliveries-query.dto.js';
 
 describe('twitch query dtos', () => {
   it('translates readable metrics into proto enums', () => {
@@ -40,5 +43,22 @@ describe('twitch query dtos', () => {
       TimelineQueryDto.schema.safeParse({ metric: 'messages', interval: 'day' })
         .success,
     ).toBe(false);
+  });
+
+  it('splits the topics of the event stream', () => {
+    expect(
+      EventsStreamQueryDto.schema.parse({
+        topics: 'twitch.chat, twitch.stream,',
+      }),
+    ).toEqual({ topics: ['twitch.chat', 'twitch.stream'] });
+    expect(EventsStreamQueryDto.schema.parse({})).toEqual({ topics: [] });
+  });
+
+  it('translates delivery statuses', () => {
+    expect(
+      WebhookDeliveriesQueryDto.schema.parse({ status: 'failed' }),
+    ).toEqual({
+      status: TwitchWebhookDeliveryStatus.TWITCH_WEBHOOK_DELIVERY_STATUS_FAILED,
+    });
   });
 });
