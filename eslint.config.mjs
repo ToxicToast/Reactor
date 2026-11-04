@@ -44,7 +44,8 @@ const dependencyChecks = (files, ignoredDependencies) => ({
     '@nx/dependency-checks': [
       'error',
       {
-        buildTargets: ['build'],
+        // Libs sind nicht buildable (nur typecheck), daher typecheck als Bezugs-Target für alle Projekte.
+        buildTargets: ['typecheck'],
         checkMissingDependencies: true,
         checkObsoleteDependencies: true,
         checkVersionMismatches: true,
@@ -56,7 +57,7 @@ const dependencyChecks = (files, ignoredDependencies) => ({
   },
 });
 
-export default [
+const workspaceConfig = [
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
@@ -217,6 +218,13 @@ export default [
       ],
     },
   },
-  dependencyChecks(['libs/**/package.json'], runtimeOnlyPackages),
-  dependencyChecks(['apps/*/package.json'], appRuntimePackages),
+  // Patterns gelten relativ zur geladenen Projekt-Config, daher **/package.json statt libs/** bzw. apps/*.
+  dependencyChecks(['**/package.json'], runtimeOnlyPackages),
 ];
+
+export const appConfig = [
+  ...workspaceConfig,
+  dependencyChecks(['**/package.json'], appRuntimePackages),
+];
+
+export default workspaceConfig;
