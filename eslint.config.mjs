@@ -1,4 +1,5 @@
 import nx from '@nx/eslint-plugin';
+import jsoncParser from 'jsonc-eslint-parser';
 
 const infraPackages = [
   '@nestjs/*',
@@ -11,6 +12,49 @@ const infraPackages = [
   '@grpc/*',
   'rxjs',
 ];
+
+const dependencyCheckIgnoredFiles = [
+  '{projectRoot}/eslint.config.mjs',
+  '{projectRoot}/jest.config.cts',
+  '{projectRoot}/jest.integration.config.cts',
+  '{projectRoot}/webpack.config.js',
+  '{projectRoot}/**/*.spec.ts',
+  '{projectRoot}/src/**/testing/**',
+];
+
+const runtimeOnlyPackages = ['tslib', 'reflect-metadata'];
+
+// Apps brauchen diese Pakete zur Laufzeit (Treiber, Nest-Plattform, Peers), ohne sie direkt zu importieren.
+const appRuntimePackages = [
+  ...runtimeOnlyPackages,
+  '@nestjs/core',
+  '@nestjs/platform-express',
+  '@nestjs/microservices',
+  '@grpc/grpc-js',
+  'rxjs',
+  'express',
+  'pg',
+  'ioredis',
+];
+
+const dependencyChecks = (files, ignoredDependencies) => ({
+  files,
+  languageOptions: { parser: jsoncParser },
+  rules: {
+    '@nx/dependency-checks': [
+      'error',
+      {
+        buildTargets: ['build'],
+        checkMissingDependencies: true,
+        checkObsoleteDependencies: true,
+        checkVersionMismatches: true,
+        includeTransitiveDependencies: false,
+        ignoredFiles: dependencyCheckIgnoredFiles,
+        ignoredDependencies,
+      },
+    ],
+  },
+});
 
 export default [
   ...nx.configs['flat/base'],
@@ -173,4 +217,6 @@ export default [
       ],
     },
   },
+  dependencyChecks(['libs/**/package.json'], runtimeOnlyPackages),
+  dependencyChecks(['apps/*/package.json'], appRuntimePackages),
 ];

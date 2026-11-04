@@ -110,6 +110,24 @@ describe('WebhookDomain', () => {
 
       expect(result.error.code).toBe('VALIDATION');
     });
+
+    it('keeps the format unless a new one is given', () => {
+      const webhook = createWebhook();
+
+      webhook.update({
+        url: 'https://discord.com/api/webhooks/1/abc',
+        events: ['*'],
+        active: true,
+        format: 'discord',
+      });
+      webhook.update({
+        url: 'https://discord.com/api/webhooks/1/abc',
+        events: ['*'],
+        active: true,
+      });
+
+      expect(webhook.toAnemic().format).toBe('discord');
+    });
   });
 
   describe('rotateSecret', () => {

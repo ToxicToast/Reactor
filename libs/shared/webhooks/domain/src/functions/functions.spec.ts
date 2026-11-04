@@ -30,6 +30,7 @@ describe('normalizeWebhookData', () => {
       url: 'https://hooks.example.com/twitch',
       events: ['twitch.community.*', 'twitch.stream.online'],
       description: 'Discord-Bridge',
+      format: 'json',
     });
   });
 
@@ -51,6 +52,7 @@ describe('normalizeWebhookData', () => {
     [{ events: ['Twitch.Stream'] }],
     [{ events: ['twitch.*.online'] }],
     [{ description: 'x'.repeat(201) }],
+    [{ format: 'xml' }],
   ])('refuses %p', (override) => {
     const result = normalizeWebhookData({
       url: 'https://hooks.example.com',
@@ -60,5 +62,15 @@ describe('normalizeWebhookData', () => {
 
     expect(result.isFailure).toBe(true);
     expect(result.error.code).toBe('VALIDATION');
+  });
+
+  it('accepts the discord format', () => {
+    const result = normalizeWebhookData({
+      url: 'https://discord.com/api/webhooks/1/abc',
+      events: ['twitch.stream.online'],
+      format: 'discord',
+    });
+
+    expect(result.value.format).toBe('discord');
   });
 });

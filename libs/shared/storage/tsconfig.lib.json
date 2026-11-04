@@ -25,9 +25,6 @@
     },
     {
       "path": "../application/tsconfig.lib.json"
-    },
-    {
-      "path": "../kernel/tsconfig.lib.json"
     }
   ],
   "exclude": [

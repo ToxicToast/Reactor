@@ -20,5 +20,9 @@
       "type:application"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "@toxictoast/audit-domain": "*",
+    "@toxictoast/shared-application": "*",
+    "@toxictoast/shared-kernel": "*"
+  }
 }

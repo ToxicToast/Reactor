@@ -11,6 +11,15 @@
   "include": ["src/**/*.ts"],
   "references": [
     {
+      "path": "../../shared/webhooks/application/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/kernel/tsconfig.lib.json"
+    },
+    {
+      "path": "../../contracts/events/tsconfig.lib.json"
+    },
+    {
       "path": "../domain/tsconfig.lib.json"
     },
     {

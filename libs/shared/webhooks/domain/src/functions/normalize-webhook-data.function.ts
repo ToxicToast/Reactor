@@ -1,7 +1,8 @@
 import { Result, ValidationError } from '@toxictoast/shared-kernel';
 import type { Nullable, Optional } from '@toxictoast/shared-types';
-import { WEBHOOK_LIMITS } from '../constants/index.js';
+import { WEBHOOK_LIMITS, WebhookFormats } from '../constants/index.js';
 import type { WebhookData, WebhookDataInput } from '../data/index.js';
+import { isWebhookFormat } from './is-webhook-format.function.js';
 
 const EVENT_PATTERN = /^(\*|[a-z0-9_-]+(\.[a-z0-9_-]+)*(\.\*)?)$/;
 const PROTOCOLS: ReadonlySet<string> = new Set(['http:', 'https:']);
@@ -59,5 +60,10 @@ export const normalizeWebhookData = (
     );
   }
 
-  return Result.ok({ url: parsed.toString(), events, description });
+  const format = data.format ?? WebhookFormats.JSON;
+  if (!isWebhookFormat(format)) {
+    return Result.fail(new ValidationError(`Unknown webhook format ${format}`));
+  }
+
+  return Result.ok({ url: parsed.toString(), events, description, format });
 };

@@ -21,16 +21,12 @@
     ]
   },
   "dependencies": {
-    "@toxictoast/contracts-events": "*",
     "@toxictoast/contracts-grpc": "*",
     "@toxictoast/security-application": "*",
     "@toxictoast/security-domain": "*",
     "@toxictoast/shared-grpc": "*",
     "@toxictoast/shared-kernel": "*",
-    "@toxictoast/shared-types": "*",
-    "@nestjs/common": "^11.0.0",
-    "@nestjs/microservices": "^11.2.7",
-    "@grpc/grpc-js": "^1.14.6"
+    "@nestjs/common": "^11.0.0"
   },
   "devDependencies": {
     "@toxictoast/shared-application": "*"

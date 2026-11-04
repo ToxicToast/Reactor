@@ -25,7 +25,9 @@
     "@toxictoast/shared-kernel": "*",
     "@toxictoast/shared-types": "*",
     "@toxictoast/shared-webhooks-application": "*",
-    "@toxictoast/shared-webhooks-domain": "*",
     "@toxictoast/twitch-domain": "*"
+  },
+  "devDependencies": {
+    "@toxictoast/shared-webhooks-domain": "*"
   }
 }

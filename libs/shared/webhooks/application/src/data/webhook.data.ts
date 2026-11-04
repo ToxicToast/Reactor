@@ -8,6 +8,7 @@ export interface CreateWebhookInput {
   readonly url: string;
   readonly events: ReadonlyArray<string>;
   readonly description?: Optional<string>;
+  readonly format?: Optional<string>;
 }
 
 export interface UpdateWebhookInput {
@@ -15,6 +16,7 @@ export interface UpdateWebhookInput {
   readonly url: string;
   readonly events: ReadonlyArray<string>;
   readonly description?: Optional<string>;
+  readonly format?: Optional<string>;
   readonly active: boolean;
 }
 

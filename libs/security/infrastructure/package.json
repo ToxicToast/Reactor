@@ -34,7 +34,6 @@
   "dependencies": {
     "@toxictoast/security-application": "*",
     "@toxictoast/security-domain": "*",
-    "@toxictoast/shared-kernel": "*",
     "@toxictoast/shared-persistence": "*",
     "@toxictoast/shared-system": "*",
     "@toxictoast/shared-types": "*",

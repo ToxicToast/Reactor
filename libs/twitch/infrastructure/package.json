@@ -38,6 +38,8 @@
     "@toxictoast/shared-webhooks-infrastructure": "*",
     "@toxictoast/twitch-application": "*",
     "@toxictoast/twitch-domain": "*",
+    "@toxictoast/contracts-events": "*",
+    "@toxictoast/shared-kernel": "*",
     "ioredis": "^5.11.1",
     "typeorm": "^1.1.2"
   }

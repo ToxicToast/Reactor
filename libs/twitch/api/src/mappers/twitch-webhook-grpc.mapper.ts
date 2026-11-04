@@ -18,6 +18,7 @@ export class TwitchWebhookGrpcMapper {
       events: [...webhook.events],
       description: webhook.description ?? undefined,
       active: webhook.active,
+      format: webhook.format,
       created_at: webhook.created_at.toISOString(),
       updated_at: toIso(webhook.updated_at),
     };

@@ -16,10 +16,12 @@ import {
 } from '@toxictoast/shared-nest';
 import { TwitchEventHandler } from '@toxictoast/twitch-api';
 import {
+  TWITCH_DISCORD_EMBEDS,
   twitchMigrations,
   twitchSchemas,
 } from '@toxictoast/twitch-infrastructure';
 import { TwitchModule } from './twitch.module.js';
+import { DiscordWebhookFormatter } from '@toxictoast/shared-webhooks-infrastructure';
 
 @Module({
   imports: [
@@ -29,7 +31,10 @@ import { TwitchModule } from './twitch.module.js';
       migrations: twitchMigrations,
     }),
     RedisModule.forRoot({ subscriber: true }),
-    WebhooksModule.forRoot({ secretKeyEnv: 'WEBHOOK_SECRET_KEY' }),
+    WebhooksModule.forRoot({
+      secretKeyEnv: 'WEBHOOK_SECRET_KEY',
+      formatters: [new DiscordWebhookFormatter(TWITCH_DISCORD_EMBEDS)],
+    }),
     MessagingModule.forRoot({
       groupId: 'twitch-service',
       imports: [TwitchModule],

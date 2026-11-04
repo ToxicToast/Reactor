@@ -106,11 +106,12 @@
     "@toxictoast/shared-application": "*",
     "@toxictoast/shared-nest": "*",
     "@toxictoast/shared-persistence": "*",
+    "@toxictoast/shared-system": "*",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.0",
+    "rxjs": "^7.8.2",
     "tslib": "^2.3.0",
     "typeorm": "^1.1.2",
     "pg": "^8.23.1"

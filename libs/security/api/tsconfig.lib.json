@@ -11,9 +11,6 @@
   "include": ["src/**/*.ts"],
   "references": [
     {
-      "path": "../../shared/types/tsconfig.lib.json"
-    },
-    {
       "path": "../../shared/kernel/tsconfig.lib.json"
     },
     {
@@ -27,9 +24,6 @@
     },
     {
       "path": "../../contracts/grpc/tsconfig.lib.json"
-    },
-    {
-      "path": "../../contracts/events/tsconfig.lib.json"
     },
     {
       "path": "../../shared/application/tsconfig.lib.json"

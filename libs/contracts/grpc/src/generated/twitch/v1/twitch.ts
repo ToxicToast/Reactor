@@ -142,6 +142,7 @@ export interface TwitchWebhook {
   active: boolean;
   created_at: string;
   updated_at?: string | undefined;
+  format: string;
 }
 
 export interface TwitchWebhookDelivery {
@@ -251,6 +252,7 @@ export interface CreateTwitchWebhookRequest {
   url: string;
   events: string[];
   description?: string | undefined;
+  format?: string | undefined;
 }
 
 export interface CreateTwitchWebhookResponse {
@@ -271,6 +273,7 @@ export interface UpdateTwitchWebhookRequest {
   events: string[];
   description?: string | undefined;
   active: boolean;
+  format?: string | undefined;
 }
 
 export interface UpdateTwitchWebhookResponse {

@@ -101,15 +101,15 @@
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.0",
+    "rxjs": "^7.8.2",
     "tslib": "^2.3.0",
     "@toxictoast/moderation-api": "*",
     "@toxictoast/moderation-application": "*",
     "@toxictoast/moderation-domain": "*",
     "@toxictoast/moderation-infrastructure": "*",
     "@toxictoast/contracts-events": "*",
-    "@toxictoast/shared-messaging": "*",
-    "@toxictoast/shared-nest": "*"
+    "@toxictoast/shared-nest": "*",
+    "@toxictoast/shared-kernel": "*"
   },
   "devDependencies": {
     "@nestjs/testing": "^11.0.0"

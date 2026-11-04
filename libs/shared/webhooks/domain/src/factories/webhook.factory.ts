@@ -4,7 +4,6 @@ import {
   type Factory,
 } from '@toxictoast/shared-kernel';
 import type { WebhookAnemic } from '../anemics/index.js';
-import { WebhookFormats } from '../constants/index.js';
 import type { CreateWebhookData } from '../data/index.js';
 import { WebhookDomain } from '../domains/index.js';
 import {
@@ -43,7 +42,6 @@ export class WebhookFactory implements Factory<
           id: this.ctx.id.generate<'Webhook'>(),
           ...normalized.value,
           active: true,
-          format: WebhookFormats.JSON,
           secret: data.secret,
           created_at: this.ctx.date.now(),
           updated_at: null,

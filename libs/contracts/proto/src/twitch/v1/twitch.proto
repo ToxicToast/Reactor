@@ -154,6 +154,7 @@ message TwitchWebhook {
   bool active = 5;
   string created_at = 6;
   optional string updated_at = 7;
+  string format = 8;
 }
 
 message TwitchWebhookDelivery {
@@ -261,6 +262,7 @@ message CreateTwitchWebhookRequest {
   string url = 1;
   repeated string events = 2;
   optional string description = 3;
+  optional string format = 4;
 }
 
 message CreateTwitchWebhookResponse {
@@ -280,6 +282,7 @@ message UpdateTwitchWebhookRequest {
   repeated string events = 3;
   optional string description = 4;
   bool active = 5;
+  optional string format = 6;
 }
 
 message UpdateTwitchWebhookResponse {

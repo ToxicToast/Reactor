@@ -21,6 +21,9 @@
     ]
   },
   "dependencies": {
-    "@toxictoast/shared-types": "*"
+    "@toxictoast/shared-types": "*",
+    "@toxictoast/blog-domain": "*",
+    "@toxictoast/shared-application": "*",
+    "@toxictoast/shared-kernel": "*"
   }
 }

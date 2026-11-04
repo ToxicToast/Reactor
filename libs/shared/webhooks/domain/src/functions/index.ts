@@ -1,4 +1,5 @@
 export * from './matches-event-key.function.js';
+export * from './is-webhook-format.function.js';
 export * from './normalize-webhook-data.function.js';
 export * from './validate-webhook-secret.function.js';
 export * from './is-webhook-active.function.js';

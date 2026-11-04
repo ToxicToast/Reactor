@@ -61,7 +61,10 @@ const USE_CASES = [
 export class WebhooksModule {
   static forRoot(options: WebhooksModuleOptions): DynamicModule {
     const logger = new Logger('Webhooks');
-    const formatters = options.formatters ?? [new JsonWebhookFormatter()];
+    const formatters = [
+      new JsonWebhookFormatter(),
+      ...(options.formatters ?? []),
+    ];
 
     return {
       module: WebhooksModule,

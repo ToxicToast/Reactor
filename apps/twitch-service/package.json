@@ -103,7 +103,7 @@
     "@nestjs/microservices": "^11.2.7",
     "@grpc/grpc-js": "^1.14.6",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.0",
+    "rxjs": "^7.8.2",
     "tslib": "^2.3.0",
     "typeorm": "^1.1.2",
     "ioredis": "^5.11.1",
@@ -117,7 +117,8 @@
     "@toxictoast/twitch-api": "*",
     "@toxictoast/twitch-application": "*",
     "@toxictoast/twitch-domain": "*",
-    "@toxictoast/twitch-infrastructure": "*"
+    "@toxictoast/twitch-infrastructure": "*",
+    "@toxictoast/shared-webhooks-infrastructure": "*"
   },
   "devDependencies": {
     "@nestjs/testing": "^11.0.0"

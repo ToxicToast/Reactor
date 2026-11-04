@@ -273,5 +273,26 @@ describe('TwitchGrpcController', () => {
       expect(listed.webhooks).toHaveLength(1);
       expect(listed.webhooks[0]).not.toHaveProperty('secret');
     });
+
+    it('creates discord webhooks and rejects unknown formats', async () => {
+      actors.actor = testActor([TwitchPermission.WEBHOOK_MANAGE]);
+
+      const created = await controller.createTwitchWebhook({
+        url: 'https://discord.com/api/webhooks/1/abc',
+        events: ['twitch.stream.online'],
+        format: 'discord',
+      });
+
+      expect(created.webhook?.format).toBe('discord');
+      expect(
+        await grpcCode(
+          controller.createTwitchWebhook({
+            url: 'https://hooks.example.com',
+            events: ['*'],
+            format: 'xml',
+          }),
+        ),
+      ).toBe(status.INVALID_ARGUMENT);
+    });
   });
 });

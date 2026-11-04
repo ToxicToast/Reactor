@@ -32,7 +32,6 @@
     }
   },
   "dependencies": {
-    "@toxictoast/audit-application": "*",
     "@toxictoast/audit-domain": "*",
     "@toxictoast/contracts-events": "*",
     "@toxictoast/shared-persistence": "*",

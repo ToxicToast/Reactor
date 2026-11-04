@@ -22,7 +22,10 @@ export class WebhookDomain extends BaseDomain<WebhookAnemic> {
     if (writable.isFailure) {
       return writable;
     }
-    const normalized = normalizeWebhookData(data);
+    const normalized = normalizeWebhookData({
+      ...data,
+      format: data.format ?? this.state.format,
+    });
     if (normalized.isFailure) {
       return Result.fail(normalized.error);
     }
@@ -30,6 +33,7 @@ export class WebhookDomain extends BaseDomain<WebhookAnemic> {
     this.state.url = normalized.value.url;
     this.state.events = normalized.value.events;
     this.state.description = normalized.value.description;
+    this.state.format = normalized.value.format;
     this.state.active = data.active;
     this.touch();
     return Result.ok();

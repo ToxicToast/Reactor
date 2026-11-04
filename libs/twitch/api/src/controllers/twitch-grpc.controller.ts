@@ -259,6 +259,7 @@ export class TwitchGrpcController implements TwitchServiceController {
         url: request.url,
         events: request.events,
         description: request.description,
+        format: request.format,
       }),
     );
     return { webhook: this.webhooks.toWebhook(webhook), secret };
@@ -282,6 +283,7 @@ export class TwitchGrpcController implements TwitchServiceController {
         url: request.url,
         events: request.events,
         description: request.description,
+        format: request.format,
         active: request.active,
       }),
     );

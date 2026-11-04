@@ -3,3 +3,8 @@ export * from './webhook-delivery-row.interface.js';
 export * from './webhook-request.interface.js';
 export * from './webhook-response.interface.js';
 export * from './webhook-sender.interface.js';
+export * from './discord-embed-field.interface.js';
+export * from './discord-embed-image.interface.js';
+export * from './discord-embed-footer.interface.js';
+export * from './discord-embed.interface.js';
+export * from './discord-webhook-message.interface.js';
