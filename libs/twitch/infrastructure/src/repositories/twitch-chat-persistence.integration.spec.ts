@@ -1,7 +1,7 @@
 import {
   postedChatMessage,
   TWITCH_TEST_CHANNEL,
-} from '@toxictoast/twitch-application';
+} from '@toxictoast/twitch-application/testing';
 import {
   ChatDeletionReasons,
   type ChatMessage,

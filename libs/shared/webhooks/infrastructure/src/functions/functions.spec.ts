@@ -2,7 +2,7 @@ import { createHmac } from 'node:crypto';
 import {
   webhookAnemic,
   webhookDeliveryAnemic,
-} from '@toxictoast/shared-webhooks-application';
+} from '@toxictoast/shared-webhooks-application/testing';
 import { buildWebhookRequest } from './build-webhook-request.function.js';
 import { isSuccessfulStatus } from './is-successful-status.function.js';
 import { signWebhook } from './sign-webhook.function.js';

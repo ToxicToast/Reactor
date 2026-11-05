@@ -1,14 +1,14 @@
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import type { Result } from '@toxictoast/shared-kernel';
+import { DispatchWebhookEventUseCase } from '@toxictoast/shared-webhooks-application';
 import {
-  DispatchWebhookEventUseCase,
   InMemoryWebhookDeliveryRepository,
   InMemoryWebhookRepository,
-} from '@toxictoast/shared-webhooks-application';
+} from '@toxictoast/shared-webhooks-application/testing';
 import { WebhookDeliveryFactory } from '@toxictoast/shared-webhooks-domain';
 import {
   StreamSessionFactory,

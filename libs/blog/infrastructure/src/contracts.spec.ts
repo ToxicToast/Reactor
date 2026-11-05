@@ -12,7 +12,7 @@ import {
   CommentStatus,
   RequestCommentModerationEvent,
 } from '@toxictoast/blog-domain';
-import { commentAnemic } from '@toxictoast/blog-application';
+import { commentAnemic } from '@toxictoast/blog-application/testing';
 import {
   BlogTopics,
   type BlogCategoryPayloadV1,

@@ -4,7 +4,7 @@ import { SecretCipher } from '@toxictoast/shared-system';
 import {
   webhookAnemic,
   webhookDeliveryAnemic,
-} from '@toxictoast/shared-webhooks-application';
+} from '@toxictoast/shared-webhooks-application/testing';
 import {
   WebhookDeliveryFactory,
   WebhookRetryPolicy,

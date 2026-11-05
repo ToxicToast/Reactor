@@ -12,16 +12,16 @@ import {
   grpcCode,
   TestActorProvider,
   testActor,
-} from '@toxictoast/shared-grpc';
+} from '@toxictoast/shared-grpc/testing';
 import {
   CreateWebhookUseCase,
   DeleteWebhookUseCase,
-  FixedWebhookSecretGenerator,
   ListWebhookDeliveriesUseCase,
   ListWebhooksUseCase,
   RotateWebhookSecretUseCase,
   UpdateWebhookUseCase,
 } from '@toxictoast/shared-webhooks-application';
+import { FixedWebhookSecretGenerator } from '@toxictoast/shared-webhooks-application/testing';
 import { WebhookFactory } from '@toxictoast/shared-webhooks-domain';
 import {
   ChatChangeKinds,
@@ -34,15 +34,17 @@ import {
   ListRewardsUseCase,
   ListSessionsUseCase,
   ListStatsChannelsUseCase,
+} from '@toxictoast/twitch-application';
+import {
   observation,
   postedChatMessage,
   TWITCH_TEST_CHANNEL,
   TwitchTestHarness,
   viewer,
-} from '@toxictoast/twitch-application';
+} from '@toxictoast/twitch-application/testing';
 import { ObservationKinds } from '@toxictoast/twitch-domain';
 import { TwitchGrpcController } from './twitch-grpc.controller.js';
-import { createUuidTestContext } from '@toxictoast/shared-application';
+import { createUuidTestContext } from '@toxictoast/shared-application/testing';
 
 const CHANNEL_ID = TWITCH_TEST_CHANNEL.channel_id;
 const UNKNOWN_ID = '0192f3a0-0000-7000-8000-0000000000ff';

@@ -3,7 +3,7 @@ import { SecretCipher } from '@toxictoast/shared-system';
 import {
   webhookAnemic,
   webhookDeliveryAnemic,
-} from '@toxictoast/shared-webhooks-application';
+} from '@toxictoast/shared-webhooks-application/testing';
 import { WebhookMapper } from '../mappers/index.js';
 import { JsonWebhookFormatter } from './json-webhook-formatter.service.js';
 import { RandomWebhookSecretGenerator } from './random-webhook-secret-generator.service.js';

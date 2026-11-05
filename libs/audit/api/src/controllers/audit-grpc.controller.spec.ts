@@ -1,16 +1,18 @@
 import { status } from '@grpc/grpc-js';
 import {
-  auditEntry,
-  InMemoryAuditRepository,
   ListAuditEventsUseCase,
   PurgeExpiredAuditEventsUseCase,
 } from '@toxictoast/audit-application';
+import {
+  auditEntry,
+  InMemoryAuditRepository,
+} from '@toxictoast/audit-application/testing';
 import { AuditRetentionPolicy } from '@toxictoast/audit-domain';
 import {
   grpcCode,
   TestActorProvider,
   testActor,
-} from '@toxictoast/shared-grpc';
+} from '@toxictoast/shared-grpc/testing';
 import { AuditGrpcController } from './audit-grpc.controller.js';
 
 const EVENT_ID = '0192f3a0-0000-7000-8000-000000000001';

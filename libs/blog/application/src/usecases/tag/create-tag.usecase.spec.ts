@@ -1,10 +1,10 @@
 import type { Nullable } from '@toxictoast/shared-types';
 import type { DomainContext } from '@toxictoast/shared-kernel';
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import {
   TagFactory,
   type TagAnemic,

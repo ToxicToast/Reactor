@@ -1,4 +1,4 @@
-import { webhookDeliveryAnemic } from '@toxictoast/shared-webhooks-application';
+import { webhookDeliveryAnemic } from '@toxictoast/shared-webhooks-application/testing';
 import { TWITCH_DISCORD } from './twitch-discord.constant.js';
 import { TWITCH_DISCORD_EMBEDS } from './twitch-discord-embeds.constant.js';
 

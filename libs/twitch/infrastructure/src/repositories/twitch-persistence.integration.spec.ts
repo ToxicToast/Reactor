@@ -1,4 +1,4 @@
-import { TWITCH_TEST_CHANNEL } from '@toxictoast/twitch-application';
+import { TWITCH_TEST_CHANNEL } from '@toxictoast/twitch-application/testing';
 import type { Nullable } from '@toxictoast/shared-types';
 import {
   SESSION_COUNTER_KEYS,

@@ -2,23 +2,25 @@ import { randomUUID } from 'node:crypto';
 import { status } from '@grpc/grpc-js';
 import {
   ArchivePostUseCase,
-  categoryAnemic,
   CreatePostUseCase,
   DeletePostUseCase,
   GetPostUseCase,
   GetPublishedPostUseCase,
-  InMemoryCategoryRepository,
-  InMemoryMediaRepository,
-  InMemoryPostRepository,
-  InMemoryTagRepository,
   ListPostsUseCase,
-  mediaAnemic,
   PostReferencesService,
   PublishPostUseCase,
   RestorePostUseCase,
   UnarchivePostUseCase,
   UpdatePostUseCase,
 } from '@toxictoast/blog-application';
+import {
+  categoryAnemic,
+  InMemoryCategoryRepository,
+  InMemoryMediaRepository,
+  InMemoryPostRepository,
+  InMemoryTagRepository,
+  mediaAnemic,
+} from '@toxictoast/blog-application/testing';
 import { PostFactory } from '@toxictoast/blog-domain';
 import {
   PostStatus as GrpcPostStatus,
@@ -26,18 +28,18 @@ import {
   type UpdatePostRequest,
   BlogPermission,
 } from '@toxictoast/contracts-grpc';
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
   createUuidTestContext,
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import {
   anonymousTestActor,
   grpcCode,
   testActor,
   TestActorProvider,
-} from '@toxictoast/shared-grpc';
+} from '@toxictoast/shared-grpc/testing';
 import { PostGrpcController } from './post-grpc.controller.js';
 
 const NOW = new Date('2026-10-20T12:00:00Z');

@@ -5,15 +5,17 @@ import {
   CreateCommentUseCase,
   DeleteCommentUseCase,
   GetCommentUseCase,
-  InMemoryCommentRepository,
-  InMemoryPostRepository,
   ListCommentsByStatusUseCase,
   ListPostCommentsUseCase,
   ModerateCommentUseCase,
-  postAnemic,
   RestoreCommentUseCase,
   UpdateCommentUseCase,
 } from '@toxictoast/blog-application';
+import {
+  InMemoryCommentRepository,
+  InMemoryPostRepository,
+  postAnemic,
+} from '@toxictoast/blog-application/testing';
 import { CommentFactory, PostStatus } from '@toxictoast/blog-domain';
 import {
   BlogPermission,
@@ -21,18 +23,18 @@ import {
   CommentStatus as GrpcCommentStatus,
   ModerationStatus as GrpcModerationStatus,
 } from '@toxictoast/contracts-grpc';
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
   createUuidTestContext,
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import {
   anonymousTestActor,
   grpcCode,
   testActor,
   TestActorProvider,
-} from '@toxictoast/shared-grpc';
+} from '@toxictoast/shared-grpc/testing';
 import { CommentGrpcController } from './comment-grpc.controller.js';
 
 const NOW = new Date('2026-10-20T12:00:00Z');

@@ -1,4 +1,4 @@
-import { auditEntry } from '@toxictoast/audit-application';
+import { auditEntry } from '@toxictoast/audit-application/testing';
 import { AuditTestDatabase } from '../testing/index.js';
 import { TypeOrmAuditRepository } from './typeorm-audit.repository.js';
 

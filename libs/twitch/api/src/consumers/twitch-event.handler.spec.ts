@@ -1,4 +1,4 @@
-import { TwitchTestHarness } from '@toxictoast/twitch-application';
+import { TwitchTestHarness } from '@toxictoast/twitch-application/testing';
 import { incomingTwitchEvent, TEST_VIEWER } from '../testing/index.js';
 import { TwitchEventHandler } from './twitch-event.handler.js';
 

@@ -1,4 +1,4 @@
-import { webhookDeliveryAnemic } from '@toxictoast/shared-webhooks-application';
+import { webhookDeliveryAnemic } from '@toxictoast/shared-webhooks-application/testing';
 import { DISCORD } from '../constants/index.js';
 import { DiscordWebhookFormatter } from './discord-webhook-formatter.service.js';
 

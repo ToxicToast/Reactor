@@ -1,8 +1,8 @@
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import { TwitchChannelFactory } from '@toxictoast/twitch-bot-domain';
 import {
   createTestContext,

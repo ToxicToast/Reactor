@@ -1,4 +1,4 @@
-import { ipBanAnemic } from '@toxictoast/security-application';
+import { ipBanAnemic } from '@toxictoast/security-application/testing';
 import { SecurityTestDatabase } from '../testing/index.js';
 import { TypeOrmIpBanRepository } from './typeorm-ip-ban.repository.js';
 

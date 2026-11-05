@@ -1,4 +1,4 @@
-import { InMemoryFileStorage } from '@toxictoast/shared-application';
+import { InMemoryFileStorage } from '@toxictoast/shared-application/testing';
 import { MediaStatus, type MediaId } from '@toxictoast/blog-domain';
 import {
   InMemoryMediaRepository,

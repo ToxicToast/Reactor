@@ -1,4 +1,4 @@
-import { createCountingTestContext } from '@toxictoast/shared-application';
+import { createCountingTestContext } from '@toxictoast/shared-application/testing';
 import type { DomainContext } from '@toxictoast/shared-kernel';
 import type { ChannelRef } from '@toxictoast/twitch-domain';
 import type { TwitchStatsConfig } from '../interfaces/index.js';

@@ -1,4 +1,4 @@
-import { TWITCH_TEST_CHANNEL } from '@toxictoast/twitch-application';
+import { TWITCH_TEST_CHANNEL } from '@toxictoast/twitch-application/testing';
 import type { IncomingTwitchEvent } from '../interfaces/index.js';
 
 export const TEST_VIEWER = {

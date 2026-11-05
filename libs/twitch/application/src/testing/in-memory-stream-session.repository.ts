@@ -1,4 +1,4 @@
-import { paginate } from '@toxictoast/shared-application';
+import { paginate } from '@toxictoast/shared-application/testing';
 import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type {
   StatsRange,

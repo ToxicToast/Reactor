@@ -6,24 +6,24 @@ import {
   CreateCategoryUseCase,
   DeleteCategoryUseCase,
   GetCategoryUseCase,
-  InMemoryCategoryRepository,
   ListCategoriesUseCase,
   RestoreCategoryUseCase,
   UpdateCategoryUseCase,
 } from '@toxictoast/blog-application';
+import { InMemoryCategoryRepository } from '@toxictoast/blog-application/testing';
 import { CategoryFactory } from '@toxictoast/blog-domain';
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
   createUuidTestContext,
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import {
   anonymousTestActor,
   grpcCode,
   testActor,
   TestActorProvider,
-} from '@toxictoast/shared-grpc';
+} from '@toxictoast/shared-grpc/testing';
 import { CategoryGrpcController } from './category-grpc.controller.js';
 import type { Optional } from '@toxictoast/shared-types';
 import { BlogPermission } from '@toxictoast/contracts-grpc';

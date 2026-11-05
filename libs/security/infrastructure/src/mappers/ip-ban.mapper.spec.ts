@@ -1,4 +1,4 @@
-import { ipBanAnemic } from '@toxictoast/security-application';
+import { ipBanAnemic } from '@toxictoast/security-application/testing';
 import { IpBanMapper } from './ip-ban.mapper.js';
 
 describe('IpBanMapper', () => {

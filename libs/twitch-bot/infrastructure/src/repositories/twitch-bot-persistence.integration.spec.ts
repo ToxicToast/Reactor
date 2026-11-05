@@ -2,7 +2,7 @@ import { randomBytes } from 'node:crypto';
 import {
   FakeTwitchAuthClient,
   twitchChannelAnemic,
-} from '@toxictoast/twitch-bot-application';
+} from '@toxictoast/twitch-bot-application/testing';
 import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
 import { SecretCipher } from '@toxictoast/shared-system';
 import { TwitchBotTestDatabase } from '../testing/index.js';

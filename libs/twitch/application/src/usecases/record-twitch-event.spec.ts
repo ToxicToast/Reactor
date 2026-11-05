@@ -2,7 +2,7 @@ import {
   ObservationKinds,
   type TwitchObservation,
 } from '@toxictoast/twitch-domain';
-import { webhookAnemic } from '@toxictoast/shared-webhooks-application';
+import { webhookAnemic } from '@toxictoast/shared-webhooks-application/testing';
 import {
   observation,
   TWITCH_TEST_CHANNEL,

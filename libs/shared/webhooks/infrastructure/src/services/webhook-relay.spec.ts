@@ -5,7 +5,7 @@ import {
   WEBHOOK_TEST_NOW,
   webhookAnemic,
   webhookDeliveryAnemic,
-} from '@toxictoast/shared-webhooks-application';
+} from '@toxictoast/shared-webhooks-application/testing';
 import {
   WebhookDeliveryFactory,
   WebhookRetryPolicy,

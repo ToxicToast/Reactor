@@ -1,9 +1,9 @@
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryFileStorage,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import {
   MediaFactory,
   MediaStatus,

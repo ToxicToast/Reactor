@@ -2,21 +2,23 @@ import { randomUUID } from 'node:crypto';
 import {
   ApplyModerationDecisionUseCase,
   CommentModerationService,
+} from '@toxictoast/blog-application';
+import {
   commentAnemic,
   InMemoryCommentRepository,
-} from '@toxictoast/blog-application';
+} from '@toxictoast/blog-application/testing';
 import {
   CommentFactory,
   CommentModerator,
   CommentStatus,
   type CommentId,
 } from '@toxictoast/blog-domain';
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
   createUuidTestContext,
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import { ModerationDecidedHandler } from './moderation-decided.handler.js';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
