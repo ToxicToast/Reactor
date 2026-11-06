@@ -1,7 +1,7 @@
-import { createCountingTestContext } from '@toxictoast/shared-application/testing';
 import type { DomainContext } from '@toxictoast/shared-kernel';
 import type { ChannelRef } from '@toxictoast/twitch-domain';
 import type { TwitchStatsConfig } from '../interfaces/index.js';
+import { createCountingTestContext } from '@toxictoast/shared-kernel/testing';
 
 export const TWITCH_TEST_NOW = new Date('2026-10-28T20:00:00Z');
 

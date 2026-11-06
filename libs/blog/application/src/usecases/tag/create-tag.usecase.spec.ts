@@ -1,5 +1,4 @@
 import type { Nullable } from '@toxictoast/shared-types';
-import type { DomainContext } from '@toxictoast/shared-kernel';
 import { DomainPersistence } from '@toxictoast/shared-application';
 import {
   ImmediateUnitOfWork,
@@ -12,6 +11,7 @@ import {
 } from '@toxictoast/blog-domain';
 import { InMemoryTagRepository } from '../../testing/index.js';
 import { CreateTagUseCase } from './create-tag.usecase.js';
+import { createCountingTestContext } from '@toxictoast/shared-kernel/testing';
 
 const NOW = new Date('2026-10-19T12:00:00Z');
 
@@ -22,11 +22,7 @@ describe('CreateTagUseCase', () => {
   let useCase: CreateTagUseCase;
 
   beforeEach(() => {
-    let counter = 0;
-    const ctx: DomainContext = {
-      id: { generate: () => `id-${++counter}` as never },
-      date: { now: () => NOW },
-    };
+    const ctx = createCountingTestContext(NOW);
 
     repository = new InMemoryTagRepository();
     outbox = new InMemoryOutbox();

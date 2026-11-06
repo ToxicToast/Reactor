@@ -14,7 +14,6 @@ import { InMemoryCategoryRepository } from '@toxictoast/blog-application/testing
 import { CategoryFactory } from '@toxictoast/blog-domain';
 import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  createUuidTestContext,
   ImmediateUnitOfWork,
   InMemoryOutbox,
 } from '@toxictoast/shared-application/testing';
@@ -27,6 +26,7 @@ import {
 import { CategoryGrpcController } from './category-grpc.controller.js';
 import type { Optional } from '@toxictoast/shared-types';
 import { BlogPermission } from '@toxictoast/contracts-grpc';
+import { createUuidTestContext } from '@toxictoast/shared-kernel/testing';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
 

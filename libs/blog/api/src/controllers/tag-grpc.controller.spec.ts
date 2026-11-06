@@ -12,7 +12,6 @@ import { InMemoryTagRepository } from '@toxictoast/blog-application/testing';
 import { TagFactory } from '@toxictoast/blog-domain';
 import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  createUuidTestContext,
   ImmediateUnitOfWork,
   InMemoryOutbox,
 } from '@toxictoast/shared-application/testing';
@@ -24,6 +23,7 @@ import {
   TestActorProvider,
 } from '@toxictoast/shared-grpc/testing';
 import { TagGrpcController } from './tag-grpc.controller.js';
+import { createUuidTestContext } from '@toxictoast/shared-kernel/testing';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
 const NOW_ISO = '2026-10-20T12:00:00.000Z';

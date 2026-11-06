@@ -1,14 +1,11 @@
-import type { DomainContext } from '@toxictoast/shared-kernel';
 import type { TwitchChannelData } from '../data/index.js';
 import { TwitchChannelFactory } from '../factories/index.js';
 import type { TwitchChannelDomain } from './twitch-channel.domain.js';
+import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
 
 let now = new Date('2026-10-26T20:00:00Z');
 
-const ctx: DomainContext = {
-  id: { generate: () => 'channel-1' as never },
-  date: { now: () => now },
-};
+const ctx = createFixedTestContext('channel-1', () => now);
 
 const VALID: TwitchChannelData = {
   twitch_id: '123456',

@@ -1,15 +1,12 @@
-import type { DomainContext } from '@toxictoast/shared-kernel';
 import { MediaStatus } from '../enums/index.js';
 import { MediaFactory } from '../factories/index.js';
 import type { MediaData } from '../data/index.js';
 import type { MediaDomain } from './media.domain.js';
+import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
 
 const NOW = new Date('2026-10-19T12:00:00Z');
 
-const ctx: DomainContext = {
-  id: { generate: () => 'id-1' as never },
-  date: { now: () => NOW },
-};
+const ctx = createFixedTestContext('id-1', () => NOW);
 
 const VALID_DATA: MediaData = {
   filename: 'hero.png',

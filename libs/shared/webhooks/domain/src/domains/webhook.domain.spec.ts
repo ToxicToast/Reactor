@@ -1,13 +1,10 @@
-import type { DomainContext } from '@toxictoast/shared-kernel';
 import { WebhookFactory } from '../factories/index.js';
 import type { WebhookDomain } from './webhook.domain.js';
+import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
 
 let now = new Date('2026-10-28T10:00:00Z');
 
-const ctx: DomainContext = {
-  id: { generate: () => 'webhook-1' as never },
-  date: { now: () => now },
-};
+const ctx = createFixedTestContext('webhook-1', () => now);
 
 describe('WebhookDomain', () => {
   const factory = new WebhookFactory(ctx);

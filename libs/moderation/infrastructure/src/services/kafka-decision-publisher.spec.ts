@@ -1,18 +1,16 @@
 import { ModerationDecision } from '@toxictoast/moderation-domain';
-import { ActorType, DomainContext } from '@toxictoast/shared-kernel';
+import { ActorType } from '@toxictoast/shared-kernel';
 import type {
   EventPublisher,
   PublishedEvent,
 } from '@toxictoast/shared-messaging';
 import { KafkaDecisionPublisher } from './kafka-decision-publisher.service.js';
 import { CorrelationContext } from '@toxictoast/shared-system';
+import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
 
 const NOW = new Date('2026-10-23T12:00:00Z');
 
-const ctx: DomainContext = {
-  id: { generate: () => 'event-1' as never },
-  date: { now: () => NOW },
-};
+const ctx = createFixedTestContext('event-1', () => NOW);
 
 const CID = '01a16a00-3111-7049-8d8d-0db609f31f2a';
 

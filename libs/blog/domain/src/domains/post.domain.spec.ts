@@ -1,18 +1,15 @@
-import type { DomainContext } from '@toxictoast/shared-kernel';
 import type { PostData } from '../data/index.js';
 import { PostStatus } from '../enums/index.js';
 import { PostFactory } from '../factories/index.js';
 import type { AuthorId, CategoryId, MediaId, TagId } from '../types/index.js';
 import type { PostDomain } from './post.domain.js';
+import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
 
 const NOW = new Date('2026-10-19T12:00:00Z');
 const PAST = new Date('2024-05-01T08:00:00Z');
 const FUTURE = new Date('2027-01-01T00:00:00Z');
 
-const ctx: DomainContext = {
-  id: { generate: () => 'id-1' as never },
-  date: { now: () => NOW },
-};
+const ctx = createFixedTestContext('id-1', () => NOW);
 
 const CATEGORY_ID = 'category-1' as CategoryId;
 const TAG_ID = 'tag-1' as TagId;

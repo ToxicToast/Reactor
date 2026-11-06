@@ -1,5 +1,5 @@
-import { createCountingTestContext } from '@toxictoast/shared-application/testing';
 import type { DomainContext } from '@toxictoast/shared-kernel';
+import { createCountingTestContext } from '@toxictoast/shared-kernel/testing';
 
 export const WEBHOOK_TEST_NOW = new Date('2026-10-28T10:00:00Z');
 

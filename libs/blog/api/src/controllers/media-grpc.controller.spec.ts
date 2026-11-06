@@ -18,7 +18,6 @@ import {
 } from '@toxictoast/contracts-grpc';
 import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  createUuidTestContext,
   ImmediateUnitOfWork,
   InMemoryFileStorage,
   InMemoryOutbox,
@@ -30,6 +29,7 @@ import {
   TestActorProvider,
 } from '@toxictoast/shared-grpc/testing';
 import { MediaGrpcController } from './media-grpc.controller.js';
+import { createUuidTestContext } from '@toxictoast/shared-kernel/testing';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
 

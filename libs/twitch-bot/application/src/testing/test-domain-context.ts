@@ -1,5 +1,5 @@
-import { createCountingTestContext } from '@toxictoast/shared-application/testing';
 import type { DomainContext } from '@toxictoast/shared-kernel';
+import { createCountingTestContext } from '@toxictoast/shared-kernel/testing';
 
 export const TEST_NOW = new Date('2026-10-26T20:00:00Z');
 

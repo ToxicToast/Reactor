@@ -108,7 +108,6 @@
     "@toxictoast/shared-kernel": "*",
     "@toxictoast/shared-nest": "*",
     "@toxictoast/shared-system": "*",
-    "@toxictoast/shared-types": "*",
     "@nestjs/microservices": "^11.2.7",
     "@nestjs/bullmq": "^11.0.5",
     "@grpc/grpc-js": "^1.14.6",

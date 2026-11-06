@@ -25,7 +25,6 @@ import {
 } from '@toxictoast/contracts-grpc';
 import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  createUuidTestContext,
   ImmediateUnitOfWork,
   InMemoryOutbox,
 } from '@toxictoast/shared-application/testing';
@@ -36,6 +35,7 @@ import {
   TestActorProvider,
 } from '@toxictoast/shared-grpc/testing';
 import { CommentGrpcController } from './comment-grpc.controller.js';
+import { createUuidTestContext } from '@toxictoast/shared-kernel/testing';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
 const POST = randomUUID();

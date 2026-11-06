@@ -44,7 +44,7 @@ import {
 } from '@toxictoast/twitch-application/testing';
 import { ObservationKinds } from '@toxictoast/twitch-domain';
 import { TwitchGrpcController } from './twitch-grpc.controller.js';
-import { createUuidTestContext } from '@toxictoast/shared-application/testing';
+import { createUuidTestContext } from '@toxictoast/shared-kernel/testing';
 
 const CHANNEL_ID = TWITCH_TEST_CHANNEL.channel_id;
 const UNKNOWN_ID = '0192f3a0-0000-7000-8000-0000000000ff';

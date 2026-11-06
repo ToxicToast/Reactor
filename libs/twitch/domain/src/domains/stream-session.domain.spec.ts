@@ -1,11 +1,11 @@
-import type { DomainContext } from '@toxictoast/shared-kernel';
 import { StreamSessionFactory } from '../factories/index.js';
 import type { StreamSessionDomain } from './stream-session.domain.js';
+import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
 
-const ctx: DomainContext = {
-  id: { generate: () => 'session-1' as never },
-  date: { now: () => new Date('2026-10-28T20:00:05Z') },
-};
+const ctx = createFixedTestContext(
+  'session-1',
+  () => new Date('2026-10-28T20:00:05Z'),
+);
 
 const CHANNEL = {
   channel_id: '123456',
