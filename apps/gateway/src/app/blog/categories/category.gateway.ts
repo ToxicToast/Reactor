@@ -1,4 +1,3 @@
-import type { OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import {
   CATEGORY_SERVICE_NAME,
@@ -16,61 +15,42 @@ import {
   type UpdateCategoryRequest,
   type UpdateCategoryResponse,
 } from '@toxictoast/contracts-grpc';
-import type { Nullable } from '@toxictoast/shared-types';
 import type { Observable } from 'rxjs';
+import { GrpcGateway } from '../../grpc/abstracts/index.js';
 import type { RequestMetadata } from '../../grpc/services/index.js';
 
-export class CategoryGateway implements OnModuleInit {
-  private client: Nullable<CategoryServiceClient> = null;
-
-  constructor(
-    private readonly grpc: ClientGrpc,
-    private readonly metadata: RequestMetadata,
-  ) {}
-
-  onModuleInit(): void {
-    this.client = this.grpc.getService<CategoryServiceClient>(
-      CATEGORY_SERVICE_NAME,
-    );
+export class CategoryGateway extends GrpcGateway<CategoryServiceClient> {
+  constructor(grpc: ClientGrpc, metadata: RequestMetadata) {
+    super(grpc, CATEGORY_SERVICE_NAME, metadata);
   }
 
   create(request: CreateCategoryRequest): Observable<CreateCategoryResponse> {
-    return this.categories().createCategory(request, this.metadata.current());
+    return this.service.createCategory(request, this.metadata());
   }
 
   update(request: UpdateCategoryRequest): Observable<UpdateCategoryResponse> {
-    return this.categories().updateCategory(request, this.metadata.current());
+    return this.service.updateCategory(request, this.metadata());
   }
 
   changeParent(
     request: ChangeCategoryParentRequest,
   ): Observable<ChangeCategoryParentResponse> {
-    return this.categories().changeCategoryParent(
-      request,
-      this.metadata.current(),
-    );
+    return this.service.changeCategoryParent(request, this.metadata());
   }
 
   delete(id: string): Observable<DeleteCategoryResponse> {
-    return this.categories().deleteCategory({ id }, this.metadata.current());
+    return this.service.deleteCategory({ id }, this.metadata());
   }
 
   restore(id: string): Observable<RestoreCategoryResponse> {
-    return this.categories().restoreCategory({ id }, this.metadata.current());
+    return this.service.restoreCategory({ id }, this.metadata());
   }
 
   get(request: GetCategoryRequest): Observable<GetCategoryResponse> {
-    return this.categories().getCategory(request, this.metadata.current());
+    return this.service.getCategory(request, this.metadata());
   }
 
   list(request: ListCategoriesRequest): Observable<ListCategoriesResponse> {
-    return this.categories().listCategories(request, this.metadata.current());
-  }
-
-  private categories(): CategoryServiceClient {
-    if (!this.client) {
-      throw new Error('Blog category client is not initialized');
-    }
-    return this.client;
+    return this.service.listCategories(request, this.metadata());
   }
 }

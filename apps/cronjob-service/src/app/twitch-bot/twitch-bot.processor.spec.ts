@@ -27,7 +27,6 @@ describe('TwitchBotProcessor', () => {
       ctx,
       new CorrelationContext(),
     );
-    processor.onModuleInit();
   });
 
   it('syncs the chatters', async () => {

@@ -1,5 +1,5 @@
 import { Processor } from '@nestjs/bullmq';
-import { Inject, Logger, type OnModuleInit } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import {
   TWITCH_BOT_GRPC_CLIENT,
@@ -10,9 +10,8 @@ import {
   type TwitchBotServiceClient,
 } from '@toxictoast/contracts-grpc';
 import type { DomainContext } from '@toxictoast/shared-kernel';
-import { TOKENS } from '@toxictoast/shared-nest';
+import { GrpcServiceClient, TOKENS } from '@toxictoast/shared-nest';
 import { CorrelationContext } from '@toxictoast/shared-system';
-import type { Nullable } from '@toxictoast/shared-types';
 import type { Job } from 'bullmq';
 import { firstValueFrom } from 'rxjs';
 import { SystemJobProcessor } from '../common/processors/index.js';
@@ -20,24 +19,19 @@ import { CRONJOB_TOKENS } from '../constants/index.js';
 import { TWITCH_BOT_QUEUE, TwitchBotJobs } from './constants/index.js';
 
 @Processor(TWITCH_BOT_QUEUE)
-export class TwitchBotProcessor
-  extends SystemJobProcessor
-  implements OnModuleInit
-{
+export class TwitchBotProcessor extends SystemJobProcessor {
   private readonly logger = new Logger(TwitchBotProcessor.name);
-  private twitch: Nullable<TwitchBotServiceClient> = null;
+  private readonly twitch: GrpcServiceClient<TwitchBotServiceClient>;
 
   constructor(
-    @Inject(TWITCH_BOT_GRPC_CLIENT) private readonly client: ClientGrpc,
+    @Inject(TWITCH_BOT_GRPC_CLIENT) grpc: ClientGrpc,
     @Inject(CRONJOB_TOKENS.ACTOR_ID) actorId: string,
     @Inject(TOKENS.DOMAIN_CONTEXT) ctx: DomainContext,
     correlations: CorrelationContext,
   ) {
     super(actorId, ctx, correlations);
-  }
-
-  onModuleInit(): void {
-    this.twitch = this.client.getService<TwitchBotServiceClient>(
+    this.twitch = new GrpcServiceClient<TwitchBotServiceClient>(
+      grpc,
       TWITCH_BOT_SERVICE_NAME,
     );
   }
@@ -55,7 +49,7 @@ export class TwitchBotProcessor
 
   private async syncChatters(): Promise<SyncChattersResponse> {
     const response = await firstValueFrom(
-      this.service().syncChatters(
+      this.twitch.service.syncChatters(
         {},
         this.metadataFor([TwitchBotPermission.SYNC]),
       ),
@@ -70,7 +64,7 @@ export class TwitchBotProcessor
 
   private async syncClips(): Promise<SyncClipsResponse> {
     const response = await firstValueFrom(
-      this.service().syncClips(
+      this.twitch.service.syncClips(
         {},
         this.metadataFor([TwitchBotPermission.SYNC]),
       ),
@@ -79,12 +73,5 @@ export class TwitchBotProcessor
       this.logger.log(`Clips synced: ${response.created} new`);
     }
     return response;
-  }
-
-  private service(): TwitchBotServiceClient {
-    if (!this.twitch) {
-      throw new Error('Twitch bot client is not initialized');
-    }
-    return this.twitch;
   }
 }

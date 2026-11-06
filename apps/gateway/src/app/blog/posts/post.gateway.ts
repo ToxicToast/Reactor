@@ -1,4 +1,3 @@
-import type { OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import {
   POST_SERVICE_NAME,
@@ -19,66 +18,52 @@ import {
   type UpdatePostRequest,
   type UpdatePostResponse,
 } from '@toxictoast/contracts-grpc';
-import type { Nullable } from '@toxictoast/shared-types';
 import type { Observable } from 'rxjs';
+import { GrpcGateway } from '../../grpc/abstracts/index.js';
 import type { RequestMetadata } from '../../grpc/services/index.js';
 
-export class PostGateway implements OnModuleInit {
-  private client: Nullable<PostServiceClient> = null;
-
-  constructor(
-    private readonly grpc: ClientGrpc,
-    private readonly metadata: RequestMetadata,
-  ) {}
-
-  onModuleInit(): void {
-    this.client = this.grpc.getService<PostServiceClient>(POST_SERVICE_NAME);
+export class PostGateway extends GrpcGateway<PostServiceClient> {
+  constructor(grpc: ClientGrpc, metadata: RequestMetadata) {
+    super(grpc, POST_SERVICE_NAME, metadata);
   }
 
   create(request: CreatePostRequest): Observable<CreatePostResponse> {
-    return this.posts().createPost(request, this.metadata.current());
+    return this.service.createPost(request, this.metadata());
   }
 
   update(request: UpdatePostRequest): Observable<UpdatePostResponse> {
-    return this.posts().updatePost(request, this.metadata.current());
+    return this.service.updatePost(request, this.metadata());
   }
 
   publish(request: PublishPostRequest): Observable<PublishPostResponse> {
-    return this.posts().publishPost(request, this.metadata.current());
+    return this.service.publishPost(request, this.metadata());
   }
 
   archive(id: string): Observable<ArchivePostResponse> {
-    return this.posts().archivePost({ id }, this.metadata.current());
+    return this.service.archivePost({ id }, this.metadata());
   }
 
   unarchive(id: string): Observable<UnarchivePostResponse> {
-    return this.posts().unarchivePost({ id }, this.metadata.current());
+    return this.service.unarchivePost({ id }, this.metadata());
   }
 
   delete(id: string): Observable<DeletePostResponse> {
-    return this.posts().deletePost({ id }, this.metadata.current());
+    return this.service.deletePost({ id }, this.metadata());
   }
 
   restore(id: string): Observable<RestorePostResponse> {
-    return this.posts().restorePost({ id }, this.metadata.current());
+    return this.service.restorePost({ id }, this.metadata());
   }
 
   get(request: GetPostRequest): Observable<GetPostResponse> {
-    return this.posts().getPost(request, this.metadata.current());
+    return this.service.getPost(request, this.metadata());
   }
 
   getPublished(slug: string): Observable<GetPublishedPostResponse> {
-    return this.posts().getPublishedPost({ slug }, this.metadata.current());
+    return this.service.getPublishedPost({ slug }, this.metadata());
   }
 
   list(request: ListPostsRequest): Observable<ListPostsResponse> {
-    return this.posts().listPosts(request, this.metadata.current());
-  }
-
-  private posts(): PostServiceClient {
-    if (!this.client) {
-      throw new Error('Blog post client is not initialized');
-    }
-    return this.client;
+    return this.service.listPosts(request, this.metadata());
   }
 }

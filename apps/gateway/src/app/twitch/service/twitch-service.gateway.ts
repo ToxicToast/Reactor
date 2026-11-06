@@ -1,4 +1,3 @@
-import type { OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import {
   TWITCH_SERVICE_NAME,
@@ -30,69 +29,61 @@ import {
   type WatchEventsResponse,
   type WatchLiveResponse,
 } from '@toxictoast/contracts-grpc';
-import type { Nullable } from '@toxictoast/shared-types';
 import type { Observable } from 'rxjs';
+import { GrpcGateway } from '../../grpc/abstracts/index.js';
 import type { RequestMetadata } from '../../grpc/services/index.js';
 
-export class TwitchServiceGateway implements OnModuleInit {
-  private client: Nullable<TwitchServiceClient> = null;
-
-  constructor(
-    private readonly grpc: ClientGrpc,
-    private readonly metadata: RequestMetadata,
-  ) {}
-
-  onModuleInit(): void {
-    this.client =
-      this.grpc.getService<TwitchServiceClient>(TWITCH_SERVICE_NAME);
+export class TwitchServiceGateway extends GrpcGateway<TwitchServiceClient> {
+  constructor(grpc: ClientGrpc, metadata: RequestMetadata) {
+    super(grpc, TWITCH_SERVICE_NAME, metadata);
   }
 
   // ── Stats ─────────────────────────────────────
 
   listChannels(): Observable<ListStatsChannelsResponse> {
-    return this.twitch().listStatsChannels({}, this.metadata.current());
+    return this.service.listStatsChannels({}, this.metadata());
   }
 
   listSessions(request: ListSessionsRequest): Observable<ListSessionsResponse> {
-    return this.twitch().listSessions(request, this.metadata.current());
+    return this.service.listSessions(request, this.metadata());
   }
 
   getSession(id: string): Observable<GetSessionResponse> {
-    return this.twitch().getSession({ id }, this.metadata.current());
+    return this.service.getSession({ id }, this.metadata());
   }
 
   getLeaderboard(
     request: GetLeaderboardRequest,
   ): Observable<GetLeaderboardResponse> {
-    return this.twitch().getLeaderboard(request, this.metadata.current());
+    return this.service.getLeaderboard(request, this.metadata());
   }
 
   getTimeline(request: GetTimelineRequest): Observable<GetTimelineResponse> {
-    return this.twitch().getTimeline(request, this.metadata.current());
+    return this.service.getTimeline(request, this.metadata());
   }
 
   listRewards(request: ListRewardsRequest): Observable<ListRewardsResponse> {
-    return this.twitch().listRewards(request, this.metadata.current());
+    return this.service.listRewards(request, this.metadata());
   }
 
   listPolls(request: ListPollsRequest): Observable<ListPollsResponse> {
-    return this.twitch().listPolls(request, this.metadata.current());
+    return this.service.listPolls(request, this.metadata());
   }
 
   listChatMessages(
     request: ListChatMessagesRequest,
   ): Observable<ListChatMessagesResponse> {
-    return this.twitch().listChatMessages(request, this.metadata.current());
+    return this.service.listChatMessages(request, this.metadata());
   }
 
   // ── Streams ───────────────────────────────────
 
   watchLive(): Observable<WatchLiveResponse> {
-    return this.twitch().watchLive({}, this.metadata.current());
+    return this.service.watchLive({}, this.metadata());
   }
 
   watchEvents(request: WatchEventsRequest): Observable<WatchEventsResponse> {
-    return this.twitch().watchEvents(request, this.metadata.current());
+    return this.service.watchEvents(request, this.metadata());
   }
 
   // ── Webhooks ──────────────────────────────────
@@ -100,45 +91,32 @@ export class TwitchServiceGateway implements OnModuleInit {
   createWebhook(
     request: CreateTwitchWebhookRequest,
   ): Observable<CreateTwitchWebhookResponse> {
-    return this.twitch().createTwitchWebhook(request, this.metadata.current());
+    return this.service.createTwitchWebhook(request, this.metadata());
   }
 
   listWebhooks(): Observable<ListTwitchWebhooksResponse> {
-    return this.twitch().listTwitchWebhooks({}, this.metadata.current());
+    return this.service.listTwitchWebhooks({}, this.metadata());
   }
 
   updateWebhook(
     request: UpdateTwitchWebhookRequest,
   ): Observable<UpdateTwitchWebhookResponse> {
-    return this.twitch().updateTwitchWebhook(request, this.metadata.current());
+    return this.service.updateTwitchWebhook(request, this.metadata());
   }
 
   deleteWebhook(id: string): Observable<DeleteTwitchWebhookResponse> {
-    return this.twitch().deleteTwitchWebhook({ id }, this.metadata.current());
+    return this.service.deleteTwitchWebhook({ id }, this.metadata());
   }
 
   rotateWebhookSecret(
     id: string,
   ): Observable<RotateTwitchWebhookSecretResponse> {
-    return this.twitch().rotateTwitchWebhookSecret(
-      { id },
-      this.metadata.current(),
-    );
+    return this.service.rotateTwitchWebhookSecret({ id }, this.metadata());
   }
 
   listWebhookDeliveries(
     request: ListTwitchWebhookDeliveriesRequest,
   ): Observable<ListTwitchWebhookDeliveriesResponse> {
-    return this.twitch().listTwitchWebhookDeliveries(
-      request,
-      this.metadata.current(),
-    );
-  }
-
-  private twitch(): TwitchServiceClient {
-    if (!this.client) {
-      throw new Error('Twitch service client is not initialized');
-    }
-    return this.client;
+    return this.service.listTwitchWebhookDeliveries(request, this.metadata());
   }
 }
