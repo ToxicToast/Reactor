@@ -121,6 +121,6 @@
     "@toxictoast/shared-messaging": "*"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.0.0"
+    "@nestjs/testing": "^12.0.0"
   }
 }
