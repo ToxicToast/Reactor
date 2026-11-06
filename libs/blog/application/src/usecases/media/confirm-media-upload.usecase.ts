@@ -1,38 +1,48 @@
 import {
   ConflictError,
-  NotFoundError,
   Result,
   ValidationError,
 } from '@toxictoast/shared-kernel';
 import type {
+  AggregateEditor,
   DomainPersistence,
   FileStorage,
   UseCase,
 } from '@toxictoast/shared-application';
 import type {
   MediaAnemic,
+  MediaDomain,
   MediaFactory,
   MediaRepository,
 } from '@toxictoast/blog-domain';
 import type { MediaIdInput } from '../../data/index.js';
+import { createMediaEditor } from '../../functions/index.js';
 
 export class ConfirmMediaUploadUseCase implements UseCase<
   MediaIdInput,
   MediaAnemic
 > {
+  private readonly editor: AggregateEditor<MediaAnemic, MediaDomain>;
+
   constructor(
-    private readonly factory: MediaFactory,
-    private readonly repository: MediaRepository,
+    factory: MediaFactory,
+    repository: MediaRepository,
     private readonly storage: FileStorage,
-    private readonly persistence: DomainPersistence,
-  ) {}
+    persistence: DomainPersistence,
+  ) {
+    this.editor = createMediaEditor(factory, repository, persistence);
+  }
 
-  async execute(input: MediaIdInput): Promise<Result<MediaAnemic>> {
-    const anemic = await this.repository.findById(input.id);
-    if (!anemic) {
-      return Result.fail(new NotFoundError('Media', input.id));
-    }
+  execute(input: MediaIdInput): Promise<Result<MediaAnemic>> {
+    return this.editor.change(input.id, (media, anemic) =>
+      this.markReady(media, anemic),
+    );
+  }
 
+  private async markReady(
+    media: MediaDomain,
+    anemic: MediaAnemic,
+  ): Promise<Result<void>> {
     const file = await this.storage.stat(anemic.object_key);
     if (!file) {
       return Result.fail(new ConflictError('File has not been uploaded yet'));
@@ -45,12 +55,6 @@ export class ConfirmMediaUploadUseCase implements UseCase<
       );
     }
 
-    const media = this.factory.reconstitute(anemic);
-    const ready = media.markReady(file.size);
-    if (ready.isFailure) {
-      return Result.fail(ready.error);
-    }
-
-    return this.persistence.persist(media, this.repository);
+    return media.markReady(file.size);
   }
 }

@@ -1,35 +1,45 @@
+import { ConflictError, Result } from '@toxictoast/shared-kernel';
 import {
-  ConflictError,
-  NotFoundError,
-  Result,
-} from '@toxictoast/shared-kernel';
-import type {
-  DomainPersistence,
-  UseCase,
+  INCLUDING_DELETED,
+  type AggregateEditor,
+  type DomainPersistence,
+  type UseCase,
 } from '@toxictoast/shared-application';
 import type {
   CategoryAnemic,
+  CategoryDomain,
   CategoryFactory,
   CategoryRepository,
 } from '@toxictoast/blog-domain';
 import type { CategoryIdInput } from '../../data/index.js';
+import { createCategoryEditor } from '../../functions/index.js';
 
 export class RestoreCategoryUseCase implements UseCase<
   CategoryIdInput,
   CategoryAnemic
 > {
+  private readonly editor: AggregateEditor<CategoryAnemic, CategoryDomain>;
+
   constructor(
-    private readonly factory: CategoryFactory,
+    factory: CategoryFactory,
     private readonly repository: CategoryRepository,
-    private readonly persistence: DomainPersistence,
-  ) {}
+    persistence: DomainPersistence,
+  ) {
+    this.editor = createCategoryEditor(factory, repository, persistence);
+  }
 
-  async execute(input: CategoryIdInput): Promise<Result<CategoryAnemic>> {
-    const anemic = await this.repository.findById(input.id, true);
-    if (!anemic) {
-      return Result.fail(new NotFoundError('Category', input.id));
-    }
+  execute(input: CategoryIdInput): Promise<Result<CategoryAnemic>> {
+    return this.editor.change(
+      input.id,
+      (category, anemic) => this.restore(category, anemic),
+      INCLUDING_DELETED,
+    );
+  }
 
+  private async restore(
+    category: CategoryDomain,
+    anemic: CategoryAnemic,
+  ): Promise<Result<void>> {
     if (anemic.parent_id !== null) {
       const parent = await this.repository.findById(anemic.parent_id);
       if (!parent) {
@@ -39,9 +49,7 @@ export class RestoreCategoryUseCase implements UseCase<
       }
     }
 
-    const category = this.factory.reconstitute(anemic);
     category.restoreCategory();
-
-    return this.persistence.persist(category, this.repository);
+    return Result.ok();
   }
 }

@@ -1,37 +1,35 @@
-import { NotFoundError, Result } from '@toxictoast/shared-kernel';
+import type { Result } from '@toxictoast/shared-kernel';
 import type {
+  AggregateEditor,
   DomainPersistence,
   UseCase,
 } from '@toxictoast/shared-application';
 import type {
   CategoryAnemic,
+  CategoryDomain,
   CategoryFactory,
   CategoryRepository,
 } from '@toxictoast/blog-domain';
 import type { UpdateCategoryInput } from '../../data/index.js';
+import { createCategoryEditor } from '../../functions/index.js';
 
 export class UpdateCategoryUseCase implements UseCase<
   UpdateCategoryInput,
   CategoryAnemic
 > {
+  private readonly editor: AggregateEditor<CategoryAnemic, CategoryDomain>;
+
   constructor(
-    private readonly factory: CategoryFactory,
-    private readonly repository: CategoryRepository,
-    private readonly persistence: DomainPersistence,
-  ) {}
+    factory: CategoryFactory,
+    repository: CategoryRepository,
+    persistence: DomainPersistence,
+  ) {
+    this.editor = createCategoryEditor(factory, repository, persistence);
+  }
 
-  async execute(input: UpdateCategoryInput): Promise<Result<CategoryAnemic>> {
-    const anemic = await this.repository.findById(input.id);
-    if (!anemic) {
-      return Result.fail(new NotFoundError('Category', input.id));
-    }
-
-    const category = this.factory.reconstitute(anemic);
-    const updated = category.updateCategory(input.title, input.description);
-    if (updated.isFailure) {
-      return Result.fail(updated.error);
-    }
-
-    return this.persistence.persist(category, this.repository);
+  execute(input: UpdateCategoryInput): Promise<Result<CategoryAnemic>> {
+    return this.editor.change(input.id, (category) =>
+      category.updateCategory(input.title, input.description),
+    );
   }
 }

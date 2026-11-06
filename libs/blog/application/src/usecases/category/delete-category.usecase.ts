@@ -1,36 +1,46 @@
+import { ConflictError, Result } from '@toxictoast/shared-kernel';
 import {
-  ConflictError,
-  NotFoundError,
-  Result,
-} from '@toxictoast/shared-kernel';
-import type {
-  DomainPersistence,
-  UseCase,
+  INCLUDING_DELETED,
+  type AggregateEditor,
+  type DomainPersistence,
+  type UseCase,
 } from '@toxictoast/shared-application';
 import type {
   CategoryAnemic,
+  CategoryDomain,
   CategoryFactory,
   CategoryRepository,
 } from '@toxictoast/blog-domain';
 import type { CategoryIdInput } from '../../data/index.js';
+import { createCategoryEditor } from '../../functions/index.js';
 
 export class DeleteCategoryUseCase implements UseCase<
   CategoryIdInput,
   CategoryAnemic
 > {
+  private readonly editor: AggregateEditor<CategoryAnemic, CategoryDomain>;
+
   constructor(
-    private readonly factory: CategoryFactory,
+    factory: CategoryFactory,
     private readonly repository: CategoryRepository,
-    private readonly persistence: DomainPersistence,
-  ) {}
+    persistence: DomainPersistence,
+  ) {
+    this.editor = createCategoryEditor(factory, repository, persistence);
+  }
 
-  async execute(input: CategoryIdInput): Promise<Result<CategoryAnemic>> {
-    const anemic = await this.repository.findById(input.id, true);
-    if (!anemic) {
-      return Result.fail(new NotFoundError('Category', input.id));
-    }
+  execute(input: CategoryIdInput): Promise<Result<CategoryAnemic>> {
+    return this.editor.change(
+      input.id,
+      (category, anemic) => this.delete(category, anemic),
+      INCLUDING_DELETED,
+    );
+  }
 
-    const children = await this.repository.findChildren(input.id);
+  private async delete(
+    category: CategoryDomain,
+    anemic: CategoryAnemic,
+  ): Promise<Result<void>> {
+    const children = await this.repository.findChildren(anemic.id);
     if (children.length > 0) {
       return Result.fail(
         new ConflictError(
@@ -39,9 +49,7 @@ export class DeleteCategoryUseCase implements UseCase<
       );
     }
 
-    const category = this.factory.reconstitute(anemic);
     category.deleteCategory();
-
-    return this.persistence.persist(category, this.repository);
+    return Result.ok();
   }
 }

@@ -1,31 +1,35 @@
-import { NotFoundError, Result } from '@toxictoast/shared-kernel';
-import type {
-  DomainPersistence,
-  UseCase,
+import type { Result } from '@toxictoast/shared-kernel';
+import {
+  INCLUDING_DELETED,
+  type AggregateEditor,
+  type DomainPersistence,
+  type UseCase,
 } from '@toxictoast/shared-application';
 import type {
   MediaAnemic,
+  MediaDomain,
   MediaFactory,
   MediaRepository,
 } from '@toxictoast/blog-domain';
 import type { MediaIdInput } from '../../data/index.js';
+import { createMediaEditor } from '../../functions/index.js';
 
 export class DeleteMediaUseCase implements UseCase<MediaIdInput, MediaAnemic> {
+  private readonly editor: AggregateEditor<MediaAnemic, MediaDomain>;
+
   constructor(
-    private readonly factory: MediaFactory,
-    private readonly repository: MediaRepository,
-    private readonly persistence: DomainPersistence,
-  ) {}
+    factory: MediaFactory,
+    repository: MediaRepository,
+    persistence: DomainPersistence,
+  ) {
+    this.editor = createMediaEditor(factory, repository, persistence);
+  }
 
-  async execute(input: MediaIdInput): Promise<Result<MediaAnemic>> {
-    const anemic = await this.repository.findById(input.id, true);
-    if (!anemic) {
-      return Result.fail(new NotFoundError('Media', input.id));
-    }
-
-    const media = this.factory.reconstitute(anemic);
-    media.deleteMedia();
-
-    return this.persistence.persist(media, this.repository);
+  execute(input: MediaIdInput): Promise<Result<MediaAnemic>> {
+    return this.editor.change(
+      input.id,
+      (media) => media.deleteMedia(),
+      INCLUDING_DELETED,
+    );
   }
 }

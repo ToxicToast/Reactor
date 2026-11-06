@@ -1,37 +1,35 @@
-import { NotFoundError, Result } from '@toxictoast/shared-kernel';
+import type { Result } from '@toxictoast/shared-kernel';
 import type {
+  AggregateEditor,
   DomainPersistence,
   UseCase,
 } from '@toxictoast/shared-application';
 import type {
   MediaAnemic,
+  MediaDomain,
   MediaFactory,
   MediaRepository,
 } from '@toxictoast/blog-domain';
 import type { UpdateMediaAltTextInput } from '../../data/index.js';
+import { createMediaEditor } from '../../functions/index.js';
 
 export class UpdateMediaAltTextUseCase implements UseCase<
   UpdateMediaAltTextInput,
   MediaAnemic
 > {
+  private readonly editor: AggregateEditor<MediaAnemic, MediaDomain>;
+
   constructor(
-    private readonly factory: MediaFactory,
-    private readonly repository: MediaRepository,
-    private readonly persistence: DomainPersistence,
-  ) {}
+    factory: MediaFactory,
+    repository: MediaRepository,
+    persistence: DomainPersistence,
+  ) {
+    this.editor = createMediaEditor(factory, repository, persistence);
+  }
 
-  async execute(input: UpdateMediaAltTextInput): Promise<Result<MediaAnemic>> {
-    const anemic = await this.repository.findById(input.id);
-    if (!anemic) {
-      return Result.fail(new NotFoundError('Media', input.id));
-    }
-
-    const media = this.factory.reconstitute(anemic);
-    const updated = media.updateAltText(input.alt_text);
-    if (updated.isFailure) {
-      return Result.fail(updated.error);
-    }
-
-    return this.persistence.persist(media, this.repository);
+  execute(input: UpdateMediaAltTextInput): Promise<Result<MediaAnemic>> {
+    return this.editor.change(input.id, (media) =>
+      media.updateAltText(input.alt_text),
+    );
   }
 }

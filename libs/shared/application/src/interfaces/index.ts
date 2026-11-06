@@ -5,3 +5,6 @@ export * from './persistable-domain.interface.js';
 export * from './save-repository.interface.js';
 export * from './file-storage.interface.js';
 export * from './stored-file.interface.js';
+export * from './aggregate-factory.interface.js';
+export * from './aggregate-change.interface.js';
+export * from './aggregate-change-options.interface.js';

@@ -1,31 +1,35 @@
-import { NotFoundError, Result } from '@toxictoast/shared-kernel';
-import type {
-  DomainPersistence,
-  UseCase,
+import type { Result } from '@toxictoast/shared-kernel';
+import {
+  INCLUDING_DELETED,
+  type AggregateEditor,
+  type DomainPersistence,
+  type UseCase,
 } from '@toxictoast/shared-application';
 import type {
   PostAnemic,
+  PostDomain,
   PostFactory,
   PostRepository,
 } from '@toxictoast/blog-domain';
 import type { PostIdInput } from '../../data/index.js';
+import { createPostEditor } from '../../functions/index.js';
 
 export class DeletePostUseCase implements UseCase<PostIdInput, PostAnemic> {
+  private readonly editor: AggregateEditor<PostAnemic, PostDomain>;
+
   constructor(
-    private readonly factory: PostFactory,
-    private readonly repository: PostRepository,
-    private readonly persistence: DomainPersistence,
-  ) {}
+    factory: PostFactory,
+    repository: PostRepository,
+    persistence: DomainPersistence,
+  ) {
+    this.editor = createPostEditor(factory, repository, persistence);
+  }
 
-  async execute(input: PostIdInput): Promise<Result<PostAnemic>> {
-    const anemic = await this.repository.findById(input.id, true);
-    if (!anemic) {
-      return Result.fail(new NotFoundError('Post', input.id));
-    }
-
-    const post = this.factory.reconstitute(anemic);
-    post.deletePost();
-
-    return this.persistence.persist(post, this.repository);
+  execute(input: PostIdInput): Promise<Result<PostAnemic>> {
+    return this.editor.change(
+      input.id,
+      (post) => post.deletePost(),
+      INCLUDING_DELETED,
+    );
   }
 }
