@@ -1,8 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import {
-  ApplyModerationDecisionUseCase,
-  CommentModerationService,
-} from '@toxictoast/blog-application';
+import { ApplyModerationDecisionUseCase } from '@toxictoast/blog-application';
 import {
   commentAnemic,
   InMemoryCommentRepository,
@@ -43,7 +40,6 @@ describe('ModerationDecidedHandler', () => {
       new ApplyModerationDecisionUseCase(
         new CommentFactory(createUuidTestContext(NOW)),
         comments,
-        new CommentModerationService(),
         new DomainPersistence(new InMemoryOutbox(), new ImmediateUnitOfWork()),
       ),
     );

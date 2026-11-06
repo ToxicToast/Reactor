@@ -20,7 +20,7 @@ import {
   UpdateCommentEvent,
 } from '../events/index.js';
 import { ValidateCommentContent } from '../validations/index.js';
-import type { AuthorId } from '../types/index.js';
+import type { AuthorId, ModerationStatus } from '../types/index.js';
 
 export class CommentDomain extends BaseDomain<CommentAnemic> {
   get isApproved(): boolean {
@@ -115,6 +115,40 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
     this.recordModeration(moderator, note);
     this.raise(ReviewCommentEvent);
     return Result.ok();
+  }
+
+  moderate(
+    status: ModerationStatus,
+    moderator: CommentModerator,
+    note: Nullable<string> = null,
+  ): Result<void> {
+    switch (status) {
+      case CommentStatus.APPROVED:
+        return this.approveComment(moderator, note);
+      case CommentStatus.SPAM:
+        return this.markAsSpam(moderator, note);
+      case CommentStatus.HATE:
+        return this.markAsHate(moderator, note);
+    }
+  }
+
+  /**
+   * Applies an automated moderation decision. Decisions for comments that are
+   * deleted or no longer pending are ignored: decision events can arrive twice
+   * or after an admin has already moderated the comment.
+   */
+  applyDecision(
+    decision: CommentStatus,
+    moderator: CommentModerator,
+    note: Nullable<string> = null,
+  ): Result<void> {
+    if (this.isDeleted || !this.isPending) {
+      return Result.ok();
+    }
+    if (decision === CommentStatus.PENDING) {
+      return this.markForReview(moderator, note);
+    }
+    return this.moderate(decision, moderator, note);
   }
 
   deleteComment(): void {

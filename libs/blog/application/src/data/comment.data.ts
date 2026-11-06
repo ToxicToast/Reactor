@@ -3,9 +3,9 @@ import type {
   AuthorId,
   CommentId,
   CommentStatus,
+  ModerationStatus,
   PostId,
 } from '@toxictoast/blog-domain';
-import type { ModerationStatus } from '../types/index.js';
 
 export interface UpdateCommentInput {
   readonly id: CommentId;

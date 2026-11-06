@@ -9,7 +9,6 @@ import {
   CommentStatus,
   type CommentId,
 } from '@toxictoast/blog-domain';
-import { CommentModerationService } from '../../services/index.js';
 import {
   commentAnemic,
   createTestContext,
@@ -33,7 +32,6 @@ describe('ApplyModerationDecisionUseCase', () => {
     useCase = new ApplyModerationDecisionUseCase(
       new CommentFactory(createTestContext()),
       comments,
-      new CommentModerationService(),
       new DomainPersistence(outbox, uow),
     );
   });

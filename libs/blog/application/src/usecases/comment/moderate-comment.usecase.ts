@@ -13,7 +13,6 @@ import {
 } from '@toxictoast/blog-domain';
 import type { ModerateCommentInput } from '../../data/index.js';
 import { createCommentEditor } from '../../functions/index.js';
-import type { CommentModerationService } from '../../services/index.js';
 
 export class ModerateCommentUseCase implements UseCase<
   ModerateCommentInput,
@@ -24,7 +23,6 @@ export class ModerateCommentUseCase implements UseCase<
   constructor(
     factory: CommentFactory,
     repository: CommentRepository,
-    private readonly moderation: CommentModerationService,
     persistence: DomainPersistence,
   ) {
     this.editor = createCommentEditor(factory, repository, persistence);
@@ -32,8 +30,7 @@ export class ModerateCommentUseCase implements UseCase<
 
   execute(input: ModerateCommentInput): Promise<Result<CommentAnemic>> {
     return this.editor.change(input.id, (comment) =>
-      this.moderation.moderate(
-        comment,
+      comment.moderate(
         input.status,
         CommentModerator.ADMIN,
         input.note ?? null,

@@ -12,7 +12,6 @@ import {
   ArchivePostUseCase,
   CategoryHierarchyService,
   ChangeCategoryParentUseCase,
-  CommentModerationService,
   ConfirmMediaUploadUseCase,
   CreateCategoryUseCase,
   CreateCommentUseCase,
@@ -115,7 +114,6 @@ const DATABASE = [DataSource, TransactionContext];
       TAG_REPOSITORY,
       MEDIA_REPOSITORY,
     ]),
-    provideClass(CommentModerationService),
 
     // ── Tag ─────────────────────────────────────
     provideClass(CreateTagUseCase, [
@@ -269,13 +267,11 @@ const DATABASE = [DataSource, TransactionContext];
     provideClass(ModerateCommentUseCase, [
       CommentFactory,
       COMMENT_REPOSITORY,
-      CommentModerationService,
       DomainPersistence,
     ]),
     provideClass(ApplyModerationDecisionUseCase, [
       CommentFactory,
       COMMENT_REPOSITORY,
-      CommentModerationService,
       DomainPersistence,
     ]),
     provideClass(DeleteCommentUseCase, [

@@ -1,7 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { status } from '@grpc/grpc-js';
 import {
-  CommentModerationService,
   CreateCommentUseCase,
   DeleteCommentUseCase,
   GetCommentUseCase,
@@ -60,7 +59,6 @@ describe('CommentGrpcController', () => {
     const factory = new CommentFactory(ctx);
     const comments = new InMemoryCommentRepository();
     const posts = new InMemoryPostRepository();
-    const moderation = new CommentModerationService();
     const persistence = new DomainPersistence(
       new InMemoryOutbox(),
       new ImmediateUnitOfWork(),
@@ -68,7 +66,7 @@ describe('CommentGrpcController', () => {
     controller = new CommentGrpcController(
       new CreateCommentUseCase(factory, comments, posts, persistence),
       new UpdateCommentUseCase(factory, comments, persistence),
-      new ModerateCommentUseCase(factory, comments, moderation, persistence),
+      new ModerateCommentUseCase(factory, comments, persistence),
       new DeleteCommentUseCase(factory, comments, persistence),
       new RestoreCommentUseCase(factory, comments, persistence),
       new GetCommentUseCase(comments),

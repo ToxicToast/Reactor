@@ -4,3 +4,4 @@ export * from './media-id.type.js';
 export * from './post-id.type.js';
 export * from './tag-id.type.js';
 export * from './comment-id.type.js';
+export * from './moderation-status.type.js';

@@ -1,3 +1,3 @@
-import type { CommentStatus } from '@toxictoast/blog-domain';
+import type { CommentStatus } from '../enums/index.js';
 
 export type ModerationStatus = Exclude<CommentStatus, CommentStatus.PENDING>;
