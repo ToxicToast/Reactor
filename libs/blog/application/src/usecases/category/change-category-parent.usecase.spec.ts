@@ -3,8 +3,11 @@ import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
 } from '@toxictoast/shared-application/testing';
-import { CategoryFactory, type CategoryId } from '@toxictoast/blog-domain';
-import { CategoryHierarchyService } from '../../services/index.js';
+import {
+  CategoryFactory,
+  CategoryHierarchyService,
+  type CategoryId,
+} from '@toxictoast/blog-domain';
 import {
   categoryAnemic,
   createTestContext,

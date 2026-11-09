@@ -1,7 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { status } from '@grpc/grpc-js';
 import {
-  CategoryHierarchyService,
   ChangeCategoryParentUseCase,
   CreateCategoryUseCase,
   DeleteCategoryUseCase,
@@ -11,7 +10,10 @@ import {
   UpdateCategoryUseCase,
 } from '@toxictoast/blog-application';
 import { InMemoryCategoryRepository } from '@toxictoast/blog-application/testing';
-import { CategoryFactory } from '@toxictoast/blog-domain';
+import {
+  CategoryFactory,
+  CategoryHierarchyService,
+} from '@toxictoast/blog-domain';
 import { DomainPersistence } from '@toxictoast/shared-application';
 import {
   ImmediateUnitOfWork,
@@ -57,8 +59,8 @@ describe('CategoryGrpcController', () => {
         hierarchy,
         persistence,
       ),
-      new DeleteCategoryUseCase(factory, categories, persistence),
-      new RestoreCategoryUseCase(factory, categories, persistence),
+      new DeleteCategoryUseCase(factory, categories, hierarchy, persistence),
+      new RestoreCategoryUseCase(factory, categories, hierarchy, persistence),
       new GetCategoryUseCase(categories),
       new ListCategoriesUseCase(categories),
       actors,

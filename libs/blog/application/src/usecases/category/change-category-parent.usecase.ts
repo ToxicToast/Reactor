@@ -8,11 +8,11 @@ import type {
   CategoryAnemic,
   CategoryDomain,
   CategoryFactory,
+  CategoryHierarchyService,
   CategoryRepository,
 } from '@toxictoast/blog-domain';
 import type { ChangeCategoryParentInput } from '../../data/index.js';
 import { createCategoryEditor } from '../../functions/index.js';
-import type { CategoryHierarchyService } from '../../services/index.js';
 
 export class ChangeCategoryParentUseCase implements UseCase<
   ChangeCategoryParentInput,

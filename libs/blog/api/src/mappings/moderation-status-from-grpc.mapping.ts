@@ -1,5 +1,4 @@
-import type { ModerationStatus } from '@toxictoast/blog-application';
-import { CommentStatus } from '@toxictoast/blog-domain';
+import { CommentStatus, type ModerationStatus } from '@toxictoast/blog-domain';
 import { ModerationStatus as GrpcModerationStatus } from '@toxictoast/contracts-grpc';
 import type { Nullable } from '@toxictoast/shared-types';
 

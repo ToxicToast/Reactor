@@ -3,7 +3,11 @@ import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
 } from '@toxictoast/shared-application/testing';
-import { CategoryFactory, type CategoryId } from '@toxictoast/blog-domain';
+import {
+  CategoryFactory,
+  CategoryHierarchyService,
+  type CategoryId,
+} from '@toxictoast/blog-domain';
 import {
   categoryAnemic,
   createTestContext,
@@ -27,6 +31,7 @@ describe('RestoreCategoryUseCase', () => {
     useCase = new RestoreCategoryUseCase(
       new CategoryFactory(createTestContext()),
       repository,
+      new CategoryHierarchyService(repository),
       new DomainPersistence(outbox, uow),
     );
   });

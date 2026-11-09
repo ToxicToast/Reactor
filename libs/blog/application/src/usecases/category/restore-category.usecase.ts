@@ -1,4 +1,4 @@
-import { ConflictError, Result } from '@toxictoast/shared-kernel';
+import { Result } from '@toxictoast/shared-kernel';
 import {
   INCLUDING_DELETED,
   type AggregateEditor,
@@ -9,6 +9,7 @@ import type {
   CategoryAnemic,
   CategoryDomain,
   CategoryFactory,
+  CategoryHierarchyService,
   CategoryRepository,
 } from '@toxictoast/blog-domain';
 import type { CategoryIdInput } from '../../data/index.js';
@@ -22,7 +23,8 @@ export class RestoreCategoryUseCase implements UseCase<
 
   constructor(
     factory: CategoryFactory,
-    private readonly repository: CategoryRepository,
+    repository: CategoryRepository,
+    private readonly hierarchy: CategoryHierarchyService,
     persistence: DomainPersistence,
   ) {
     this.editor = createCategoryEditor(factory, repository, persistence);
@@ -40,13 +42,9 @@ export class RestoreCategoryUseCase implements UseCase<
     category: CategoryDomain,
     anemic: CategoryAnemic,
   ): Promise<Result<void>> {
-    if (anemic.parent_id !== null) {
-      const parent = await this.repository.findById(anemic.parent_id);
-      if (!parent) {
-        return Result.fail(
-          new ConflictError('Parent category is deleted, restore it first'),
-        );
-      }
+    const allowed = await this.hierarchy.validateRestore(anemic);
+    if (allowed.isFailure) {
+      return allowed;
     }
 
     category.restoreCategory();

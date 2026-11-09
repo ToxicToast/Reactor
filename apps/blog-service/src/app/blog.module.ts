@@ -10,7 +10,6 @@ import {
 import {
   ApplyModerationDecisionUseCase,
   ArchivePostUseCase,
-  CategoryHierarchyService,
   ChangeCategoryParentUseCase,
   ConfirmMediaUploadUseCase,
   CreateCategoryUseCase,
@@ -58,6 +57,7 @@ import {
   MediaFactory,
   PostFactory,
   TagFactory,
+  CategoryHierarchyService,
 } from '@toxictoast/blog-domain';
 import {
   TypeOrmCategoryRepository,
@@ -140,6 +140,7 @@ const DATABASE = [DataSource, TransactionContext];
     provideClass(ListTagsUseCase, [TAG_REPOSITORY]),
 
     // ── Category ────────────────────────────────
+    // ── Category ────────────────────────────────
     provideClass(CreateCategoryUseCase, [
       CategoryFactory,
       CATEGORY_REPOSITORY,
@@ -160,11 +161,13 @@ const DATABASE = [DataSource, TransactionContext];
     provideClass(DeleteCategoryUseCase, [
       CategoryFactory,
       CATEGORY_REPOSITORY,
+      CategoryHierarchyService,
       DomainPersistence,
     ]),
     provideClass(RestoreCategoryUseCase, [
       CategoryFactory,
       CATEGORY_REPOSITORY,
+      CategoryHierarchyService,
       DomainPersistence,
     ]),
     provideClass(GetCategoryUseCase, [CATEGORY_REPOSITORY]),
