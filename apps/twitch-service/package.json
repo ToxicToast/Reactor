@@ -118,7 +118,8 @@
     "@toxictoast/twitch-application": "*",
     "@toxictoast/twitch-domain": "*",
     "@toxictoast/twitch-infrastructure": "*",
-    "@toxictoast/shared-webhooks-infrastructure": "*"
+    "@toxictoast/shared-webhooks-infrastructure": "*",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
     "@nestjs/testing": "^11.0.0"

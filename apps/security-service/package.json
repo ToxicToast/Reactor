@@ -114,7 +114,8 @@
     "@toxictoast/shared-persistence": "*",
     "@nestjs/microservices": "^11.2.7",
     "@grpc/grpc-js": "^1.14.6",
-    "typeorm": "^1.1.2"
+    "typeorm": "^1.1.2",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
     "@nestjs/testing": "^11.0.0"
