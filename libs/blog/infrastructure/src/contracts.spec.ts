@@ -3,17 +3,18 @@ import {
   CreateCommentEvent,
   CreateMediaEvent,
   CreatePostEvent,
-  CreateTagEvent,
+  TagEvents,
   type CategoryAnemic,
   type CommentAnemic,
   type MediaAnemic,
   type PostAnemic,
-  type TagAnemic,
+  type TagEventPayload,
   CommentStatus,
   RequestCommentModerationEvent,
 } from '@toxictoast/blog-domain';
 import { commentAnemic } from '@toxictoast/blog-application/testing';
 import {
+  BlogTagEvents,
   BlogTopics,
   type BlogCategoryPayloadV1,
   type BlogCommentPayloadV1,
@@ -24,7 +25,10 @@ import {
   BlogCommentModerationEvents,
   type EventActorV1,
 } from '@toxictoast/contracts-events';
-import type { ActorIdentity } from '@toxictoast/shared-kernel';
+import type {
+  ActorIdentity,
+  DomainEventDefinition,
+} from '@toxictoast/shared-kernel';
 
 type JsonValue<T> = T extends Date
   ? string
@@ -46,10 +50,24 @@ type Compatible<TActual, TExpected> = [TActual] extends [TExpected]
     : false
   : false;
 
+const namesOf = (
+  definitions: Readonly<Record<string, DomainEventDefinition>>,
+): Array<string> => {
+  return Object.values(definitions)
+    .map((definition) => definition.name)
+    .sort();
+};
+
+const namespacesOf = (
+  definitions: Readonly<Record<string, DomainEventDefinition>>,
+): Array<string> => {
+  return [...new Set(Object.values(definitions).map((item) => item.namespace))];
+};
+
 describe('Event contracts', () => {
-  it('match the serialized anemics', () => {
+  it('match the serialized payloads', () => {
     const checks: Array<true> = [
-      true as Compatible<Jsonified<TagAnemic>, BlogTagPayloadV1>,
+      true as Compatible<Jsonified<TagEventPayload>, BlogTagPayloadV1>,
       true as Compatible<Jsonified<CategoryAnemic>, BlogCategoryPayloadV1>,
       true as Compatible<Jsonified<MediaAnemic>, BlogMediaPayloadV1>,
       true as Compatible<Jsonified<PostAnemic>, BlogPostPayloadV1>,
@@ -57,6 +75,11 @@ describe('Event contracts', () => {
     ];
 
     expect(checks).toHaveLength(5);
+  });
+
+  it('publish the tag events under the contract names', () => {
+    expect(namespacesOf(TagEvents)).toEqual([BlogTopics.TAG]);
+    expect(namesOf(TagEvents)).toEqual(Object.values(BlogTagEvents).sort());
   });
 
   it('use the topics of the domain namespaces', () => {
@@ -68,7 +91,6 @@ describe('Event contracts', () => {
         .event_namespace;
     };
 
-    expect(namespace(CreateTagEvent)).toBe(BlogTopics.TAG);
     expect(namespace(CreateCategoryEvent)).toBe(BlogTopics.CATEGORY);
     expect(namespace(CreateMediaEvent)).toBe(BlogTopics.MEDIA);
     expect(namespace(CreatePostEvent)).toBe(BlogTopics.POST);

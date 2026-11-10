@@ -1,7 +1,5 @@
-export * from './create-tag.event.js';
-export * from './delete-tag.event.js';
-export * from './restore-tag.event.js';
-export * from './update-tag.event.js';
+export * from './tag-events.constant.js';
+export * from './tag-event-payload.interface.js';
 
 export * from './create-category.event.js';
 export * from './delete-category.event.js';

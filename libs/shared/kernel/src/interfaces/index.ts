@@ -4,6 +4,7 @@ export * from './domain.interface.js';
 export * from './factory.interface.js';
 export * from './repository.interface.js';
 export * from './domain-event.interface.js';
+export * from './domain-event-definition.interface.js';
 export * from './value-object.interface.js';
 export * from './clock.interface.js';
 export * from './domain-context.interface.js';

@@ -1,6 +1,7 @@
 import { TagFactory } from '../factories/index.js';
 import type { TagDomain } from './tag.domain.js';
 import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
+import { TagEvents } from '../events/index.js';
 
 const ctx = createFixedTestContext(
   'id-1',
@@ -19,12 +20,12 @@ describe('TagDomain', () => {
   };
 
   describe('createDomain', () => {
-    it('creates a tag with slug and CreateTagEvent', () => {
+    it('creates a tag with slug and created event', () => {
       const result = factory.createDomain({ title: 'Warhammer 40k' });
       expect(result.isSuccess).toBe(true);
       expect(result.value.toAnemic().slug).toBe('warhammer-40k');
       expect(result.value.toEvents().map((e) => e.event_name)).toEqual([
-        'create',
+        TagEvents.CREATED.name,
       ]);
     });
 
@@ -47,7 +48,9 @@ describe('TagDomain', () => {
       const result = tag.updateTitle('Warhammer 40.000');
       expect(result.isSuccess).toBe(true);
       expect(tag.toAnemic().slug).toBe('warhammer');
-      expect(tag.toEvents().map((e) => e.event_name)).toEqual(['update']);
+      expect(tag.toEvents().map((e) => e.event_name)).toEqual([
+        TagEvents.UPDATED.name,
+      ]);
     });
 
     it('raises no event when the title is unchanged', () => {
@@ -77,8 +80,8 @@ describe('TagDomain', () => {
       tag.restoreTag();
       expect(tag.toAnemic().deleted_at).toBeNull();
       expect(tag.toEvents().map((e) => e.event_name)).toEqual([
-        'delete',
-        'restore',
+        TagEvents.DELETED.name,
+        TagEvents.RESTORED.name,
       ]);
     });
 

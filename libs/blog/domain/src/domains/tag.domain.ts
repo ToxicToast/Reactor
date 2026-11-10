@@ -5,21 +5,16 @@ import {
   ValidationError,
 } from '@toxictoast/shared-kernel';
 import type { TagAnemic } from '../anemics/index.js';
-import {
-  CreateTagEvent,
-  UpdateTagEvent,
-  DeleteTagEvent,
-  RestoreTagEvent,
-} from '../events/index.js';
+import { TagEvents, type TagEventPayload } from '../events/index.js';
 
-export class TagDomain extends BaseDomain<TagAnemic> {
+export class TagDomain extends BaseDomain<TagAnemic, TagEventPayload> {
   createTag(): void {
-    this.raise(CreateTagEvent);
+    this.raise(TagEvents.CREATED);
   }
 
   updateTitle(title: string): Result<void> {
     const trimmed = title.trim();
-    if (this.state.deleted_at) {
+    if (this.isDeleted) {
       return Result.fail(new ConflictError('Tag is deleted'));
     }
     if (!trimmed) {
@@ -31,23 +26,26 @@ export class TagDomain extends BaseDomain<TagAnemic> {
 
     this.state.title = trimmed;
     this.touch();
-    this.raise(UpdateTagEvent);
+    this.raise(TagEvents.UPDATED);
     return Result.ok();
   }
 
   deleteTag(): void {
-    if (this.state.deleted_at === null) {
-      this.state.deleted_at = this.ctx.date.now();
-      this.touch();
-      this.raise(DeleteTagEvent);
-    }
+    this.markDeleted(TagEvents.DELETED);
   }
 
   restoreTag(): void {
-    if (this.state.deleted_at !== null) {
-      this.state.deleted_at = null;
-      this.touch();
-      this.raise(RestoreTagEvent);
-    }
+    this.markRestored(TagEvents.RESTORED);
+  }
+
+  protected override toEventPayload(): TagEventPayload {
+    return {
+      id: this.state.id,
+      title: this.state.title,
+      slug: this.state.slug,
+      created_at: this.state.created_at,
+      updated_at: this.state.updated_at,
+      deleted_at: this.state.deleted_at,
+    };
   }
 }
