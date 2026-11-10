@@ -1,38 +1,39 @@
-import type { CategoryId, MediaId, TagId } from '@toxictoast/blog-domain';
-import {
-  categoryAnemic,
-  InMemoryCategoryRepository,
-  InMemoryMediaRepository,
-  InMemoryTagRepository,
-  mediaAnemic,
-  TEST_NOW,
-} from '../testing/index.js';
+import type { Nullable } from '@toxictoast/shared-types';
+import type { PostReferences } from '../data/index.js';
+import type {
+  CategoryRepository,
+  MediaRepository,
+  TagRepository,
+} from '../repositories/index.js';
+import type { CategoryId, MediaId, TagId } from '../types/index.js';
 import { PostReferencesService } from './post-references.service.js';
 
+const NOW = new Date('2026-11-06T12:00:00Z');
+
+interface StoredItem {
+  readonly id: string;
+  readonly deleted_at: Nullable<Date>;
+}
+
+const finder = <TRepository>(items: ReadonlyArray<StoredItem>): TRepository => {
+  return {
+    findByIds: async (ids: ReadonlyArray<string>) => {
+      return items.filter((item) => {
+        return ids.includes(item.id) && item.deleted_at === null;
+      });
+    },
+  } as unknown as TRepository;
+};
+
 describe('PostReferencesService', () => {
-  let categories: InMemoryCategoryRepository;
-  let tags: InMemoryTagRepository;
-  let media: InMemoryMediaRepository;
-  let service: PostReferencesService;
-
-  beforeEach(async () => {
-    categories = new InMemoryCategoryRepository();
-    tags = new InMemoryTagRepository();
-    media = new InMemoryMediaRepository();
-    service = new PostReferencesService(categories, tags, media);
-
-    await categories.save(categoryAnemic('cat-1'));
-    await categories.save(categoryAnemic('cat-gone', { deleted_at: TEST_NOW }));
-    await tags.save({
-      id: 'tag-1' as TagId,
-      title: 'tag-1',
-      slug: 'tag-1',
-      created_at: TEST_NOW,
-      updated_at: null,
-      deleted_at: null,
-    });
-    await media.save(mediaAnemic('media-1'));
-  });
+  const service = new PostReferencesService(
+    finder<CategoryRepository>([
+      { id: 'cat-1', deleted_at: null },
+      { id: 'cat-gone', deleted_at: NOW },
+    ]),
+    finder<TagRepository>([{ id: 'tag-1', deleted_at: null }]),
+    finder<MediaRepository>([{ id: 'media-1', deleted_at: null }]),
+  );
 
   it('accepts existing references', async () => {
     const result = await service.validate({
@@ -68,7 +69,7 @@ describe('PostReferencesService', () => {
     expect(result.isSuccess).toBe(true);
   });
 
-  it.each([
+  it.each<[string, PostReferences]>([
     ['missing category', { category_ids: ['missing' as CategoryId] }],
     ['deleted category', { category_ids: ['cat-gone' as CategoryId] }],
     ['missing tag', { tag_ids: ['missing' as TagId] }],
@@ -79,5 +80,14 @@ describe('PostReferencesService', () => {
 
     expect(result.isFailure).toBe(true);
     expect(result.error.code).toBe('NOT_FOUND');
+  });
+
+  it('names all missing ids of one kind', async () => {
+    const result = await service.validate({
+      tag_ids: ['a' as TagId, 'tag-1' as TagId, 'b' as TagId],
+    });
+
+    expect(result.isFailure).toBe(true);
+    expect(result.error.message).toContain('a, b');
   });
 });

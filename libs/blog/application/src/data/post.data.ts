@@ -1,19 +1,11 @@
-import type { Nullable, Optional } from '@toxictoast/shared-types';
+import type { Optional } from '@toxictoast/shared-types';
 import type {
   CategoryId,
-  MediaId,
   PostId,
   PostStatus,
   TagId,
   UpdatePostData,
 } from '@toxictoast/blog-domain';
-
-export interface PostReferences {
-  readonly category_ids?: Optional<ReadonlyArray<CategoryId>>;
-  readonly tag_ids?: Optional<ReadonlyArray<TagId>>;
-  readonly blog_image_id?: Optional<Nullable<MediaId>>;
-  readonly hero_image_id?: Optional<Nullable<MediaId>>;
-}
 
 export interface UpdatePostInput extends UpdatePostData {
   readonly id: PostId;

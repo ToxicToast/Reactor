@@ -7,7 +7,6 @@ import {
   GetPostUseCase,
   GetPublishedPostUseCase,
   ListPostsUseCase,
-  PostReferencesService,
   PublishPostUseCase,
   RestorePostUseCase,
   UnarchivePostUseCase,
@@ -21,7 +20,7 @@ import {
   InMemoryTagRepository,
   mediaAnemic,
 } from '@toxictoast/blog-application/testing';
-import { PostFactory } from '@toxictoast/blog-domain';
+import { PostFactory, PostReferencesService } from '@toxictoast/blog-domain';
 import {
   PostStatus as GrpcPostStatus,
   type CreatePostRequest,

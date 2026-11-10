@@ -8,11 +8,11 @@ import type {
   PostAnemic,
   PostDomain,
   PostFactory,
+  PostReferencesService,
   PostRepository,
 } from '@toxictoast/blog-domain';
 import type { UpdatePostInput } from '../../data/index.js';
 import { createPostEditor } from '../../functions/index.js';
-import type { PostReferencesService } from '../../services/index.js';
 
 export class UpdatePostUseCase implements UseCase<UpdatePostInput, PostAnemic> {
   private readonly editor: AggregateEditor<PostAnemic, PostDomain>;
