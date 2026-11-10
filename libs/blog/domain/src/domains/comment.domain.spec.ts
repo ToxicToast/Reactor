@@ -44,7 +44,7 @@ describe('CommentDomain', () => {
         moderated_at: null,
       });
       expect(result.value.toEvents().map((e) => e.event_name)).toEqual([
-        'create',
+        'created',
         'requested',
       ]);
     });
@@ -86,7 +86,7 @@ describe('CommentDomain', () => {
         updated_at: NOW,
       });
       expect(comment.toEvents().map((e) => e.event_name)).toEqual([
-        'update',
+        'updated',
         'requested',
       ]);
     });
@@ -148,20 +148,20 @@ describe('CommentDomain', () => {
       [
         'approveComment',
         CommentStatus.APPROVED,
-        'approve',
+        'approved',
         (c: CommentDomain) =>
           c.approveComment(CommentModerator.AI, 'Unbedenklich'),
       ],
       [
         'markAsSpam',
         CommentStatus.SPAM,
-        'spam',
+        'marked_as_spam',
         (c: CommentDomain) => c.markAsSpam(CommentModerator.AI, 'Werbelink'),
       ],
       [
         'markAsHate',
         CommentStatus.HATE,
-        'hate',
+        'marked_as_hate',
         (c: CommentDomain) => c.markAsHate(CommentModerator.AI, 'Beleidigung'),
       ],
     ])('%s sets status, moderator and note', (_, status, eventName, act) => {
@@ -221,7 +221,7 @@ describe('CommentDomain', () => {
         moderated_by: CommentModerator.ADMIN,
         moderation_note: null,
       });
-      expect(comment.toEvents().map((e) => e.event_name)).toEqual(['approve']);
+      expect(comment.toEvents().map((e) => e.event_name)).toEqual(['approved']);
     });
 
     it('can hide an approved comment later', () => {
@@ -279,7 +279,9 @@ describe('CommentDomain', () => {
         moderated_by: CommentModerator.AI,
         moderated_at: NOW,
       });
-      expect(comment.toEvents().map((e) => e.event_name)).toEqual(['review']);
+      expect(comment.toEvents().map((e) => e.event_name)).toEqual([
+        'marked_for_review',
+      ]);
     });
 
     it('refuses to mark a moderated comment for review', () => {
@@ -314,8 +316,8 @@ describe('CommentDomain', () => {
       expect(comment.toAnemic().deleted_at).toBeNull();
 
       expect(comment.toEvents().map((e) => e.event_name)).toEqual([
-        'delete',
-        'restore',
+        'deleted',
+        'restored',
       ]);
     });
 

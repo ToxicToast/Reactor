@@ -38,7 +38,7 @@ describe('RestoreMediaUseCase', () => {
 
     expect(result.isSuccess).toBe(true);
     expect(repository.items.get(ID)?.deleted_at).toBeNull();
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['restore']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['restored']);
   });
 
   it('succeeds without writing when not deleted', async () => {

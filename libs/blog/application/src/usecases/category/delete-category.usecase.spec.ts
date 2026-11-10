@@ -43,7 +43,7 @@ describe('DeleteCategoryUseCase', () => {
 
     expect(result.isSuccess).toBe(true);
     expect(repository.items.get(id('leaf'))?.deleted_at).toEqual(TEST_NOW);
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['delete']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['deleted']);
   });
 
   it('refuses to delete a category with children', async () => {

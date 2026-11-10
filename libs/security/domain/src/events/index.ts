@@ -1,2 +1,2 @@
-export * from './ban-ip.event.js';
-export * from './unban-ip.event.js';
+export * from './ip-ban-events.constant.js';
+export * from './ip-ban-event-payload.interface.js';

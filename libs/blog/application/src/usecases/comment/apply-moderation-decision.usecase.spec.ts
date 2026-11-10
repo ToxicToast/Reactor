@@ -51,7 +51,7 @@ describe('ApplyModerationDecisionUseCase', () => {
       moderated_by: CommentModerator.AI,
       moderation_note: 'link farm',
     });
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['spam']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['marked_as_spam']);
   });
 
   it('stores the note of the AI and keeps the comment pending', async () => {
@@ -69,7 +69,9 @@ describe('ApplyModerationDecisionUseCase', () => {
       moderation_note: 'vielleicht Spam',
       moderated_by: CommentModerator.AI,
     });
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['review']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual([
+      'marked_for_review',
+    ]);
   });
 
   it('ignores the decision when the admin was faster', async () => {

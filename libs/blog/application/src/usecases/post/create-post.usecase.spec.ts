@@ -66,7 +66,7 @@ describe('CreatePostUseCase', () => {
       status: PostStatus.DRAFT,
     });
     expect(posts.items.size).toBe(1);
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['create']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['created']);
   });
 
   it('creates a post with existing categories', async () => {

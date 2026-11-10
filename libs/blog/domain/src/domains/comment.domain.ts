@@ -3,26 +3,23 @@ import {
   BaseDomain,
   ConflictError,
   ForbiddenError,
-  type DomainEventClass,
+  type DomainEventDefinition,
   Result,
 } from '@toxictoast/shared-kernel';
 import type { CommentAnemic } from '../anemics/index.js';
 import { type CommentModerator, CommentStatus } from '../enums/index.js';
 import {
-  ApproveCommentEvent,
-  CreateCommentEvent,
-  DeleteCommentEvent,
-  HateCommentEvent,
-  RequestCommentModerationEvent,
-  RestoreCommentEvent,
-  ReviewCommentEvent,
-  SpamCommentEvent,
-  UpdateCommentEvent,
+  CommentEvents,
+  CommentModerationEvents,
+  type CommentEventPayload,
 } from '../events/index.js';
 import { ValidateCommentContent } from '../validations/index.js';
 import type { AuthorId, ModerationStatus } from '../types/index.js';
 
-export class CommentDomain extends BaseDomain<CommentAnemic> {
+export class CommentDomain extends BaseDomain<
+  CommentAnemic,
+  CommentEventPayload
+> {
   get isApproved(): boolean {
     return this.state.status === CommentStatus.APPROVED;
   }
@@ -32,8 +29,8 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
   }
 
   createComment(): void {
-    this.raise(CreateCommentEvent);
-    this.raise(RequestCommentModerationEvent);
+    this.raise(CommentEvents.CREATED);
+    this.raise(CommentModerationEvents.REQUESTED);
   }
 
   updateContent(content: string, editor: AuthorId): Result<void> {
@@ -58,8 +55,8 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
     this.state.content = trimmed;
     this.resetModeration();
     this.touch();
-    this.raise(UpdateCommentEvent);
-    this.raise(RequestCommentModerationEvent);
+    this.raise(CommentEvents.UPDATED);
+    this.raise(CommentModerationEvents.REQUESTED);
     return Result.ok();
   }
 
@@ -70,7 +67,7 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
     return this.changeStatus(
       CommentStatus.APPROVED,
       moderator,
-      ApproveCommentEvent,
+      CommentEvents.APPROVED,
       note,
     );
   }
@@ -82,7 +79,7 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
     return this.changeStatus(
       CommentStatus.SPAM,
       moderator,
-      SpamCommentEvent,
+      CommentEvents.MARKED_AS_SPAM,
       note,
     );
   }
@@ -94,7 +91,7 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
     return this.changeStatus(
       CommentStatus.HATE,
       moderator,
-      HateCommentEvent,
+      CommentEvents.MARKED_AS_HATE,
       note,
     );
   }
@@ -113,7 +110,7 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
     }
 
     this.recordModeration(moderator, note);
-    this.raise(ReviewCommentEvent);
+    this.raise(CommentEvents.MARKED_FOR_REVIEW);
     return Result.ok();
   }
 
@@ -152,17 +149,34 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
   }
 
   deleteComment(): void {
-    this.markDeleted(DeleteCommentEvent);
+    this.markDeleted(CommentEvents.DELETED);
   }
 
   restoreComment(): void {
-    this.markRestored(RestoreCommentEvent);
+    this.markRestored(CommentEvents.RESTORED);
+  }
+
+  protected override toEventPayload(): CommentEventPayload {
+    return {
+      id: this.state.id,
+      post_id: this.state.post_id,
+      parent_id: this.state.parent_id,
+      author_id: this.state.author_id,
+      content: this.state.content,
+      status: this.state.status,
+      moderation_note: this.state.moderation_note,
+      moderated_by: this.state.moderated_by,
+      moderated_at: this.state.moderated_at,
+      created_at: this.state.created_at,
+      updated_at: this.state.updated_at,
+      deleted_at: this.state.deleted_at,
+    };
   }
 
   private changeStatus(
     status: CommentStatus,
     moderator: CommentModerator,
-    EventClass: DomainEventClass<CommentAnemic>,
+    event: DomainEventDefinition,
     note: Nullable<string>,
   ): Result<void> {
     if (this.isDeleted) {
@@ -174,7 +188,7 @@ export class CommentDomain extends BaseDomain<CommentAnemic> {
 
     this.state.status = status;
     this.recordModeration(moderator, note);
-    this.raise(EventClass);
+    this.raise(event);
     return Result.ok();
   }
 

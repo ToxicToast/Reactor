@@ -39,7 +39,7 @@ describe('UpdateMediaAltTextUseCase', () => {
 
     expect(result.isSuccess).toBe(true);
     expect(result.value.alt_text).toBe('Ein Space Marine');
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['update']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['updated']);
   });
 
   it('fails on alt text above the limit', async () => {

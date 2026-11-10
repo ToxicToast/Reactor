@@ -44,7 +44,7 @@ describe('UnarchivePostUseCase', () => {
       status: PostStatus.PUBLISHED,
       published_at: PAST,
     });
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['unarchive']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['unarchived']);
   });
 
   it('refuses a post that is not archived', async () => {

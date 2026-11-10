@@ -1,32 +1,15 @@
 export * from './tag-events.constant.js';
 export * from './tag-event-payload.interface.js';
 
-export * from './create-category.event.js';
-export * from './delete-category.event.js';
-export * from './restore-category.event.js';
-export * from './update-category.event.js';
+export * from './category-events.constant.js';
+export * from './category-event-payload.interface.js';
 
-export * from './create-media.event.js';
-export * from './delete-media.event.js';
-export * from './ready-media.event.js';
-export * from './restore-media.event.js';
-export * from './update-media.event.js';
+export * from './media-events.constant.js';
+export * from './media-event-payload.interface.js';
 
-export * from './archive-post.event.js';
-export * from './create-post.event.js';
-export * from './delete-post.event.js';
-export * from './publish-post.event.js';
-export * from './restore-post.event.js';
-export * from './unarchive-post.event.js';
-export * from './update-post.event.js';
+export * from './post-events.constant.js';
+export * from './post-event-payload.interface.js';
 
-export * from './approve-comment.event.js';
-export * from './create-comment.event.js';
-export * from './delete-comment.event.js';
-export * from './hate-comment.event.js';
-export * from './restore-comment.event.js';
-export * from './spam-comment.event.js';
-export * from './update-comment.event.js';
-
-export * from './request-comment-moderation.event.js';
-export * from './review-comment.event.js';
+export * from './comment-events.constant.js';
+export * from './comment-moderation-events.constant.js';
+export * from './comment-event-payload.interface.js';

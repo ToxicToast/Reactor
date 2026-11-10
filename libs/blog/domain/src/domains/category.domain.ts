@@ -7,20 +7,18 @@ import {
 } from '@toxictoast/shared-kernel';
 import type { CategoryAnemic } from '../anemics/index.js';
 import type { CategoryId } from '../types/index.js';
-import {
-  CreateCategoryEvent,
-  DeleteCategoryEvent,
-  RestoreCategoryEvent,
-  UpdateCategoryEvent,
-} from '../events/index.js';
+import { CategoryEvents, type CategoryEventPayload } from '../events/index.js';
 
-export class CategoryDomain extends BaseDomain<CategoryAnemic> {
+export class CategoryDomain extends BaseDomain<
+  CategoryAnemic,
+  CategoryEventPayload
+> {
   createCategory(): void {
-    this.raise(CreateCategoryEvent);
+    this.raise(CategoryEvents.CREATED);
   }
 
   updateCategory(title: string, description: Nullable<string>): Result<void> {
-    if (this.state.deleted_at) {
+    if (this.isDeleted) {
       return Result.fail(new ConflictError('Category is deleted'));
     }
 
@@ -40,12 +38,12 @@ export class CategoryDomain extends BaseDomain<CategoryAnemic> {
     this.state.title = trimmedTitle;
     this.state.description = trimmedDescription;
     this.touch();
-    this.raise(UpdateCategoryEvent);
+    this.raise(CategoryEvents.UPDATED);
     return Result.ok();
   }
 
   changeParent(parentId: Nullable<CategoryId>): Result<void> {
-    if (this.state.deleted_at) {
+    if (this.isDeleted) {
       return Result.fail(new ConflictError('Category is deleted'));
     }
     if (parentId === this.state.id) {
@@ -59,23 +57,28 @@ export class CategoryDomain extends BaseDomain<CategoryAnemic> {
 
     this.state.parent_id = parentId;
     this.touch();
-    this.raise(UpdateCategoryEvent);
+    this.raise(CategoryEvents.UPDATED);
     return Result.ok();
   }
 
   deleteCategory(): void {
-    if (this.state.deleted_at === null) {
-      this.state.deleted_at = this.ctx.date.now();
-      this.touch();
-      this.raise(DeleteCategoryEvent);
-    }
+    this.markDeleted(CategoryEvents.DELETED);
   }
 
   restoreCategory(): void {
-    if (this.state.deleted_at !== null) {
-      this.state.deleted_at = null;
-      this.touch();
-      this.raise(RestoreCategoryEvent);
-    }
+    this.markRestored(CategoryEvents.RESTORED);
+  }
+
+  protected override toEventPayload(): CategoryEventPayload {
+    return {
+      id: this.state.id,
+      title: this.state.title,
+      slug: this.state.slug,
+      description: this.state.description,
+      parent_id: this.state.parent_id,
+      created_at: this.state.created_at,
+      updated_at: this.state.updated_at,
+      deleted_at: this.state.deleted_at,
+    };
   }
 }

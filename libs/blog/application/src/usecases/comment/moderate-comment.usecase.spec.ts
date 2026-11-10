@@ -46,7 +46,7 @@ describe('ModerateCommentUseCase', () => {
       status: CommentStatus.APPROVED,
       moderated_by: CommentModerator.ADMIN,
     });
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['approve']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['approved']);
   });
 
   it('overrides a decision of the AI', async () => {
@@ -80,7 +80,7 @@ describe('ModerateCommentUseCase', () => {
     });
 
     expect(result.value.status).toBe(CommentStatus.HATE);
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['hate']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['marked_as_hate']);
   });
 
   it('fails when the status is already set', async () => {

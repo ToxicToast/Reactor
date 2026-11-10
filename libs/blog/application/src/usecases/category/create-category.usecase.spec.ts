@@ -44,7 +44,7 @@ describe('CreateCategoryUseCase', () => {
     expect(result.isSuccess).toBe(true);
     expect(result.value.slug).toBe('warhammer');
     expect(repository.items.size).toBe(1);
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['create']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['created']);
   });
 
   it('creates a category below an existing parent', async () => {

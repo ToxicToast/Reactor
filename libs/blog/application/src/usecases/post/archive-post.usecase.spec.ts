@@ -35,7 +35,7 @@ describe('ArchivePostUseCase', () => {
 
     expect(result.isSuccess).toBe(true);
     expect(result.value.status).toBe(PostStatus.ARCHIVED);
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['archive']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['archived']);
   });
 
   it('refuses to archive a draft', async () => {
