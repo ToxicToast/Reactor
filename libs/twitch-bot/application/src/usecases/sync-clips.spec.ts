@@ -1,7 +1,7 @@
 import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
 import {
   createTestContext,

@@ -25,7 +25,6 @@ describe('BlogProcessor', () => {
       ctx,
       new CorrelationContext(),
     );
-    processor.onModuleInit();
   });
 
   it('cleans up pending media and returns the count', async () => {

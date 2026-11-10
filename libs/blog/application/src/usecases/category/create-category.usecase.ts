@@ -7,9 +7,9 @@ import type {
   CategoryAnemic,
   CategoryData,
   CategoryFactory,
+  CategoryHierarchyService,
   CategoryRepository,
 } from '@toxictoast/blog-domain';
-import type { CategoryHierarchyService } from '../../services/index.js';
 
 export class CreateCategoryUseCase implements UseCase<
   CategoryData,

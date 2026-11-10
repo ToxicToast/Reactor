@@ -4,26 +4,26 @@ import {
   CreateTagUseCase,
   DeleteTagUseCase,
   GetTagUseCase,
-  InMemoryTagRepository,
   ListTagsUseCase,
   RestoreTagUseCase,
   UpdateTagUseCase,
 } from '@toxictoast/blog-application';
+import { InMemoryTagRepository } from '@toxictoast/blog-application/testing';
 import { TagFactory } from '@toxictoast/blog-domain';
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  createUuidTestContext,
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import { BlogPermission } from '@toxictoast/contracts-grpc';
 import {
   anonymousTestActor,
   grpcCode,
   testActor,
   TestActorProvider,
-} from '@toxictoast/shared-grpc';
+} from '@toxictoast/shared-grpc/testing';
 import { TagGrpcController } from './tag-grpc.controller.js';
+import { createUuidTestContext } from '@toxictoast/shared-kernel/testing';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
 const NOW_ISO = '2026-10-20T12:00:00.000Z';

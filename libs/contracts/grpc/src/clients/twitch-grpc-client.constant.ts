@@ -1,0 +1,1 @@
+export const TWITCH_GRPC_CLIENT = 'TWITCH_GRPC_CLIENT';

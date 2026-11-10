@@ -13,6 +13,7 @@ import {
   MessagingModule,
   MetricsModule,
   PersistenceModule,
+  RedisModule,
   SystemModule,
 } from '@toxictoast/shared-nest';
 import { SecurityModule } from './security.module.js';
@@ -24,6 +25,7 @@ import { SecurityModule } from './security.module.js';
       schemas: securitySchemas,
       migrations: securityMigrations,
     }),
+    RedisModule.forRoot(),
     MessagingModule.forRoot({
       groupId: 'security-service',
       imports: [SecurityModule],

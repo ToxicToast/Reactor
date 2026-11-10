@@ -1,18 +1,24 @@
 import { status } from '@grpc/grpc-js';
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import {
   grpcCode,
   TestActorProvider,
   testActor,
-} from '@toxictoast/shared-grpc';
+} from '@toxictoast/shared-grpc/testing';
 import {
   CompleteAuthorizationUseCase,
-  createTestContext,
   DisconnectChannelUseCase,
+  ListChannelsUseCase,
+  StartAuthorizationUseCase,
+  SyncChattersUseCase,
+  SyncClipsUseCase,
+} from '@toxictoast/twitch-bot-application';
+import {
+  createTestContext,
   FakeTwitchAuthClient,
   FakeTwitchChatterSource,
   FakeTwitchClipSource,
@@ -20,13 +26,9 @@ import {
   InMemoryPublishedClipLedger,
   InMemoryTwitchChannelRepository,
   InMemoryTwitchTokenStore,
-  ListChannelsUseCase,
   RecordingTwitchEventSubscriber,
-  StartAuthorizationUseCase,
-  SyncChattersUseCase,
-  SyncClipsUseCase,
   twitchChannelAnemic,
-} from '@toxictoast/twitch-bot-application';
+} from '@toxictoast/twitch-bot-application/testing';
 import {
   ChatterDiffService,
   TwitchChannelFactory,

@@ -10,9 +10,8 @@ import {
 import {
   ApplyModerationDecisionUseCase,
   ArchivePostUseCase,
-  CategoryHierarchyService,
   ChangeCategoryParentUseCase,
-  CommentModerationService,
+  CleanupPendingMediaUseCase,
   ConfirmMediaUploadUseCase,
   CreateCategoryUseCase,
   CreateCommentUseCase,
@@ -37,7 +36,6 @@ import {
   ListPostsUseCase,
   ListTagsUseCase,
   ModerateCommentUseCase,
-  PostReferencesService,
   PublishPostUseCase,
   RequestMediaUploadUseCase,
   RestoreCategoryUseCase,
@@ -51,13 +49,14 @@ import {
   UpdateMediaAltTextUseCase,
   UpdatePostUseCase,
   UpdateTagUseCase,
-  CleanupPendingMediaUseCase,
 } from '@toxictoast/blog-application';
 import {
   CategoryFactory,
+  CategoryHierarchyService,
   CommentFactory,
   MediaFactory,
   PostFactory,
+  PostReferencesService,
   TagFactory,
 } from '@toxictoast/blog-domain';
 import {
@@ -115,7 +114,6 @@ const DATABASE = [DataSource, TransactionContext];
       TAG_REPOSITORY,
       MEDIA_REPOSITORY,
     ]),
-    provideClass(CommentModerationService),
 
     // ── Tag ─────────────────────────────────────
     provideClass(CreateTagUseCase, [
@@ -142,6 +140,7 @@ const DATABASE = [DataSource, TransactionContext];
     provideClass(ListTagsUseCase, [TAG_REPOSITORY]),
 
     // ── Category ────────────────────────────────
+    // ── Category ────────────────────────────────
     provideClass(CreateCategoryUseCase, [
       CategoryFactory,
       CATEGORY_REPOSITORY,
@@ -162,11 +161,13 @@ const DATABASE = [DataSource, TransactionContext];
     provideClass(DeleteCategoryUseCase, [
       CategoryFactory,
       CATEGORY_REPOSITORY,
+      CategoryHierarchyService,
       DomainPersistence,
     ]),
     provideClass(RestoreCategoryUseCase, [
       CategoryFactory,
       CATEGORY_REPOSITORY,
+      CategoryHierarchyService,
       DomainPersistence,
     ]),
     provideClass(GetCategoryUseCase, [CATEGORY_REPOSITORY]),
@@ -269,13 +270,11 @@ const DATABASE = [DataSource, TransactionContext];
     provideClass(ModerateCommentUseCase, [
       CommentFactory,
       COMMENT_REPOSITORY,
-      CommentModerationService,
       DomainPersistence,
     ]),
     provideClass(ApplyModerationDecisionUseCase, [
       CommentFactory,
       COMMENT_REPOSITORY,
-      CommentModerationService,
       DomainPersistence,
     ]),
     provideClass(DeleteCommentUseCase, [

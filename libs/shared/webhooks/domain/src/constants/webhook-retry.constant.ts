@@ -1,0 +1,5 @@
+export const WEBHOOK_RETRY = {
+  MAX_ATTEMPTS: 8,
+  BASE_DELAY_MS: 30_000,
+  MAX_DELAY_MS: 21_600_000,
+} as const;

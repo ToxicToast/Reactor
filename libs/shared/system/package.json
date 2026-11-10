@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@toxictoast/shared-kernel": "*",
-    "@toxictoast/shared-types": "*"
+    "@toxictoast/shared-types": "*",
+    "ioredis": "^5.11.1"
   }
 }

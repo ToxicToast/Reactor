@@ -1,32 +1,34 @@
 import { randomUUID } from 'node:crypto';
 import { status } from '@grpc/grpc-js';
 import {
-  CategoryHierarchyService,
   ChangeCategoryParentUseCase,
   CreateCategoryUseCase,
   DeleteCategoryUseCase,
   GetCategoryUseCase,
-  InMemoryCategoryRepository,
   ListCategoriesUseCase,
   RestoreCategoryUseCase,
   UpdateCategoryUseCase,
 } from '@toxictoast/blog-application';
-import { CategoryFactory } from '@toxictoast/blog-domain';
+import { InMemoryCategoryRepository } from '@toxictoast/blog-application/testing';
 import {
-  createUuidTestContext,
-  DomainPersistence,
+  CategoryFactory,
+  CategoryHierarchyService,
+} from '@toxictoast/blog-domain';
+import { DomainPersistence } from '@toxictoast/shared-application';
+import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import {
   anonymousTestActor,
   grpcCode,
   testActor,
   TestActorProvider,
-} from '@toxictoast/shared-grpc';
+} from '@toxictoast/shared-grpc/testing';
 import { CategoryGrpcController } from './category-grpc.controller.js';
 import type { Optional } from '@toxictoast/shared-types';
 import { BlogPermission } from '@toxictoast/contracts-grpc';
+import { createUuidTestContext } from '@toxictoast/shared-kernel/testing';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
 
@@ -57,8 +59,8 @@ describe('CategoryGrpcController', () => {
         hierarchy,
         persistence,
       ),
-      new DeleteCategoryUseCase(factory, categories, persistence),
-      new RestoreCategoryUseCase(factory, categories, persistence),
+      new DeleteCategoryUseCase(factory, categories, hierarchy, persistence),
+      new RestoreCategoryUseCase(factory, categories, hierarchy, persistence),
       new GetCategoryUseCase(categories),
       new ListCategoriesUseCase(categories),
       actors,

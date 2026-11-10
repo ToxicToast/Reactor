@@ -1,45 +1,40 @@
-import { NotFoundError, Result } from '@toxictoast/shared-kernel';
+import type { Result } from '@toxictoast/shared-kernel';
 import type {
+  AggregateEditor,
   DomainPersistence,
   UseCase,
 } from '@toxictoast/shared-application';
 import {
   CommentModerator,
   type CommentAnemic,
+  type CommentDomain,
   type CommentFactory,
   type CommentRepository,
 } from '@toxictoast/blog-domain';
 import type { ModerateCommentInput } from '../../data/index.js';
-import type { CommentModerationService } from '../../services/index.js';
+import { createCommentEditor } from '../../functions/index.js';
 
 export class ModerateCommentUseCase implements UseCase<
   ModerateCommentInput,
   CommentAnemic
 > {
+  private readonly editor: AggregateEditor<CommentAnemic, CommentDomain>;
+
   constructor(
-    private readonly factory: CommentFactory,
-    private readonly repository: CommentRepository,
-    private readonly moderation: CommentModerationService,
-    private readonly persistence: DomainPersistence,
-  ) {}
+    factory: CommentFactory,
+    repository: CommentRepository,
+    persistence: DomainPersistence,
+  ) {
+    this.editor = createCommentEditor(factory, repository, persistence);
+  }
 
-  async execute(input: ModerateCommentInput): Promise<Result<CommentAnemic>> {
-    const anemic = await this.repository.findById(input.id);
-    if (!anemic) {
-      return Result.fail(new NotFoundError('Comment', input.id));
-    }
-
-    const comment = this.factory.reconstitute(anemic);
-    const moderated = this.moderation.moderate(
-      comment,
-      input.status,
-      CommentModerator.ADMIN,
-      input.note ?? null,
+  execute(input: ModerateCommentInput): Promise<Result<CommentAnemic>> {
+    return this.editor.change(input.id, (comment) =>
+      comment.moderate(
+        input.status,
+        CommentModerator.ADMIN,
+        input.note ?? null,
+      ),
     );
-    if (moderated.isFailure) {
-      return Result.fail(moderated.error);
-    }
-
-    return this.persistence.persist(comment, this.repository);
   }
 }

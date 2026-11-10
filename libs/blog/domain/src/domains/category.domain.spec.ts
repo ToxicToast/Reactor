@@ -1,13 +1,13 @@
-import type { DomainContext } from '@toxictoast/shared-kernel';
 import type { Nullable } from '@toxictoast/shared-types';
 import { CategoryFactory } from '../factories/index.js';
 import type { CategoryDomain } from './category.domain.js';
 import type { CategoryId } from '../types/index.js';
+import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
 
-const ctx: DomainContext = {
-  id: { generate: () => 'id-1' as never },
-  date: { now: () => new Date('2026-10-19T12:00:00Z') },
-};
+const ctx = createFixedTestContext(
+  'id-1',
+  () => new Date('2026-10-19T12:00:00Z'),
+);
 const NOW = new Date('2026-10-19T12:00:00Z');
 const PARENT_ID = 'parent-1' as CategoryId;
 

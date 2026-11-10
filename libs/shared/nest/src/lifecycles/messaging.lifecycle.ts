@@ -8,9 +8,9 @@ import {
 import type { Producer } from '@platformatic/kafka';
 import type {
   KafkaEventConsumer,
-  OutboxRelayWorker,
   TopicProvisioner,
 } from '@toxictoast/shared-messaging';
+import type { PollingWorker } from '@toxictoast/shared-system';
 import type { Nullable } from '@toxictoast/shared-types';
 import { TOKENS } from '../constants/index.js';
 
@@ -22,7 +22,7 @@ export class MessagingLifecycle
 
   constructor(
     @Inject(TOKENS.OUTBOX_RELAY_WORKER)
-    private readonly worker: Nullable<OutboxRelayWorker>,
+    private readonly worker: Nullable<PollingWorker>,
     @Inject(TOKENS.EVENT_CONSUMER)
     private readonly consumer: Nullable<KafkaEventConsumer>,
     @Inject(TOKENS.KAFKA_PRODUCER)

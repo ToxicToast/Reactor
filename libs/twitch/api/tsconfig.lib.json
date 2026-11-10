@@ -1,0 +1,52 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/tsconfig.lib.tsbuildinfo",
+    "emitDeclarationOnly": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  },
+  "include": ["src/**/*.ts"],
+  "references": [
+    {
+      "path": "../domain/tsconfig.lib.json"
+    },
+    {
+      "path": "../application/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/webhooks/domain/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/webhooks/application/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/types/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/kernel/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/grpc/tsconfig.lib.json"
+    },
+    {
+      "path": "../../contracts/grpc/tsconfig.lib.json"
+    },
+    {
+      "path": "../../contracts/events/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/application/tsconfig.lib.json"
+    }
+  ],
+  "exclude": [
+    "jest.config.ts",
+    "jest.config.cts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts"
+  ]
+}

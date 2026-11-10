@@ -1,31 +1,35 @@
-import { NotFoundError, Result } from '@toxictoast/shared-kernel';
-import type {
-  DomainPersistence,
-  UseCase,
+import type { Result } from '@toxictoast/shared-kernel';
+import {
+  INCLUDING_DELETED,
+  type AggregateEditor,
+  type DomainPersistence,
+  type UseCase,
 } from '@toxictoast/shared-application';
 import type {
   TagAnemic,
+  TagDomain,
   TagFactory,
   TagRepository,
 } from '@toxictoast/blog-domain';
 import type { TagIdInput } from '../../data/index.js';
+import { createTagEditor } from '../../functions/index.js';
 
 export class RestoreTagUseCase implements UseCase<TagIdInput, TagAnemic> {
+  private readonly editor: AggregateEditor<TagAnemic, TagDomain>;
+
   constructor(
-    private readonly factory: TagFactory,
-    private readonly repository: TagRepository,
-    private readonly persistence: DomainPersistence,
-  ) {}
+    factory: TagFactory,
+    repository: TagRepository,
+    persistence: DomainPersistence,
+  ) {
+    this.editor = createTagEditor(factory, repository, persistence);
+  }
 
-  async execute(input: TagIdInput): Promise<Result<TagAnemic>> {
-    const anemic = await this.repository.findById(input.id, true);
-    if (!anemic) {
-      return Result.fail(new NotFoundError('Tag', input.id));
-    }
-
-    const tag = this.factory.reconstitute(anemic);
-    tag.restoreTag();
-
-    return this.persistence.persist(tag, this.repository);
+  execute(input: TagIdInput): Promise<Result<TagAnemic>> {
+    return this.editor.change(
+      input.id,
+      (tag) => tag.restoreTag(),
+      INCLUDING_DELETED,
+    );
   }
 }

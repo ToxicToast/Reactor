@@ -1,16 +1,13 @@
-import type { DomainContext } from '@toxictoast/shared-kernel';
 import type { CommentData } from '../data/index.js';
 import { CommentModerator, CommentStatus } from '../enums/index.js';
 import { CommentFactory } from '../factories/index.js';
 import type { AuthorId, CommentId, PostId } from '../types/index.js';
 import type { CommentDomain } from './comment.domain.js';
+import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
 
 const NOW = new Date('2026-10-19T12:00:00Z');
 
-const ctx: DomainContext = {
-  id: { generate: () => 'id-1' as never },
-  date: { now: () => NOW },
-};
+const ctx = createFixedTestContext('id-1', () => NOW);
 
 const VALID_DATA: CommentData = {
   post_id: 'post-1' as PostId,

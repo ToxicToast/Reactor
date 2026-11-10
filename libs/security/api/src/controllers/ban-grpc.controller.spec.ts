@@ -1,23 +1,25 @@
 import { status } from '@grpc/grpc-js';
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
+import {
+  ListBansUseCase,
+  UnbanIpUseCase,
+} from '@toxictoast/security-application';
 import {
   createTestContext,
   InMemoryIpBanRepository,
   ipBanAnemic,
-  ListBansUseCase,
   TEST_NOW,
-  UnbanIpUseCase,
-} from '@toxictoast/security-application';
+} from '@toxictoast/security-application/testing';
 import { IpBanFactory } from '@toxictoast/security-domain';
 import {
   grpcCode,
   TestActorProvider,
   testActor,
-} from '@toxictoast/shared-grpc';
+} from '@toxictoast/shared-grpc/testing';
 import { BanGrpcController } from './ban-grpc.controller.js';
 
 describe('BanGrpcController', () => {

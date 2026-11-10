@@ -4,6 +4,7 @@ export * from './unwrap.function.js';
 export * from './parse-id.function.js';
 export * from './parse-optional-id.function.js';
 export * from './parse-date.function.js';
+export * from './require-date.function.js';
 export * from './to-iso.function.js';
 export * from './map-enum.function.js';
 export * from './map-optional-enum.function.js';

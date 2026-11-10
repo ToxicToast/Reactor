@@ -1,15 +1,14 @@
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import {
   CommentFactory,
   CommentModerator,
   CommentStatus,
   type CommentId,
 } from '@toxictoast/blog-domain';
-import { CommentModerationService } from '../../services/index.js';
 import {
   commentAnemic,
   createTestContext,
@@ -30,7 +29,6 @@ describe('ModerateCommentUseCase', () => {
     useCase = new ModerateCommentUseCase(
       new CommentFactory(createTestContext()),
       comments,
-      new CommentModerationService(),
       new DomainPersistence(outbox, new ImmediateUnitOfWork()),
     );
   });

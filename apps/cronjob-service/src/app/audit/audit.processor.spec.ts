@@ -25,7 +25,6 @@ describe('AuditProcessor', () => {
       ctx,
       new CorrelationContext(),
     );
-    processor.onModuleInit();
   });
 
   it('purges expired events and returns the count', async () => {

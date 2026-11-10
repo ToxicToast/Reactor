@@ -1,0 +1,15 @@
+export const ObservationKinds = {
+  MESSAGE: 'message',
+  FOLLOW: 'follow',
+  SUBSCRIPTION: 'subscription',
+  RESUBSCRIPTION: 'resubscription',
+  GIFT: 'gift',
+  CHEER: 'cheer',
+  RAID: 'raid',
+  REDEMPTION: 'redemption',
+  JOIN: 'join',
+  LEAVE: 'leave',
+  STREAM_ONLINE: 'stream_online',
+  STREAM_OFFLINE: 'stream_offline',
+  POLL: 'poll',
+} as const;

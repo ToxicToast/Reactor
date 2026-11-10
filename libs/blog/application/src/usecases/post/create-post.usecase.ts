@@ -7,9 +7,9 @@ import type {
   PostAnemic,
   PostData,
   PostFactory,
+  PostReferencesService,
   PostRepository,
 } from '@toxictoast/blog-domain';
-import type { PostReferencesService } from '../../services/index.js';
 
 export class CreatePostUseCase implements UseCase<PostData, PostAnemic> {
   constructor(

@@ -29,6 +29,7 @@ import { BanMiddleware } from './security/middlewares/index.js';
 import { BanAdminModule } from './security/bans/ban-admin.module.js';
 import { AuditAdminModule } from './audit/audit-admin.module.js';
 import { TwitchAdminModule } from './twitch/twitch-admin.module.js';
+import { TwitchServiceModule } from './twitch/service/twitch-service.module.js';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { TwitchAdminModule } from './twitch/twitch-admin.module.js';
     BanAdminModule,
     AuditAdminModule,
     TwitchAdminModule,
+    TwitchServiceModule,
   ],
   providers: [
     // ── Auth ────────────────────────────────────

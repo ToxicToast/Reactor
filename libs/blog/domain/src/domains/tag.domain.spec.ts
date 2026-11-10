@@ -1,11 +1,11 @@
-import type { DomainContext } from '@toxictoast/shared-kernel';
 import { TagFactory } from '../factories/index.js';
 import type { TagDomain } from './tag.domain.js';
+import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
 
-const ctx: DomainContext = {
-  id: { generate: () => 'id-1' as never },
-  date: { now: () => new Date('2026-10-19T12:00:00Z') },
-};
+const ctx = createFixedTestContext(
+  'id-1',
+  () => new Date('2026-10-19T12:00:00Z'),
+);
 
 describe('TagDomain', () => {
   const factory = new TagFactory(ctx);

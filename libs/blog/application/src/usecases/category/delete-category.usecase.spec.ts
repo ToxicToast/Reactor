@@ -1,9 +1,13 @@
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
-import { CategoryFactory, type CategoryId } from '@toxictoast/blog-domain';
+} from '@toxictoast/shared-application/testing';
+import {
+  CategoryFactory,
+  CategoryHierarchyService,
+  type CategoryId,
+} from '@toxictoast/blog-domain';
 import {
   categoryAnemic,
   createTestContext,
@@ -27,6 +31,7 @@ describe('DeleteCategoryUseCase', () => {
     useCase = new DeleteCategoryUseCase(
       new CategoryFactory(createTestContext()),
       repository,
+      new CategoryHierarchyService(repository),
       new DomainPersistence(outbox, uow),
     );
   });

@@ -1,47 +1,53 @@
+import { Result } from '@toxictoast/shared-kernel';
 import {
-  ConflictError,
-  NotFoundError,
-  Result,
-} from '@toxictoast/shared-kernel';
-import type {
-  DomainPersistence,
-  UseCase,
+  INCLUDING_DELETED,
+  type AggregateEditor,
+  type DomainPersistence,
+  type UseCase,
 } from '@toxictoast/shared-application';
 import type {
   CategoryAnemic,
+  CategoryDomain,
   CategoryFactory,
+  CategoryHierarchyService,
   CategoryRepository,
 } from '@toxictoast/blog-domain';
 import type { CategoryIdInput } from '../../data/index.js';
+import { createCategoryEditor } from '../../functions/index.js';
 
 export class RestoreCategoryUseCase implements UseCase<
   CategoryIdInput,
   CategoryAnemic
 > {
+  private readonly editor: AggregateEditor<CategoryAnemic, CategoryDomain>;
+
   constructor(
-    private readonly factory: CategoryFactory,
-    private readonly repository: CategoryRepository,
-    private readonly persistence: DomainPersistence,
-  ) {}
+    factory: CategoryFactory,
+    repository: CategoryRepository,
+    private readonly hierarchy: CategoryHierarchyService,
+    persistence: DomainPersistence,
+  ) {
+    this.editor = createCategoryEditor(factory, repository, persistence);
+  }
 
-  async execute(input: CategoryIdInput): Promise<Result<CategoryAnemic>> {
-    const anemic = await this.repository.findById(input.id, true);
-    if (!anemic) {
-      return Result.fail(new NotFoundError('Category', input.id));
+  execute(input: CategoryIdInput): Promise<Result<CategoryAnemic>> {
+    return this.editor.change(
+      input.id,
+      (category, anemic) => this.restore(category, anemic),
+      INCLUDING_DELETED,
+    );
+  }
+
+  private async restore(
+    category: CategoryDomain,
+    anemic: CategoryAnemic,
+  ): Promise<Result<void>> {
+    const allowed = await this.hierarchy.validateRestore(anemic);
+    if (allowed.isFailure) {
+      return allowed;
     }
 
-    if (anemic.parent_id !== null) {
-      const parent = await this.repository.findById(anemic.parent_id);
-      if (!parent) {
-        return Result.fail(
-          new ConflictError('Parent category is deleted, restore it first'),
-        );
-      }
-    }
-
-    const category = this.factory.reconstitute(anemic);
     category.restoreCategory();
-
-    return this.persistence.persist(category, this.repository);
+    return Result.ok();
   }
 }

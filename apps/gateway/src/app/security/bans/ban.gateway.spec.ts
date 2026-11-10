@@ -15,10 +15,6 @@ describe('BanGateway', () => {
     { current: () => metadata } as unknown as RequestMetadata,
   );
 
-  beforeAll(() => {
-    gateway.onModuleInit();
-  });
-
   it('forwards the list request with the actor metadata', async () => {
     await lastValueFrom(gateway.list({ active_only: true, limit: 20 }));
 

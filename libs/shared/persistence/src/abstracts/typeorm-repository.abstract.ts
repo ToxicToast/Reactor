@@ -4,22 +4,24 @@ import type {
   DataSource,
   EntitySchema,
   ObjectLiteral,
-  Repository,
   SelectQueryBuilder,
 } from 'typeorm';
 import type { TransactionContext } from '../classes/index.js';
 import type { Mapper } from '../interfaces/index.js';
+import { TypeOrmTableRepository } from './typeorm-table-repository.abstract.js';
 
 export abstract class TypeOrmRepository<
   TAnemic extends Anemic,
   TRow extends ObjectLiteral,
-> {
+> extends TypeOrmTableRepository<TRow> {
   protected constructor(
-    private readonly dataSource: DataSource,
-    private readonly context: TransactionContext,
-    private readonly schema: EntitySchema<TRow>,
+    dataSource: DataSource,
+    context: TransactionContext,
+    schema: EntitySchema<TRow>,
     protected readonly mapper: Mapper<TAnemic, TRow>,
-  ) {}
+  ) {
+    super(dataSource, context, schema);
+  }
 
   async save(anemic: TAnemic): Promise<TAnemic> {
     const row = await this.repository().save(this.mapper.toRow(anemic));
@@ -41,10 +43,6 @@ export abstract class TypeOrmRepository<
         .take(limit)
         .skip(offset),
     );
-  }
-
-  protected repository(): Repository<TRow> {
-    return this.context.manager(this.dataSource).getRepository(this.schema);
   }
 
   protected query(withDeleted = false): SelectQueryBuilder<TRow> {

@@ -1,10 +1,12 @@
-import type {
-  DomainPersistence,
-  UseCase,
+import {
+  AggregateEditor,
+  type DomainPersistence,
+  type UseCase,
 } from '@toxictoast/shared-application';
-import { NotFoundError, Result } from '@toxictoast/shared-kernel';
+import { Result } from '@toxictoast/shared-kernel';
 import type {
   TwitchChannelAnemic,
+  TwitchChannelDomain,
   TwitchChannelFactory,
   TwitchChannelId,
   TwitchChannelRepository,
@@ -19,31 +21,35 @@ export class DisconnectChannelUseCase implements UseCase<
   DisconnectChannelInput,
   TwitchChannelAnemic
 > {
+  private readonly editor: AggregateEditor<
+    TwitchChannelAnemic,
+    TwitchChannelDomain
+  >;
+
   constructor(
-    private readonly factory: TwitchChannelFactory,
-    private readonly repository: TwitchChannelRepository,
-    private readonly persistence: DomainPersistence,
+    factory: TwitchChannelFactory,
+    repository: TwitchChannelRepository,
+    persistence: DomainPersistence,
     private readonly tokens: TwitchTokenStore,
     private readonly subscriber: TwitchEventSubscriber,
-  ) {}
+  ) {
+    this.editor = new AggregateEditor<TwitchChannelAnemic, TwitchChannelDomain>(
+      'Twitch channel',
+      factory,
+      repository,
+      persistence,
+    );
+  }
 
   async execute(
     input: DisconnectChannelInput,
   ): Promise<Result<TwitchChannelAnemic>> {
-    const anemic = await this.repository.findById(input.id as TwitchChannelId);
-    if (!anemic) {
-      return Result.fail(new NotFoundError('Twitch channel', input.id));
-    }
-
-    const channel = this.factory.reconstitute(anemic);
-    const disconnected = channel.disconnect();
-    if (disconnected.isFailure) {
-      return Result.fail(disconnected.error);
-    }
-
-    const saved = await this.persistence.persist(channel, this.repository);
+    const saved = await this.editor.change(
+      input.id as TwitchChannelId,
+      (channel) => channel.disconnect(),
+    );
     if (saved.isFailure) {
-      return Result.fail(saved.error);
+      return saved;
     }
 
     await this.subscriber.stop(saved.value.id);

@@ -1,16 +1,16 @@
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import {
   PostFactory,
+  PostReferencesService,
   PostStatus,
   type AuthorId,
   type CategoryId,
   type PostData,
 } from '@toxictoast/blog-domain';
-import { PostReferencesService } from '../../services/index.js';
 import {
   categoryAnemic,
   createTestContext,

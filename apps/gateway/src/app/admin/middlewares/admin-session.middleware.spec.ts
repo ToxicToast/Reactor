@@ -1,13 +1,13 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { AdminAuthConfig } from '../interfaces/index.js';
-import { SealedCookie } from '../services/index.js';
+import { AdminSessions, SealedCookie } from '../services/index.js';
 import { AdminSessionMiddleware } from './admin-session.middleware.js';
 
 describe('AdminSessionMiddleware', () => {
   const cookies = new SealedCookie({
     sessionSecret: new Uint8Array(32).fill(7),
   } as AdminAuthConfig);
-  const middleware = new AdminSessionMiddleware(cookies);
+  const middleware = new AdminSessionMiddleware(new AdminSessions(cookies));
 
   let redirect: jest.Mock;
   let json: jest.Mock;

@@ -7,7 +7,7 @@ import {
   type CommentId,
   type PostId,
 } from '@toxictoast/blog-domain';
-import { PostgresTestDatabase } from '../testing/index.js';
+import { BlogTestDatabase } from '../testing/index.js';
 import { TypeOrmCommentRepository } from './typeorm-comment.repository.js';
 
 const POST = randomUUID() as PostId;
@@ -35,7 +35,7 @@ const at = (hour: number): Date => {
 };
 
 describe('TypeOrmCommentRepository', () => {
-  const database = new PostgresTestDatabase();
+  const database = new BlogTestDatabase();
   let comments: TypeOrmCommentRepository;
 
   beforeAll(async () => {

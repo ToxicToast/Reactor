@@ -14,7 +14,6 @@ import {
   KafkaEventPublisher,
   kafkaConfigFromEnv,
   OutboxRelay,
-  OutboxRelayWorker,
   TopicProvisioner,
   type EventPublisher,
 } from '@toxictoast/shared-messaging';
@@ -24,12 +23,14 @@ import {
   describeError,
   numberEnv,
   CorrelationContext,
+  PollingWorker,
 } from '@toxictoast/shared-system';
 import type { Nullable } from '@toxictoast/shared-types';
 import { DataSource } from 'typeorm';
 import { TOKENS } from '../constants/index.js';
 import type { MessagingModuleOptions } from '../interfaces/index.js';
 import { MessagingLifecycle } from '../lifecycles/index.js';
+import { AdvisoryLock } from '@toxictoast/shared-persistence';
 
 type StringProducer = Producer<string, string, string, string>;
 
@@ -44,7 +45,7 @@ const outboxProviders = (logger: Logger): Array<Provider> => {
         clock: Clock,
       ) => {
         return new OutboxRelay(
-          dataSource,
+          new AdvisoryLock(dataSource),
           publisher,
           clock,
           numberEnv('OUTBOX_BATCH_SIZE', 100),
@@ -55,7 +56,7 @@ const outboxProviders = (logger: Logger): Array<Provider> => {
       provide: TOKENS.OUTBOX_RELAY_WORKER,
       inject: [OutboxRelay],
       useFactory: (relay: OutboxRelay) => {
-        return new OutboxRelayWorker(relay, {
+        return new PollingWorker(relay, {
           intervalMs: numberEnv('OUTBOX_INTERVAL_MS', 500),
           onError: (error) => {
             logger.error('Outbox relay failed', describeError(error));

@@ -2,9 +2,9 @@ import { randomBytes } from 'node:crypto';
 import {
   FakeTwitchAuthClient,
   twitchChannelAnemic,
-} from '@toxictoast/twitch-bot-application';
+} from '@toxictoast/twitch-bot-application/testing';
 import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
-import { TokenCipher } from '../services/token-cipher.service.js';
+import { SecretCipher } from '@toxictoast/shared-system';
 import { TwitchAccessTokenMapper } from './twitch-access-token.mapper.js';
 import { TwitchChannelMapper } from './twitch-channel.mapper.js';
 import { TwitchTokenMapper } from './twitch-token.mapper.js';
@@ -23,7 +23,7 @@ describe('TwitchChannelMapper', () => {
 });
 
 describe('TwitchTokenMapper', () => {
-  const mapper = new TwitchTokenMapper(new TokenCipher(randomBytes(32)));
+  const mapper = new TwitchTokenMapper(new SecretCipher(randomBytes(32)));
 
   it('stores both tokens encrypted and restores them', () => {
     const row = mapper.toRow(

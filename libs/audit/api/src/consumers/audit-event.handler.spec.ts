@@ -1,7 +1,5 @@
-import {
-  InMemoryAuditRepository,
-  RecordAuditEventUseCase,
-} from '@toxictoast/audit-application';
+import { RecordAuditEventUseCase } from '@toxictoast/audit-application';
+import { InMemoryAuditRepository } from '@toxictoast/audit-application/testing';
 import { AuditEventHandler } from './audit-event.handler.js';
 
 const NOW = new Date('2026-10-26T17:29:27Z');

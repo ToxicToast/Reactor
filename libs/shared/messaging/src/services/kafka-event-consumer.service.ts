@@ -4,6 +4,7 @@ import {
   isUuid,
   SYSTEM_ACTOR,
   type Actor,
+  eventKey,
 } from '@toxictoast/shared-kernel';
 import type {
   ActorContext,
@@ -14,7 +15,6 @@ import type {
   ConsumedEvent,
   KafkaEventConsumerOptions,
 } from '../interfaces/index.js';
-import { eventKey } from '../functions/index.js';
 import { randomUUID } from 'node:crypto';
 import { FALLBACK_HANDLER, KAFKA_ADMIN } from '../constants/index.js';
 

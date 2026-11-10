@@ -1,4 +1,3 @@
-import type { OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import {
   COMMENT_SERVICE_NAME,
@@ -17,69 +16,48 @@ import {
   type UpdateCommentRequest,
   type UpdateCommentResponse,
 } from '@toxictoast/contracts-grpc';
-import type { Nullable } from '@toxictoast/shared-types';
 import type { Observable } from 'rxjs';
+import { GrpcGateway } from '../../grpc/abstracts/index.js';
 import type { RequestMetadata } from '../../grpc/services/index.js';
 
-export class CommentGateway implements OnModuleInit {
-  private client: Nullable<CommentServiceClient> = null;
-
-  constructor(
-    private readonly grpc: ClientGrpc,
-    private readonly metadata: RequestMetadata,
-  ) {}
-
-  onModuleInit(): void {
-    this.client =
-      this.grpc.getService<CommentServiceClient>(COMMENT_SERVICE_NAME);
+export class CommentGateway extends GrpcGateway<CommentServiceClient> {
+  constructor(grpc: ClientGrpc, metadata: RequestMetadata) {
+    super(grpc, COMMENT_SERVICE_NAME, metadata);
   }
 
   create(request: CreateCommentRequest): Observable<CreateCommentResponse> {
-    return this.comments().createComment(request, this.metadata.current());
+    return this.service.createComment(request, this.metadata());
   }
 
   update(request: UpdateCommentRequest): Observable<UpdateCommentResponse> {
-    return this.comments().updateComment(request, this.metadata.current());
+    return this.service.updateComment(request, this.metadata());
   }
 
   moderate(
     request: ModerateCommentRequest,
   ): Observable<ModerateCommentResponse> {
-    return this.comments().moderateComment(request, this.metadata.current());
+    return this.service.moderateComment(request, this.metadata());
   }
 
   delete(id: string): Observable<DeleteCommentResponse> {
-    return this.comments().deleteComment({ id }, this.metadata.current());
+    return this.service.deleteComment({ id }, this.metadata());
   }
 
   restore(id: string): Observable<RestoreCommentResponse> {
-    return this.comments().restoreComment({ id }, this.metadata.current());
+    return this.service.restoreComment({ id }, this.metadata());
   }
 
   get(request: GetCommentRequest): Observable<GetCommentResponse> {
-    return this.comments().getComment(request, this.metadata.current());
+    return this.service.getComment(request, this.metadata());
   }
 
   listForPost(postId: string): Observable<ListPostCommentsResponse> {
-    return this.comments().listPostComments(
-      { post_id: postId },
-      this.metadata.current(),
-    );
+    return this.service.listPostComments({ post_id: postId }, this.metadata());
   }
 
   listByStatus(
     request: ListCommentsByStatusRequest,
   ): Observable<ListCommentsByStatusResponse> {
-    return this.comments().listCommentsByStatus(
-      request,
-      this.metadata.current(),
-    );
-  }
-
-  private comments(): CommentServiceClient {
-    if (!this.client) {
-      throw new Error('Blog comment client is not initialized');
-    }
-    return this.client;
+    return this.service.listCommentsByStatus(request, this.metadata());
   }
 }

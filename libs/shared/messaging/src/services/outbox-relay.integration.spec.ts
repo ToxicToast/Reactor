@@ -1,11 +1,11 @@
 import { randomUUID } from 'node:crypto';
-import {
-  PostgreSqlContainer,
-  type StartedPostgreSqlContainer,
-} from '@testcontainers/postgresql';
 import { ActorType, type Clock } from '@toxictoast/shared-kernel';
-import { OutboxSchema, type OutboxRow } from '@toxictoast/shared-persistence';
-import { DataSource } from 'typeorm';
+import {
+  AdvisoryLock,
+  OutboxSchema,
+  type OutboxRow,
+} from '@toxictoast/shared-persistence';
+import { PostgresTestDatabase } from '@toxictoast/shared-persistence/testing';
 import type { EventPublisher, PublishedEvent } from '../interfaces/index.js';
 import { OutboxRelay } from './outbox-relay.service.js';
 
@@ -42,33 +42,32 @@ class RecordingPublisher implements EventPublisher {
 }
 
 describe('OutboxRelay', () => {
-  let container: StartedPostgreSqlContainer;
-  let dataSource: DataSource;
+  const database = new PostgresTestDatabase({ schemas: [OutboxSchema] });
 
-  beforeAll(async () => {
-    container = await new PostgreSqlContainer('postgres:18-alpine').start();
-    dataSource = new DataSource({
-      type: 'postgres',
-      url: container.getConnectionUri(),
-      entities: [OutboxSchema],
-      synchronize: true,
-    });
-    await dataSource.initialize();
-  });
+  beforeAll(() => database.start());
 
-  afterEach(() => dataSource.query('TRUNCATE outbox'));
+  afterEach(() => database.truncate());
 
-  afterAll(async () => {
-    await dataSource.destroy();
-    await container.stop();
-  });
+  afterAll(() => database.stop());
+
+  const relayWith = (
+    publisher: EventPublisher,
+    batchSize?: number,
+  ): OutboxRelay => {
+    return new OutboxRelay(
+      new AdvisoryLock(database.dataSource),
+      publisher,
+      clock,
+      batchSize,
+    );
+  };
 
   const insert = (...rows: Array<OutboxRow>): Promise<unknown> => {
-    return dataSource.getRepository(OutboxSchema).insert(rows);
+    return database.dataSource.getRepository(OutboxSchema).insert(rows);
   };
 
   const load = (): Promise<Array<OutboxRow>> => {
-    return dataSource
+    return database.dataSource
       .getRepository(OutboxSchema)
       .find({ order: { occurred_at: 'ASC' } });
   };
@@ -77,7 +76,7 @@ describe('OutboxRelay', () => {
     const publisher = new RecordingPublisher();
     await insert(row(3), row(1), row(2), row(0, { published_at: NOW }));
 
-    const result = await new OutboxRelay(dataSource, publisher, clock).relay();
+    const result = await relayWith(publisher).relay();
 
     expect(result).toEqual({ published: 3, failed: 0, error: null });
     expect(publisher.published.map((event) => event.payload)).toEqual([
@@ -95,7 +94,7 @@ describe('OutboxRelay', () => {
       row(2, { actor_type: ActorType.SYSTEM, actor_id: null, actor_ip: null }),
     );
 
-    await new OutboxRelay(dataSource, publisher, clock).relay();
+    await relayWith(publisher).relay();
 
     expect(publisher.published.map((event) => event.actor)).toEqual([
       { type: 'user', id: 'user-1', ip: '203.0.113.7' },
@@ -108,7 +107,7 @@ describe('OutboxRelay', () => {
     const correlationId = randomUUID();
     await insert(row(1, { correlation_id: correlationId }), row(2));
 
-    await new OutboxRelay(dataSource, publisher, clock).relay();
+    await relayWith(publisher).relay();
 
     expect(publisher.published.map((event) => event.correlation_id)).toEqual([
       correlationId,
@@ -119,7 +118,7 @@ describe('OutboxRelay', () => {
   it('does nothing without unpublished events', async () => {
     const publisher = new RecordingPublisher();
 
-    const result = await new OutboxRelay(dataSource, publisher, clock).relay();
+    const result = await relayWith(publisher).relay();
 
     expect(result.published).toBe(0);
     expect(publisher.published).toEqual([]);
@@ -129,7 +128,7 @@ describe('OutboxRelay', () => {
     const publisher = new RecordingPublisher();
     await insert(row(1), row(2), row(3));
 
-    await new OutboxRelay(dataSource, publisher, clock, 2).relay();
+    await relayWith(publisher, 2).relay();
 
     expect(publisher.published).toHaveLength(2);
     expect((await load())[2].published_at).toBeNull();
@@ -142,7 +141,7 @@ describe('OutboxRelay', () => {
     };
     await insert(row(1), row(2));
 
-    const result = await new OutboxRelay(dataSource, failing, clock).relay();
+    const result = await relayWith(failing).relay();
 
     expect(result).toEqual({ published: 0, failed: 2, error });
     expect(await load()).toEqual([
@@ -169,9 +168,9 @@ describe('OutboxRelay', () => {
     };
     const second = new RecordingPublisher();
 
-    const first = new OutboxRelay(dataSource, blocking, clock).relay();
+    const first = relayWith(blocking).relay();
     await isStarted;
-    const skipped = await new OutboxRelay(dataSource, second, clock).relay();
+    const skipped = await relayWith(second).relay();
     release();
 
     expect(skipped.published).toBe(0);

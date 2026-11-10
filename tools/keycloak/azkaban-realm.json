@@ -67,7 +67,9 @@
               "cronjob.queues.manage",
               "security.ban.manage",
               "audit.read",
-              "twitch-bot.channel.manage"
+              "twitch-bot.channel.manage",
+              "twitch.stats.read",
+              "twitch.webhook.manage"
             ]
           }
         }
@@ -136,6 +138,14 @@
         {
           "name": "twitch-bot.sync",
           "description": "Synchronise chatters and clips from Twitch"
+        },
+        {
+          "name": "twitch.stats.read",
+          "description": "Read Twitch statistics and watch live events"
+        },
+        {
+          "name": "twitch.webhook.manage",
+          "description": "Manage Twitch webhooks"
         }
       ]
     }

@@ -27,6 +27,13 @@ export interface UpdatePostData {
   readonly hero_image_id?: Optional<Nullable<MediaId>>;
 }
 
+export interface PostReferences {
+  readonly category_ids?: Optional<ReadonlyArray<CategoryId>>;
+  readonly tag_ids?: Optional<ReadonlyArray<TagId>>;
+  readonly blog_image_id?: Optional<Nullable<MediaId>>;
+  readonly hero_image_id?: Optional<Nullable<MediaId>>;
+}
+
 export interface PostFilter {
   readonly status?: Optional<PostStatus>;
   readonly category_id?: Optional<CategoryId>;

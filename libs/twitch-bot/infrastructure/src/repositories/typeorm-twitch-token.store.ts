@@ -1,26 +1,33 @@
-import type { TransactionContext } from '@toxictoast/shared-persistence';
+import {
+  TypeOrmTableRepository,
+  type TransactionContext,
+} from '@toxictoast/shared-persistence';
 import type { Clock } from '@toxictoast/shared-kernel';
+import type { SecretCipher } from '@toxictoast/shared-system';
 import type { Nullable } from '@toxictoast/shared-types';
 import type {
   TwitchToken,
   TwitchTokenStore,
 } from '@toxictoast/twitch-bot-application';
 import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
-import type { DataSource, Repository } from 'typeorm';
+import type { DataSource } from 'typeorm';
 import type { TwitchTokenRow } from '../interfaces/index.js';
 import { TwitchTokenMapper } from '../mappers/index.js';
 import { TwitchTokenSchema } from '../schemas/index.js';
-import type { TokenCipher } from '../services/token-cipher.service.js';
 
-export class TypeOrmTwitchTokenStore implements TwitchTokenStore {
+export class TypeOrmTwitchTokenStore
+  extends TypeOrmTableRepository<TwitchTokenRow>
+  implements TwitchTokenStore
+{
   private readonly mapper: TwitchTokenMapper;
 
   constructor(
-    private readonly dataSource: DataSource,
-    private readonly context: TransactionContext,
-    cipher: TokenCipher,
+    dataSource: DataSource,
+    context: TransactionContext,
+    cipher: SecretCipher,
     private readonly clock: Clock,
   ) {
+    super(dataSource, context, TwitchTokenSchema);
     this.mapper = new TwitchTokenMapper(cipher);
   }
 
@@ -41,11 +48,5 @@ export class TypeOrmTwitchTokenStore implements TwitchTokenStore {
 
   async remove(channelId: TwitchChannelId): Promise<void> {
     await this.repository().delete({ channel_id: channelId });
-  }
-
-  private repository(): Repository<TwitchTokenRow> {
-    return this.context
-      .manager(this.dataSource)
-      .getRepository(TwitchTokenSchema);
   }
 }

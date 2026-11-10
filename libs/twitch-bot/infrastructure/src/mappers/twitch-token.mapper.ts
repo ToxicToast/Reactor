@@ -1,10 +1,10 @@
+import type { SecretCipher } from '@toxictoast/shared-system';
 import type { TwitchToken } from '@toxictoast/twitch-bot-application';
 import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
 import type { TwitchTokenRow } from '../interfaces/index.js';
-import type { TokenCipher } from '../services/token-cipher.service.js';
 
 export class TwitchTokenMapper {
-  constructor(private readonly cipher: TokenCipher) {}
+  constructor(private readonly cipher: SecretCipher) {}
 
   toToken(row: TwitchTokenRow): TwitchToken {
     return {

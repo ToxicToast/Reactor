@@ -1,34 +1,38 @@
-import { NotFoundError, Result } from '@toxictoast/shared-kernel';
-import type {
-  DomainPersistence,
-  UseCase,
+import type { Result } from '@toxictoast/shared-kernel';
+import {
+  INCLUDING_DELETED,
+  type AggregateEditor,
+  type DomainPersistence,
+  type UseCase,
 } from '@toxictoast/shared-application';
 import type {
   CommentAnemic,
+  CommentDomain,
   CommentFactory,
   CommentRepository,
 } from '@toxictoast/blog-domain';
 import type { CommentIdInput } from '../../data/index.js';
+import { createCommentEditor } from '../../functions/index.js';
 
 export class DeleteCommentUseCase implements UseCase<
   CommentIdInput,
   CommentAnemic
 > {
+  private readonly editor: AggregateEditor<CommentAnemic, CommentDomain>;
+
   constructor(
-    private readonly factory: CommentFactory,
-    private readonly repository: CommentRepository,
-    private readonly persistence: DomainPersistence,
-  ) {}
+    factory: CommentFactory,
+    repository: CommentRepository,
+    persistence: DomainPersistence,
+  ) {
+    this.editor = createCommentEditor(factory, repository, persistence);
+  }
 
-  async execute(input: CommentIdInput): Promise<Result<CommentAnemic>> {
-    const anemic = await this.repository.findById(input.id, true);
-    if (!anemic) {
-      return Result.fail(new NotFoundError('Comment', input.id));
-    }
-
-    const comment = this.factory.reconstitute(anemic);
-    comment.deleteComment();
-
-    return this.persistence.persist(comment, this.repository);
+  execute(input: CommentIdInput): Promise<Result<CommentAnemic>> {
+    return this.editor.change(
+      input.id,
+      (comment) => comment.deleteComment(),
+      INCLUDING_DELETED,
+    );
   }
 }

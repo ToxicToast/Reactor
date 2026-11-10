@@ -1,1 +1,1 @@
-export * from './postgres-test-database.js';
+export * from './twitch-bot-test-database.js';

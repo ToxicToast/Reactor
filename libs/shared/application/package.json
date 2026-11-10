@@ -11,6 +11,11 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
+    "./testing": {
+      "types": "./src/testing/index.ts",
+      "import": "./src/testing/index.ts",
+      "default": "./src/testing/index.ts"
+    },
     "./package.json": "./package.json"
   },
   "nx": {
@@ -21,6 +26,7 @@
     ]
   },
   "dependencies": {
-    "@toxictoast/shared-types": "*"
+    "@toxictoast/shared-types": "*",
+    "@toxictoast/shared-kernel": "*"
   }
 }

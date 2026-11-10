@@ -6,7 +6,7 @@ import {
   TypeOrmUnitOfWork,
 } from '@toxictoast/shared-persistence';
 import { TypeOrmTagRepository } from './repositories/index.js';
-import { PostgresTestDatabase } from './testing/index.js';
+import { BlogTestDatabase } from './testing/index.js';
 import { ActorContext, CorrelationContext } from '@toxictoast/shared-system';
 
 const NOW = new Date('2026-10-20T10:00:00Z');
@@ -36,7 +36,7 @@ const created = (anemic: TagAnemic): DomainEvent<TagAnemic> => {
 };
 
 describe('Blog persistence', () => {
-  const database = new PostgresTestDatabase();
+  const database = new BlogTestDatabase();
   let uow: TypeOrmUnitOfWork;
   let outbox: TypeOrmOutbox;
   let tags: TypeOrmTagRepository;

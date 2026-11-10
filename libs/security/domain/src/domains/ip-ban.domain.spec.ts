@@ -1,14 +1,11 @@
-import type { DomainContext } from '@toxictoast/shared-kernel';
 import type { IpBanData } from '../data/index.js';
 import { IpBanFactory } from '../factories/index.js';
 import type { IpBanDomain } from './ip-ban.domain.js';
+import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
 
 let now = new Date('2026-10-23T12:00:00Z');
 
-const ctx: DomainContext = {
-  id: { generate: () => 'ban-1' as never },
-  date: { now: () => now },
-};
+const ctx = createFixedTestContext('ban-1', () => now);
 
 const VALID: IpBanData = {
   ip: '::ffff:203.0.113.7',

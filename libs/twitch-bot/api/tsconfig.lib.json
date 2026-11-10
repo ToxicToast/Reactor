@@ -17,9 +17,6 @@
       "path": "../application/tsconfig.lib.json"
     },
     {
-      "path": "../../shared/types/tsconfig.lib.json"
-    },
-    {
       "path": "../../shared/kernel/tsconfig.lib.json"
     },
     {

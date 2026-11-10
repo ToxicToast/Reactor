@@ -1,9 +1,8 @@
-import type { DomainContext } from '@toxictoast/shared-kernel';
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import {
   TagFactory,
   type TagAnemic,
@@ -11,6 +10,7 @@ import {
 } from '@toxictoast/blog-domain';
 import { InMemoryTagRepository } from '../../testing/index.js';
 import { UpdateTagUseCase } from './update-tag.usecase.js';
+import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
 
 const NOW = new Date('2026-10-19T12:00:00Z');
 const TAG_ID = 'tag-1' as TagId;
@@ -34,10 +34,7 @@ describe('UpdateTagUseCase', () => {
   let useCase: UpdateTagUseCase;
 
   beforeEach(() => {
-    const ctx: DomainContext = {
-      id: { generate: () => 'event-1' as never },
-      date: { now: () => NOW },
-    };
+    const ctx = createFixedTestContext('event-1', () => NOW);
     repository = new InMemoryTagRepository();
     outbox = new InMemoryOutbox();
     uow = new ImmediateUnitOfWork();

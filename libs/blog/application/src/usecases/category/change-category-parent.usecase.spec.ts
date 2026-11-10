@@ -1,10 +1,13 @@
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
-import { CategoryFactory, type CategoryId } from '@toxictoast/blog-domain';
-import { CategoryHierarchyService } from '../../services/index.js';
+} from '@toxictoast/shared-application/testing';
+import {
+  CategoryFactory,
+  CategoryHierarchyService,
+  type CategoryId,
+} from '@toxictoast/blog-domain';
 import {
   categoryAnemic,
   createTestContext,

@@ -1,4 +1,5 @@
 import nx from '@nx/eslint-plugin';
+import jsoncParser from 'jsonc-eslint-parser';
 
 const infraPackages = [
   '@nestjs/*',
@@ -12,7 +13,51 @@ const infraPackages = [
   'rxjs',
 ];
 
-export default [
+const dependencyCheckIgnoredFiles = [
+  '{projectRoot}/eslint.config.mjs',
+  '{projectRoot}/jest.config.cts',
+  '{projectRoot}/jest.integration.config.cts',
+  '{projectRoot}/webpack.config.js',
+  '{projectRoot}/**/*.spec.ts',
+  '{projectRoot}/src/**/testing/**',
+];
+
+const runtimeOnlyPackages = ['tslib', 'reflect-metadata'];
+
+// Apps brauchen diese Pakete zur Laufzeit (Treiber, Nest-Plattform, Peers), ohne sie direkt zu importieren.
+const appRuntimePackages = [
+  ...runtimeOnlyPackages,
+  '@nestjs/core',
+  '@nestjs/platform-express',
+  '@nestjs/microservices',
+  '@grpc/grpc-js',
+  'rxjs',
+  'express',
+  'pg',
+  'ioredis',
+];
+
+const dependencyChecks = (files, ignoredDependencies) => ({
+  files,
+  languageOptions: { parser: jsoncParser },
+  rules: {
+    '@nx/dependency-checks': [
+      'error',
+      {
+        // Libs sind nicht buildable (nur typecheck), daher typecheck als Bezugs-Target für alle Projekte.
+        buildTargets: ['typecheck'],
+        checkMissingDependencies: true,
+        checkObsoleteDependencies: true,
+        checkVersionMismatches: true,
+        includeTransitiveDependencies: false,
+        ignoredFiles: dependencyCheckIgnoredFiles,
+        ignoredDependencies,
+      },
+    ],
+  },
+});
+
+const workspaceConfig = [
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
@@ -159,9 +204,27 @@ export default [
                 'scope:types',
               ],
             },
+            {
+              sourceTag: 'scope:twitch',
+              onlyDependOnLibsWithTags: [
+                'scope:twitch',
+                'scope:contracts',
+                'scope:shared',
+                'scope:types',
+              ],
+            },
           ],
         },
       ],
     },
   },
+  // Patterns gelten relativ zur geladenen Projekt-Config, daher **/package.json statt libs/** bzw. apps/*.
+  dependencyChecks(['**/package.json'], runtimeOnlyPackages),
 ];
+
+export const appConfig = [
+  ...workspaceConfig,
+  dependencyChecks(['**/package.json'], appRuntimePackages),
+];
+
+export default workspaceConfig;

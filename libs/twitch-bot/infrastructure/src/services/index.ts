@@ -1,4 +1,3 @@
-export * from './token-cipher.service.js';
 export * from './twitch-socket-tracker.service.js';
 export * from './twitch-credentials-check.service.js';
 export * from './twitch-connection.service.js';

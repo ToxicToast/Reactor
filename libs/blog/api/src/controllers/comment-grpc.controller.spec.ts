@@ -1,19 +1,20 @@
 import { randomUUID } from 'node:crypto';
 import { status } from '@grpc/grpc-js';
 import {
-  CommentModerationService,
   CreateCommentUseCase,
   DeleteCommentUseCase,
   GetCommentUseCase,
-  InMemoryCommentRepository,
-  InMemoryPostRepository,
   ListCommentsByStatusUseCase,
   ListPostCommentsUseCase,
   ModerateCommentUseCase,
-  postAnemic,
   RestoreCommentUseCase,
   UpdateCommentUseCase,
 } from '@toxictoast/blog-application';
+import {
+  InMemoryCommentRepository,
+  InMemoryPostRepository,
+  postAnemic,
+} from '@toxictoast/blog-application/testing';
 import { CommentFactory, PostStatus } from '@toxictoast/blog-domain';
 import {
   BlogPermission,
@@ -21,19 +22,19 @@ import {
   CommentStatus as GrpcCommentStatus,
   ModerationStatus as GrpcModerationStatus,
 } from '@toxictoast/contracts-grpc';
+import { DomainPersistence } from '@toxictoast/shared-application';
 import {
-  createUuidTestContext,
-  DomainPersistence,
   ImmediateUnitOfWork,
   InMemoryOutbox,
-} from '@toxictoast/shared-application';
+} from '@toxictoast/shared-application/testing';
 import {
   anonymousTestActor,
   grpcCode,
   testActor,
   TestActorProvider,
-} from '@toxictoast/shared-grpc';
+} from '@toxictoast/shared-grpc/testing';
 import { CommentGrpcController } from './comment-grpc.controller.js';
+import { createUuidTestContext } from '@toxictoast/shared-kernel/testing';
 
 const NOW = new Date('2026-10-20T12:00:00Z');
 const POST = randomUUID();
@@ -58,7 +59,6 @@ describe('CommentGrpcController', () => {
     const factory = new CommentFactory(ctx);
     const comments = new InMemoryCommentRepository();
     const posts = new InMemoryPostRepository();
-    const moderation = new CommentModerationService();
     const persistence = new DomainPersistence(
       new InMemoryOutbox(),
       new ImmediateUnitOfWork(),
@@ -66,7 +66,7 @@ describe('CommentGrpcController', () => {
     controller = new CommentGrpcController(
       new CreateCommentUseCase(factory, comments, posts, persistence),
       new UpdateCommentUseCase(factory, comments, persistence),
-      new ModerateCommentUseCase(factory, comments, moderation, persistence),
+      new ModerateCommentUseCase(factory, comments, persistence),
       new DeleteCommentUseCase(factory, comments, persistence),
       new RestoreCommentUseCase(factory, comments, persistence),
       new GetCommentUseCase(comments),

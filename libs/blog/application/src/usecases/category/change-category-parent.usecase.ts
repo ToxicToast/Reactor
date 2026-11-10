@@ -1,49 +1,49 @@
-import { NotFoundError, Result } from '@toxictoast/shared-kernel';
+import type { Result } from '@toxictoast/shared-kernel';
 import type {
+  AggregateEditor,
   DomainPersistence,
   UseCase,
 } from '@toxictoast/shared-application';
 import type {
   CategoryAnemic,
+  CategoryDomain,
   CategoryFactory,
+  CategoryHierarchyService,
   CategoryRepository,
 } from '@toxictoast/blog-domain';
 import type { ChangeCategoryParentInput } from '../../data/index.js';
-import type { CategoryHierarchyService } from '../../services/index.js';
+import { createCategoryEditor } from '../../functions/index.js';
 
 export class ChangeCategoryParentUseCase implements UseCase<
   ChangeCategoryParentInput,
   CategoryAnemic
 > {
+  private readonly editor: AggregateEditor<CategoryAnemic, CategoryDomain>;
+
   constructor(
-    private readonly factory: CategoryFactory,
-    private readonly repository: CategoryRepository,
+    factory: CategoryFactory,
+    repository: CategoryRepository,
     private readonly hierarchy: CategoryHierarchyService,
-    private readonly persistence: DomainPersistence,
-  ) {}
+    persistence: DomainPersistence,
+  ) {
+    this.editor = createCategoryEditor(factory, repository, persistence);
+  }
 
-  async execute(
+  execute(input: ChangeCategoryParentInput): Promise<Result<CategoryAnemic>> {
+    return this.editor.change(input.id, (category) =>
+      this.changeParent(category, input),
+    );
+  }
+
+  private async changeParent(
+    category: CategoryDomain,
     input: ChangeCategoryParentInput,
-  ): Promise<Result<CategoryAnemic>> {
-    const anemic = await this.repository.findById(input.id);
-    if (!anemic) {
-      return Result.fail(new NotFoundError('Category', input.id));
-    }
-
-    const category = this.factory.reconstitute(anemic);
+  ): Promise<Result<void>> {
     const changed = category.changeParent(input.parent_id);
     if (changed.isFailure) {
-      return Result.fail(changed.error);
+      return changed;
     }
 
-    const parent = await this.hierarchy.validateParent(
-      input.parent_id,
-      input.id,
-    );
-    if (parent.isFailure) {
-      return Result.fail(parent.error);
-    }
-
-    return this.persistence.persist(category, this.repository);
+    return this.hierarchy.validateParent(input.parent_id, input.id);
   }
 }

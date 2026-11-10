@@ -4,3 +4,4 @@ export * from './pkce-challenge.function.js';
 export * from './safe-return-to.function.js';
 export * from './proxy-error-handler.function.js';
 export * from './admin-actor.function.js';
+export * from './missing-permission-message.function.js';

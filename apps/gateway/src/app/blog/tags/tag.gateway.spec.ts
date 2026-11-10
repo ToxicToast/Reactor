@@ -15,10 +15,6 @@ describe('TagGateway', () => {
     { current: () => metadata } as unknown as RequestMetadata,
   );
 
-  beforeAll(() => {
-    gateway.onModuleInit();
-  });
-
   it('forwards the request with the actor metadata', async () => {
     await lastValueFrom(gateway.create({ title: 'NestJS' }));
 

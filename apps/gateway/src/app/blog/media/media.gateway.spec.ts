@@ -17,10 +17,6 @@ describe('MediaGateway', () => {
     { current: () => metadata } as unknown as RequestMetadata,
   );
 
-  beforeAll(() => {
-    gateway.onModuleInit();
-  });
-
   it('forwards the upload request with the actor metadata', async () => {
     const request = {
       filename: 'hero.png',

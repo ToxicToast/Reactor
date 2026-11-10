@@ -1,4 +1,3 @@
-import type { OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import {
   TWITCH_BOT_SERVICE_NAME,
@@ -10,51 +9,32 @@ import {
   type StartAuthorizationResponse,
   type TwitchBotServiceClient,
 } from '@toxictoast/contracts-grpc';
-import type { Nullable } from '@toxictoast/shared-types';
 import type { Observable } from 'rxjs';
+import { GrpcGateway } from '../grpc/abstracts/index.js';
 import type { RequestMetadata } from '../grpc/services/index.js';
 
-export class TwitchGateway implements OnModuleInit {
-  private client: Nullable<TwitchBotServiceClient> = null;
-
-  constructor(
-    private readonly grpc: ClientGrpc,
-    private readonly metadata: RequestMetadata,
-  ) {}
-
-  onModuleInit(): void {
-    this.client = this.grpc.getService<TwitchBotServiceClient>(
-      TWITCH_BOT_SERVICE_NAME,
-    );
+export class TwitchGateway extends GrpcGateway<TwitchBotServiceClient> {
+  constructor(grpc: ClientGrpc, metadata: RequestMetadata) {
+    super(grpc, TWITCH_BOT_SERVICE_NAME, metadata);
   }
 
   startAuthorization(
     request: StartAuthorizationRequest,
   ): Observable<StartAuthorizationResponse> {
-    return this.twitch().startAuthorization(request, this.metadata.current());
+    return this.service.startAuthorization(request, this.metadata());
   }
 
   completeAuthorization(
     request: CompleteAuthorizationRequest,
   ): Observable<CompleteAuthorizationResponse> {
-    return this.twitch().completeAuthorization(
-      request,
-      this.metadata.current(),
-    );
+    return this.service.completeAuthorization(request, this.metadata());
   }
 
   listChannels(): Observable<ListChannelsResponse> {
-    return this.twitch().listChannels({}, this.metadata.current());
+    return this.service.listChannels({}, this.metadata());
   }
 
   disconnectChannel(id: string): Observable<DisconnectChannelResponse> {
-    return this.twitch().disconnectChannel({ id }, this.metadata.current());
-  }
-
-  private twitch(): TwitchBotServiceClient {
-    if (!this.client) {
-      throw new Error('Twitch bot client is not initialized');
-    }
-    return this.client;
+    return this.service.disconnectChannel({ id }, this.metadata());
   }
 }

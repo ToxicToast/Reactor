@@ -4,7 +4,7 @@ import {
   type MediaAnemic,
   type MediaId,
 } from '@toxictoast/blog-domain';
-import { PostgresTestDatabase } from '../testing/index.js';
+import { BlogTestDatabase } from '../testing/index.js';
 import { TypeOrmMediaRepository } from './typeorm-media.repository.js';
 
 const NOW = new Date('2026-10-20T10:00:00Z');
@@ -28,7 +28,7 @@ const media = (overrides: Partial<MediaAnemic> = {}): MediaAnemic => {
 };
 
 describe('TypeOrmMediaRepository', () => {
-  const database = new PostgresTestDatabase();
+  const database = new BlogTestDatabase();
   let repository: TypeOrmMediaRepository;
 
   beforeAll(async () => {
