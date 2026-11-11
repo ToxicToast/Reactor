@@ -1,12 +1,16 @@
 import { Logger, Module } from '@nestjs/common';
 import { DomainPersistence } from '@toxictoast/shared-application';
 import type { Clock } from '@toxictoast/shared-kernel';
-import { provideClass, TOKENS } from '@toxictoast/shared-nest';
+import {
+  provideClass,
+  provideSecretRotation,
+  TOKENS,
+} from '@toxictoast/shared-nest';
 import { TransactionContext } from '@toxictoast/shared-persistence';
 import {
   describeError,
   SecretCipher,
-  secretKeyEnv,
+  secretKeyringEnv,
 } from '@toxictoast/shared-system';
 import { TwitchBotGrpcController } from '@toxictoast/twitch-bot-api';
 import {
@@ -42,6 +46,7 @@ import {
   TypeOrmTwitchTokenStore,
   type TwitchBotMetrics,
   type TwitchConfig,
+  TwitchTokenSchema,
 } from '@toxictoast/twitch-bot-infrastructure';
 import { DataSource } from 'typeorm';
 import { TWITCH_BOT_TOKENS } from './constants/index.js';
@@ -74,8 +79,12 @@ const logError = (error: unknown, context: string): void => {
     },
     {
       provide: TOKEN_CIPHER,
-      useFactory: () => new SecretCipher(secretKeyEnv('TWITCH_TOKEN_KEY')),
+      useFactory: () => new SecretCipher(secretKeyringEnv('TWITCH_TOKEN')),
     },
+    provideSecretRotation(TOKEN_CIPHER, TwitchTokenSchema, [
+      'access_token',
+      'refresh_token',
+    ]),
 
     // ── Domain ──────────────────────────────────
     provideClass(TwitchChannelFactory, [DOMAIN_CONTEXT]),

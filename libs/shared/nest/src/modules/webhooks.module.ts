@@ -9,7 +9,7 @@ import {
   numberEnv,
   PollingWorker,
   SecretCipher,
-  secretKeyEnv,
+  secretKeyringEnv,
 } from '@toxictoast/shared-system';
 import {
   CreateWebhookUseCase,
@@ -34,10 +34,11 @@ import {
   TypeOrmWebhookDeliveryRepository,
   TypeOrmWebhookRepository,
   WebhookRelay,
+  WebhookSchema,
 } from '@toxictoast/shared-webhooks-infrastructure';
 import { DataSource } from 'typeorm';
 import { TOKENS } from '../constants/index.js';
-import { provideClass } from '../functions/index.js';
+import { provideClass, provideSecretRotation } from '../functions/index.js';
 import type { WebhooksModuleOptions } from '../interfaces/index.js';
 import { PollingWorkerLifecycle } from '../lifecycles/index.js';
 
@@ -74,8 +75,12 @@ export class WebhooksModule {
         {
           provide: WEBHOOK_SECRET_CIPHER,
           useFactory: () =>
-            new SecretCipher(secretKeyEnv(options.secretKeyEnv)),
+            new SecretCipher(secretKeyringEnv(options.secretKeyEnvPrefix)),
         },
+        provideSecretRotation(WEBHOOK_SECRET_CIPHER, WebhookSchema, [
+          'url',
+          'secret',
+        ]),
         provideClass(
           RandomWebhookSecretGenerator,
           [],

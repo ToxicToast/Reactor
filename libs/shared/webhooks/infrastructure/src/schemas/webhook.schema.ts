@@ -9,7 +9,7 @@ export const WebhookSchema = new EntitySchema<WebhookRow>({
   tableName: 'webhooks',
   columns: {
     ...anemicColumns,
-    url: { type: 'varchar', length: WEBHOOK_LIMITS.URL_LENGTH },
+    url: { type: 'text' },
     events: { type: 'text', array: true },
     description: {
       type: 'varchar',

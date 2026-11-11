@@ -38,7 +38,9 @@ describe('JsonWebhookFormatter', () => {
 
 describe('WebhookMapper', () => {
   it('encrypts the secret and maps back without loss', () => {
-    const mapper = new WebhookMapper(new SecretCipher(randomBytes(32)));
+    const mapper = new WebhookMapper(
+      SecretCipher.withSingleKey(randomBytes(32)),
+    );
     const webhook = webhookAnemic('webhook-1', { secret: 'whsec_1' });
 
     const row = mapper.toRow(webhook);

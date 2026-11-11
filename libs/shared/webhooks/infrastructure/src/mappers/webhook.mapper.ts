@@ -12,7 +12,7 @@ export class WebhookMapper implements Mapper<WebhookAnemic, WebhookRow> {
   toAnemic(row: WebhookRow): WebhookAnemic {
     return {
       id: row.id as WebhookId,
-      url: row.url,
+      url: this.cipher.decrypt(row.url),
       events: [...row.events],
       description: row.description,
       active: row.active,
@@ -27,7 +27,7 @@ export class WebhookMapper implements Mapper<WebhookAnemic, WebhookRow> {
   toRow(anemic: WebhookAnemic): WebhookRow {
     return {
       id: anemic.id,
-      url: anemic.url,
+      url: this.cipher.encrypt(anemic.url),
       events: [...anemic.events],
       description: anemic.description,
       active: anemic.active,

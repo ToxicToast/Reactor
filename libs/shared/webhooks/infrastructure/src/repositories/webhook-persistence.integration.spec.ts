@@ -36,7 +36,7 @@ describe('webhook persistence', () => {
     webhooks = new TypeOrmWebhookRepository(
       database.dataSource,
       database.context,
-      new SecretCipher(randomBytes(32)),
+      SecretCipher.withSingleKey(randomBytes(32)),
     );
     deliveries = new TypeOrmWebhookDeliveryRepository(
       database.dataSource,

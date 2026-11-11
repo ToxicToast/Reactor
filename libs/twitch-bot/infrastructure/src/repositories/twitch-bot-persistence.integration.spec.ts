@@ -42,7 +42,7 @@ describe('twitch-bot persistence', () => {
     tokens = new TypeOrmTwitchTokenStore(
       database.dataSource,
       database.context,
-      new SecretCipher(randomBytes(32)),
+      SecretCipher.withSingleKey(randomBytes(32)),
       clock,
     );
     ledger = new TypeOrmPublishedClipLedger(

@@ -32,7 +32,7 @@ import { DiscordWebhookFormatter } from '@toxictoast/shared-webhooks-infrastruct
     }),
     RedisModule.forRoot({ subscriber: true }),
     WebhooksModule.forRoot({
-      secretKeyEnv: 'WEBHOOK_SECRET_KEY',
+      secretKeyEnvPrefix: 'WEBHOOK_SECRET',
       formatters: [new DiscordWebhookFormatter(TWITCH_DISCORD_EMBEDS)],
     }),
     MessagingModule.forRoot({
