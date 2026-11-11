@@ -47,7 +47,7 @@ describe('UpdateCommentUseCase', () => {
     expect(result.isSuccess).toBe(true);
     expect(result.value.content).toBe('Neu');
     expect(outbox.events.map((e) => e.event_name)).toEqual([
-      'update',
+      'updated',
       'requested',
     ]);
   });

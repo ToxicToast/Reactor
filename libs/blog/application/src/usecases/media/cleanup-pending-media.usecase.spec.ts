@@ -63,7 +63,7 @@ describe('CleanupPendingMediaUseCase', () => {
     ).toBeNull();
     expect(repository.items.get('old-ready' as MediaId)?.deleted_at).toBeNull();
     expect(storage.deleted).toEqual(['media/old-pending.png']);
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['delete']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['deleted']);
   });
 
   it('removes nothing when there is nothing to clean up', async () => {

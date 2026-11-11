@@ -46,7 +46,7 @@ describe('UpdateCategoryUseCase', () => {
       description: 'Grimdark',
       slug: 'cat-1',
     });
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['update']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['updated']);
   });
 
   it('does not write when nothing changes', async () => {

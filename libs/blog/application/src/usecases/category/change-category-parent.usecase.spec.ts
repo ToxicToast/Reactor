@@ -49,7 +49,7 @@ describe('ChangeCategoryParentUseCase', () => {
 
     expect(result.isSuccess).toBe(true);
     expect(repository.items.get(id('child'))?.parent_id).toBe('other');
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['update']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['updated']);
   });
 
   it('moves a category to the root', async () => {

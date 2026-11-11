@@ -58,7 +58,7 @@ describe('CreateCommentUseCase', () => {
     expect(comments.items.size).toBe(1);
     expect(
       outbox.events.map((e) => `${e.event_namespace}.${e.event_name}`),
-    ).toEqual(['blog.comment.create', 'blog.comment.moderation.requested']);
+    ).toEqual(['blog.comment.created', 'blog.comment.moderation.requested']);
     expect(outbox.events[1].payload).toMatchObject({
       id: result.value.id,
       content: 'Für den Imperator!',

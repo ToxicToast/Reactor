@@ -41,7 +41,7 @@ describe('PublishPostUseCase', () => {
       status: PostStatus.PUBLISHED,
       published_at: TEST_NOW,
     });
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['publish']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['published']);
   });
 
   it('publishes backdated', async () => {

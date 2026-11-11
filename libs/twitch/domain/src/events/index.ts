@@ -1,2 +1,2 @@
-export * from './start-session.event.js';
-export * from './end-session.event.js';
+export * from './stream-session-events.constant.js';
+export * from './stream-session-event-payload.interface.js';

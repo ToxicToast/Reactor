@@ -48,7 +48,9 @@ describe('ConfirmMediaUploadUseCase', () => {
       status: MediaStatus.READY,
       size: 4096,
     });
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['ready']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual([
+      'upload_confirmed',
+    ]);
   });
 
   it('fails when the file has not been uploaded', async () => {

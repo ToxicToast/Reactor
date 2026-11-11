@@ -4,10 +4,14 @@ import type {
   Domain,
   DomainContext,
   DomainEvent,
+  DomainEventDefinition,
 } from '../interfaces/index.js';
-import type { DomainEventClass, Mutable } from '../types/index.js';
+import type { Mutable } from '../types/index.js';
 
-export abstract class BaseDomain<TAnemic extends Anemic>
+export abstract class BaseDomain<
+  TAnemic extends Anemic,
+  TPayload extends object = never,
+>
   extends AggregateRoot
   implements Domain<TAnemic>
 {
@@ -26,6 +30,17 @@ export abstract class BaseDomain<TAnemic extends Anemic>
     return this.pullDomainEvents();
   }
 
+  /**
+   * The state the events of this aggregate carry. Every aggregate that raises
+   * events maps it explicitly, so internal fields never leak into the event
+   * contract.
+   */
+  protected toEventPayload(): TPayload {
+    throw new Error(
+      `${this.constructor.name} raises events but defines no event payload`,
+    );
+  }
+
   protected get isDeleted(): boolean {
     return this.audit.deleted_at !== null;
   }
@@ -34,33 +49,34 @@ export abstract class BaseDomain<TAnemic extends Anemic>
     this.audit.updated_at = this.ctx.date.now();
   }
 
-  protected raise(EventClass: DomainEventClass<TAnemic>): void {
-    this.addDomainEvent(
-      new EventClass(
-        this.ctx.id.generate(),
-        this.audit.id,
-        this.ctx.date.now(),
-        this.toAnemic(),
-      ),
-    );
+  protected raise(event: DomainEventDefinition): void {
+    this.addDomainEvent({
+      event_id: this.ctx.id.generate(),
+      event_namespace: event.namespace,
+      event_name: event.name,
+      event_version: event.version,
+      aggregate_id: this.audit.id,
+      occurred_at: this.ctx.date.now(),
+      payload: this.toEventPayload(),
+    });
   }
 
-  protected markDeleted(EventClass: DomainEventClass<TAnemic>): void {
+  protected markDeleted(event: DomainEventDefinition): void {
     if (this.isDeleted) {
       return;
     }
     this.audit.deleted_at = this.ctx.date.now();
     this.touch();
-    this.raise(EventClass);
+    this.raise(event);
   }
 
-  protected markRestored(EventClass: DomainEventClass<TAnemic>): void {
+  protected markRestored(event: DomainEventDefinition): void {
     if (!this.isDeleted) {
       return;
     }
     this.audit.deleted_at = null;
     this.touch();
-    this.raise(EventClass);
+    this.raise(event);
   }
 
   private get audit(): Mutable<Anemic> {

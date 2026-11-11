@@ -1,3 +1,2 @@
-export * from './connect-channel.event.js';
-export * from './disconnect-channel.event.js';
-export * from './revoke-channel.event.js';
+export * from './twitch-channel-events.constant.js';
+export * from './twitch-channel-event-payload.interface.js';

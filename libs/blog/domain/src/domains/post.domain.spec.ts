@@ -66,7 +66,7 @@ describe('PostDomain', () => {
         published_at: null,
       });
       expect(result.value.toEvents().map((e) => e.event_name)).toEqual([
-        'create',
+        'created',
       ]);
     });
 
@@ -119,7 +119,7 @@ describe('PostDomain', () => {
         slug: 'warhammer-40k',
         updated_at: NOW,
       });
-      expect(post.toEvents().map((e) => e.event_name)).toEqual(['update']);
+      expect(post.toEvents().map((e) => e.event_name)).toEqual(['updated']);
     });
 
     it('recalculates the reading time when the content changes', () => {
@@ -222,7 +222,7 @@ describe('PostDomain', () => {
         status: PostStatus.PUBLISHED,
         published_at: NOW,
       });
-      expect(post.toEvents().map((e) => e.event_name)).toEqual(['publish']);
+      expect(post.toEvents().map((e) => e.event_name)).toEqual(['published']);
     });
 
     it('publishes backdated', () => {
@@ -295,7 +295,7 @@ describe('PostDomain', () => {
 
       expect(result.isSuccess).toBe(true);
       expect(post.toAnemic().status).toBe(PostStatus.ARCHIVED);
-      expect(post.toEvents().map((e) => e.event_name)).toEqual(['archive']);
+      expect(post.toEvents().map((e) => e.event_name)).toEqual(['archived']);
     });
 
     it('refuses to archive a draft', () => {
@@ -320,7 +320,7 @@ describe('PostDomain', () => {
         status: PostStatus.PUBLISHED,
         published_at: PAST,
       });
-      expect(post.toEvents().map((e) => e.event_name)).toEqual(['unarchive']);
+      expect(post.toEvents().map((e) => e.event_name)).toEqual(['unarchived']);
     });
 
     it('refuses to unarchive a post that is not archived', () => {
@@ -354,8 +354,8 @@ describe('PostDomain', () => {
       expect(post.toAnemic().deleted_at).toBeNull();
 
       expect(post.toEvents().map((e) => e.event_name)).toEqual([
-        'delete',
-        'restore',
+        'deleted',
+        'restored',
       ]);
     });
 

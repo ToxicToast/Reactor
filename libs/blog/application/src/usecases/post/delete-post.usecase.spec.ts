@@ -38,7 +38,7 @@ describe('DeletePostUseCase', () => {
 
     expect(result.isSuccess).toBe(true);
     expect(posts.items.get(ID)?.deleted_at).toEqual(TEST_NOW);
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['delete']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['deleted']);
   });
 
   it('succeeds without writing when already deleted', async () => {

@@ -6,21 +6,15 @@ import {
   ValidateMediaAltText,
   ValidateMediaSize,
 } from '../validations/index.js';
-import {
-  CreateMediaEvent,
-  DeleteMediaEvent,
-  ReadyMediaEvent,
-  RestoreMediaEvent,
-  UpdateMediaEvent,
-} from '../events/index.js';
+import { MediaEvents, type MediaEventPayload } from '../events/index.js';
 
-export class MediaDomain extends BaseDomain<MediaAnemic> {
+export class MediaDomain extends BaseDomain<MediaAnemic, MediaEventPayload> {
   get isReady(): boolean {
     return this.state.status === MediaStatus.READY;
   }
 
   createMedia(): void {
-    this.raise(CreateMediaEvent);
+    this.raise(MediaEvents.CREATED);
   }
 
   markReady(actualSize: number): Result<void> {
@@ -37,7 +31,7 @@ export class MediaDomain extends BaseDomain<MediaAnemic> {
     this.state.size = actualSize;
     this.state.status = MediaStatus.READY;
     this.touch();
-    this.raise(ReadyMediaEvent);
+    this.raise(MediaEvents.UPLOAD_CONFIRMED);
     return Result.ok();
   }
 
@@ -57,15 +51,30 @@ export class MediaDomain extends BaseDomain<MediaAnemic> {
 
     this.state.alt_text = trimmed;
     this.touch();
-    this.raise(UpdateMediaEvent);
+    this.raise(MediaEvents.UPDATED);
     return Result.ok();
   }
 
   deleteMedia(): void {
-    this.markDeleted(DeleteMediaEvent);
+    this.markDeleted(MediaEvents.DELETED);
   }
 
   restoreMedia(): void {
-    this.markRestored(RestoreMediaEvent);
+    this.markRestored(MediaEvents.RESTORED);
+  }
+
+  protected override toEventPayload(): MediaEventPayload {
+    return {
+      id: this.state.id,
+      object_key: this.state.object_key,
+      filename: this.state.filename,
+      mime_type: this.state.mime_type,
+      size: this.state.size,
+      alt_text: this.state.alt_text,
+      status: this.state.status,
+      created_at: this.state.created_at,
+      updated_at: this.state.updated_at,
+      deleted_at: this.state.deleted_at,
+    };
   }
 }

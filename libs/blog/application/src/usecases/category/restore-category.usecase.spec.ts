@@ -43,7 +43,7 @@ describe('RestoreCategoryUseCase', () => {
 
     expect(result.isSuccess).toBe(true);
     expect(repository.items.get(id('root'))?.deleted_at).toBeNull();
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['restore']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['restored']);
   });
 
   it('restores a child when its parent exists', async () => {

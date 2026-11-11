@@ -58,7 +58,7 @@ describe('UpdatePostUseCase', () => {
       title: 'Neuer Titel',
       slug: 'post-1',
     });
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['update']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['updated']);
   });
 
   it('sets an existing image', async () => {

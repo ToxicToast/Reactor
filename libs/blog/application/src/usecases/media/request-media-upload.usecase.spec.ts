@@ -41,7 +41,7 @@ describe('RequestMediaUploadUseCase', () => {
       `https://storage.test/upload/${result.value.media.object_key}`,
     );
     expect(repository.items.size).toBe(1);
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['create']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual(['created']);
   });
 
   it('fails on a disallowed type without storing anything', async () => {

@@ -4,6 +4,7 @@ import {
   InMemoryOutbox,
 } from '@toxictoast/shared-application/testing';
 import {
+  TagEvents,
   TagFactory,
   type TagAnemic,
   type TagId,
@@ -59,7 +60,9 @@ describe('UpdateTagUseCase', () => {
       slug: 'warhammer',
     });
     expect(repository.items.get(TAG_ID)?.title).toBe('Warhammer 40k');
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['update']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual([
+      TagEvents.UPDATED.name,
+    ]);
   });
 
   it('does not write when nothing changes', async () => {

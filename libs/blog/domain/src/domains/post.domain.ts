@@ -8,15 +8,7 @@ import {
 import type { PostAnemic } from '../anemics/index.js';
 import type { UpdatePostData } from '../data/index.js';
 import { PostStatus } from '../enums/index.js';
-import {
-  ArchivePostEvent,
-  CreatePostEvent,
-  DeletePostEvent,
-  PublishPostEvent,
-  RestorePostEvent,
-  UnarchivePostEvent,
-  UpdatePostEvent,
-} from '../events/index.js';
+import { PostEvents, type PostEventPayload } from '../events/index.js';
 import {
   ValidatePostExcerpt,
   ValidatePostPublishedAt,
@@ -24,7 +16,7 @@ import {
 } from '../validations/index.js';
 import { ReadingTime } from '../valueObjects/index.js';
 
-export class PostDomain extends BaseDomain<PostAnemic> {
+export class PostDomain extends BaseDomain<PostAnemic, PostEventPayload> {
   override toAnemic(): PostAnemic {
     return {
       ...this.state,
@@ -34,7 +26,7 @@ export class PostDomain extends BaseDomain<PostAnemic> {
   }
 
   createPost(): void {
-    this.raise(CreatePostEvent);
+    this.raise(PostEvents.CREATED);
   }
 
   updatePost(data: UpdatePostData): Result<void> {
@@ -89,7 +81,7 @@ export class PostDomain extends BaseDomain<PostAnemic> {
     }
 
     this.touch();
-    this.raise(UpdatePostEvent);
+    this.raise(PostEvents.UPDATED);
     return Result.ok();
   }
 
@@ -114,7 +106,7 @@ export class PostDomain extends BaseDomain<PostAnemic> {
     this.state.status = PostStatus.PUBLISHED;
     this.state.published_at = date;
     this.touch();
-    this.raise(PublishPostEvent);
+    this.raise(PostEvents.PUBLISHED);
     return Result.ok();
   }
 
@@ -130,7 +122,7 @@ export class PostDomain extends BaseDomain<PostAnemic> {
 
     this.state.status = PostStatus.ARCHIVED;
     this.touch();
-    this.raise(ArchivePostEvent);
+    this.raise(PostEvents.ARCHIVED);
     return Result.ok();
   }
 
@@ -146,16 +138,38 @@ export class PostDomain extends BaseDomain<PostAnemic> {
 
     this.state.status = PostStatus.PUBLISHED; // published_at bleibt
     this.touch();
-    this.raise(UnarchivePostEvent);
+    this.raise(PostEvents.UNARCHIVED);
     return Result.ok();
   }
 
   deletePost(): void {
-    this.markDeleted(DeletePostEvent);
+    this.markDeleted(PostEvents.DELETED);
   }
 
   restorePost(): void {
-    this.markRestored(RestorePostEvent);
+    this.markRestored(PostEvents.RESTORED);
+  }
+
+  protected override toEventPayload(): PostEventPayload {
+    return {
+      id: this.state.id,
+      author_id: this.state.author_id,
+      title: this.state.title,
+      slug: this.state.slug,
+      excerpt: this.state.excerpt,
+      content: this.state.content,
+      status: this.state.status,
+      featured: this.state.featured,
+      reading_time: this.state.reading_time,
+      category_ids: [...this.state.category_ids],
+      tag_ids: [...this.state.tag_ids],
+      blog_image_id: this.state.blog_image_id,
+      hero_image_id: this.state.hero_image_id,
+      published_at: this.state.published_at,
+      created_at: this.state.created_at,
+      updated_at: this.state.updated_at,
+      deleted_at: this.state.deleted_at,
+    };
   }
 
   private hasChangedSince(before: PostAnemic): boolean {

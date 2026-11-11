@@ -5,6 +5,7 @@ import {
   InMemoryOutbox,
 } from '@toxictoast/shared-application/testing';
 import {
+  TagEvents,
   TagFactory,
   type TagAnemic,
   type TagId,
@@ -56,12 +57,14 @@ describe('CreateTagUseCase', () => {
     expect(repository.items.size).toBe(1);
   });
 
-  it('writes the create event to the outbox inside the unit of work', async () => {
+  it('writes the created event to the outbox inside the unit of work', async () => {
     await useCase.execute({ title: 'Warhammer' });
 
     expect(uow.runs).toBe(1);
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['create']);
-    expect(outbox.events[0].event_namespace).toBe('blog.tag');
+    expect(outbox.events.map((e) => e.event_name)).toEqual([
+      TagEvents.CREATED.name,
+    ]);
+    expect(outbox.events[0].event_namespace).toBe(TagEvents.CREATED.namespace);
   });
 
   it('fails on an invalid title without touching the repository', async () => {

@@ -1,79 +1,80 @@
 import {
-  CreateCategoryEvent,
-  CreateCommentEvent,
-  CreateMediaEvent,
-  CreatePostEvent,
-  CreateTagEvent,
-  type CategoryAnemic,
-  type CommentAnemic,
-  type MediaAnemic,
-  type PostAnemic,
-  type TagAnemic,
+  CategoryEvents,
+  CommentEvents,
+  CommentModerationEvents,
   CommentStatus,
-  RequestCommentModerationEvent,
+  MediaEvents,
+  PostEvents,
+  TagEvents,
+  type CategoryEventPayload,
+  type CommentEventPayload,
+  type MediaEventPayload,
+  type PostEventPayload,
+  type TagEventPayload,
 } from '@toxictoast/blog-domain';
-import { commentAnemic } from '@toxictoast/blog-application/testing';
 import {
+  BlogCategoryEvents,
+  BlogCommentEvents,
+  BlogCommentModerationEvents,
+  BlogMediaEvents,
+  BlogPostEvents,
+  BlogTagEvents,
   BlogTopics,
   type BlogCategoryPayloadV1,
   type BlogCommentPayloadV1,
   type BlogMediaPayloadV1,
   type BlogPostPayloadV1,
   type BlogTagPayloadV1,
-  type ModerationDecidedPayloadV1,
-  BlogCommentModerationEvents,
   type EventActorV1,
+  type ModerationDecidedPayloadV1,
 } from '@toxictoast/contracts-events';
+import {
+  contractNamesOf,
+  eventNamesOf,
+  eventNamespacesOf,
+  type Compatible,
+  type EventDefinitionLike,
+  type Jsonified,
+  type JsonValue,
+} from '@toxictoast/contracts-events/testing';
 import type { ActorIdentity } from '@toxictoast/shared-kernel';
 
-type JsonValue<T> = T extends Date
-  ? string
-  : T extends string
-    ? Record<never, never> extends Omit<T, keyof string>
-      ? `${T}`
-      : string
-    : T extends ReadonlyArray<infer TItem>
-      ? ReadonlyArray<JsonValue<TItem>>
-      : T;
-
-type Jsonified<T> = {
-  [K in keyof T]: JsonValue<T[K]>;
-};
-
-type Compatible<TActual, TExpected> = [TActual] extends [TExpected]
-  ? [TExpected] extends [TActual]
-    ? true
-    : false
-  : false;
-
 describe('Event contracts', () => {
-  it('match the serialized anemics', () => {
+  it('match the serialized payloads', () => {
     const checks: Array<true> = [
-      true as Compatible<Jsonified<TagAnemic>, BlogTagPayloadV1>,
-      true as Compatible<Jsonified<CategoryAnemic>, BlogCategoryPayloadV1>,
-      true as Compatible<Jsonified<MediaAnemic>, BlogMediaPayloadV1>,
-      true as Compatible<Jsonified<PostAnemic>, BlogPostPayloadV1>,
-      true as Compatible<Jsonified<CommentAnemic>, BlogCommentPayloadV1>,
+      true as Compatible<Jsonified<TagEventPayload>, BlogTagPayloadV1>,
+      true as Compatible<
+        Jsonified<CategoryEventPayload>,
+        BlogCategoryPayloadV1
+      >,
+      true as Compatible<Jsonified<MediaEventPayload>, BlogMediaPayloadV1>,
+      true as Compatible<Jsonified<PostEventPayload>, BlogPostPayloadV1>,
+      true as Compatible<Jsonified<CommentEventPayload>, BlogCommentPayloadV1>,
     ];
 
     expect(checks).toHaveLength(5);
   });
 
-  it('use the topics of the domain namespaces', () => {
-    const at = new Date();
-    const namespace = (
-      EventClass: new (...args: Array<never>) => { event_namespace: string },
-    ): string => {
-      return new EventClass(...(['event', 'aggregate', at, {}] as Array<never>))
-        .event_namespace;
-    };
-
-    expect(namespace(CreateTagEvent)).toBe(BlogTopics.TAG);
-    expect(namespace(CreateCategoryEvent)).toBe(BlogTopics.CATEGORY);
-    expect(namespace(CreateMediaEvent)).toBe(BlogTopics.MEDIA);
-    expect(namespace(CreatePostEvent)).toBe(BlogTopics.POST);
-    expect(namespace(CreateCommentEvent)).toBe(BlogTopics.COMMENT);
-  });
+  it.each<
+    [
+      string,
+      Readonly<Record<string, EventDefinitionLike>>,
+      string,
+      Readonly<Record<string, string>>,
+    ]
+  >([
+    ['tag', TagEvents, BlogTopics.TAG, BlogTagEvents],
+    ['category', CategoryEvents, BlogTopics.CATEGORY, BlogCategoryEvents],
+    ['media', MediaEvents, BlogTopics.MEDIA, BlogMediaEvents],
+    ['post', PostEvents, BlogTopics.POST, BlogPostEvents],
+    ['comment', CommentEvents, BlogTopics.COMMENT, BlogCommentEvents],
+  ])(
+    'publish the %s events under the contract topic and names',
+    (_, definitions, topic, contractNames) => {
+      expect(eventNamespacesOf(definitions)).toEqual([topic]);
+      expect(eventNamesOf(definitions)).toEqual(contractNamesOf(contractNames));
+    },
+  );
 
   it('match the moderation contracts', () => {
     const checks: Array<true> = [
@@ -82,17 +83,14 @@ describe('Event contracts', () => {
         ModerationDecidedPayloadV1['decision']
       >,
     ];
-    const at = new Date();
-    const request = new RequestCommentModerationEvent(
-      'event',
-      'aggregate',
-      at,
-      commentAnemic('c-1'),
-    );
 
     expect(checks).toHaveLength(1);
-    expect(request.event_namespace).toBe(BlogTopics.COMMENT_MODERATION);
-    expect(request.event_name).toBe(BlogCommentModerationEvents.REQUESTED);
+    expect(eventNamespacesOf(CommentModerationEvents)).toEqual([
+      BlogTopics.COMMENT_MODERATION,
+    ]);
+    expect(CommentModerationEvents.REQUESTED.name).toBe(
+      BlogCommentModerationEvents.REQUESTED,
+    );
   });
 
   it('match the event actor', () => {

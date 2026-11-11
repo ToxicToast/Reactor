@@ -42,7 +42,7 @@ describe('CategoryDomain', () => {
       expect(result.isSuccess).toBe(true);
       expect(result.value.toAnemic().slug).toBe('warhammer-40k');
       expect(result.value.toEvents().map((e) => e.event_name)).toEqual([
-        'create',
+        'created',
       ]);
     });
 
@@ -97,7 +97,7 @@ describe('CategoryDomain', () => {
         slug: 'warhammer',
         updated_at: NOW,
       });
-      expect(category.toEvents().map((e) => e.event_name)).toEqual(['update']);
+      expect(category.toEvents().map((e) => e.event_name)).toEqual(['updated']);
     });
 
     it('raises no event when nothing changes', () => {
@@ -136,7 +136,7 @@ describe('CategoryDomain', () => {
 
       expect(result.isSuccess).toBe(true);
       expect(category.toAnemic().parent_id).toBe(PARENT_ID);
-      expect(category.toEvents().map((e) => e.event_name)).toEqual(['update']);
+      expect(category.toEvents().map((e) => e.event_name)).toEqual(['updated']);
     });
 
     it('removes the parent', () => {
@@ -189,8 +189,8 @@ describe('CategoryDomain', () => {
       expect(category.toAnemic().deleted_at).toBeNull();
 
       expect(category.toEvents().map((e) => e.event_name)).toEqual([
-        'delete',
-        'restore',
+        'deleted',
+        'restored',
       ]);
     });
 

@@ -40,7 +40,7 @@ describe('MediaDomain', () => {
       });
       expect(result.value.isReady).toBe(false);
       expect(result.value.toEvents().map((e) => e.event_name)).toEqual([
-        'create',
+        'created',
       ]);
     });
 
@@ -93,7 +93,9 @@ describe('MediaDomain', () => {
         size: 2048,
         updated_at: NOW,
       });
-      expect(media.toEvents().map((e) => e.event_name)).toEqual(['ready']);
+      expect(media.toEvents().map((e) => e.event_name)).toEqual([
+        'upload_confirmed',
+      ]);
     });
 
     it('refuses an actual size above the limit', () => {
@@ -135,7 +137,7 @@ describe('MediaDomain', () => {
 
       expect(result.isSuccess).toBe(true);
       expect(media.toAnemic().alt_text).toBe('Neuer Text');
-      expect(media.toEvents().map((e) => e.event_name)).toEqual(['update']);
+      expect(media.toEvents().map((e) => e.event_name)).toEqual(['updated']);
     });
 
     it('raises no event when nothing changes', () => {
@@ -177,8 +179,8 @@ describe('MediaDomain', () => {
       expect(media.toAnemic().deleted_at).toBeNull();
 
       expect(media.toEvents().map((e) => e.event_name)).toEqual([
-        'delete',
-        'restore',
+        'deleted',
+        'restored',
       ]);
     });
   });

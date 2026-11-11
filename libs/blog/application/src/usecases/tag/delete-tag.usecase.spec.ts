@@ -4,6 +4,7 @@ import {
   InMemoryOutbox,
 } from '@toxictoast/shared-application/testing';
 import {
+  TagEvents,
   TagFactory,
   type TagAnemic,
   type TagId,
@@ -52,7 +53,9 @@ describe('DeleteTagUseCase', () => {
 
     expect(result.isSuccess).toBe(true);
     expect(repository.items.get(TAG_ID)?.deleted_at).toEqual(NOW);
-    expect(outbox.events.map((e) => e.event_name)).toEqual(['delete']);
+    expect(outbox.events.map((e) => e.event_name)).toEqual([
+      TagEvents.DELETED.name,
+    ]);
   });
 
   it('succeeds without writing when the tag is already deleted', async () => {
