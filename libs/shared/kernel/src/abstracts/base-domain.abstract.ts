@@ -4,12 +4,13 @@ import type {
   Domain,
   DomainContext,
   DomainEvent,
+  DomainEventDefinition,
 } from '../interfaces/index.js';
-import type { Mutable, RaisableEvent } from '../types/index.js';
+import type { Mutable } from '../types/index.js';
 
 export abstract class BaseDomain<
   TAnemic extends Anemic,
-  TPayload extends object = TAnemic,
+  TPayload extends object = never,
 >
   extends AggregateRoot
   implements Domain<TAnemic>
@@ -30,11 +31,14 @@ export abstract class BaseDomain<
   }
 
   /**
-   * The state the events of this aggregate carry. Aggregates map it
-   * explicitly, so new internal fields do not leak into the event contract.
+   * The state the events of this aggregate carry. Every aggregate that raises
+   * events maps it explicitly, so internal fields never leak into the event
+   * contract.
    */
   protected toEventPayload(): TPayload {
-    return this.toAnemic() as unknown as TPayload;
+    throw new Error(
+      `${this.constructor.name} raises events but defines no event payload`,
+    );
   }
 
   protected get isDeleted(): boolean {
@@ -45,29 +49,19 @@ export abstract class BaseDomain<
     this.audit.updated_at = this.ctx.date.now();
   }
 
-  protected raise(event: RaisableEvent<TAnemic>): void {
-    const eventId = this.ctx.id.generate();
-    const occurredAt = this.ctx.date.now();
-
-    if (typeof event === 'function') {
-      this.addDomainEvent(
-        new event(eventId, this.audit.id, occurredAt, this.toAnemic()),
-      );
-      return;
-    }
-
+  protected raise(event: DomainEventDefinition): void {
     this.addDomainEvent({
-      event_id: eventId,
+      event_id: this.ctx.id.generate(),
       event_namespace: event.namespace,
       event_name: event.name,
       event_version: event.version,
       aggregate_id: this.audit.id,
-      occurred_at: occurredAt,
+      occurred_at: this.ctx.date.now(),
       payload: this.toEventPayload(),
     });
   }
 
-  protected markDeleted(event: RaisableEvent<TAnemic>): void {
+  protected markDeleted(event: DomainEventDefinition): void {
     if (this.isDeleted) {
       return;
     }
@@ -76,7 +70,7 @@ export abstract class BaseDomain<
     this.raise(event);
   }
 
-  protected markRestored(event: RaisableEvent<TAnemic>): void {
+  protected markRestored(event: DomainEventDefinition): void {
     if (!this.isDeleted) {
       return;
     }
