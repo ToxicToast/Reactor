@@ -1,31 +1,23 @@
 import { InjectQueue } from '@nestjs/bullmq';
-import {
-  Injectable,
-  Logger,
-  type OnApplicationBootstrap,
-} from '@nestjs/common';
-import { optionalEnv } from '@toxictoast/shared-system';
+import { Injectable } from '@nestjs/common';
 import type { Queue } from 'bullmq';
-import { defaultJobOptionsFromEnv } from '../functions/index.js';
+import type { ScheduledJob } from '../common/interfaces/index.js';
+import { JobSchedules } from '../common/schedules/index.js';
 import { AUDIT_QUEUE, AuditJobs } from './constants/index.js';
 
 @Injectable()
-export class AuditSchedules implements OnApplicationBootstrap {
-  private readonly logger = new Logger(AuditSchedules.name);
+export class AuditSchedules extends JobSchedules {
+  constructor(@InjectQueue(AUDIT_QUEUE) queue: Queue) {
+    super(queue);
+  }
 
-  constructor(@InjectQueue(AUDIT_QUEUE) private readonly queue: Queue) {}
-
-  async onApplicationBootstrap(): Promise<void> {
-    const pattern = optionalEnv('AUDIT_PURGE_CRON', undefined) ?? '30 3 * * *';
-    const tz = optionalEnv('CRONJOB_TIMEZONE', undefined) ?? 'Europe/Berlin';
-
-    await this.queue.upsertJobScheduler(
-      AuditJobs.PURGE_EXPIRED,
-      { pattern, tz },
-      { name: AuditJobs.PURGE_EXPIRED, opts: defaultJobOptionsFromEnv() },
-    );
-    this.logger.log(
-      `Scheduled ${AuditJobs.PURGE_EXPIRED} at "${pattern}" (${tz})`,
-    );
+  protected jobs(): ReadonlyArray<ScheduledJob> {
+    return [
+      {
+        name: AuditJobs.PURGE_EXPIRED,
+        patternEnv: 'AUDIT_PURGE_CRON',
+        defaultPattern: '30 3 * * *',
+      },
+    ];
   }
 }

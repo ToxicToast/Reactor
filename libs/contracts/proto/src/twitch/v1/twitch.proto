@@ -19,6 +19,7 @@ service TwitchService {
   rpc DeleteTwitchWebhook(DeleteTwitchWebhookRequest) returns (DeleteTwitchWebhookResponse);
   rpc RotateTwitchWebhookSecret(RotateTwitchWebhookSecretRequest) returns (RotateTwitchWebhookSecretResponse);
   rpc ListTwitchWebhookDeliveries(ListTwitchWebhookDeliveriesRequest) returns (ListTwitchWebhookDeliveriesResponse);
+  rpc PurgeExpiredChatMessages(PurgeExpiredChatMessagesRequest) returns (PurgeExpiredChatMessagesResponse);
 }
 
 enum LeaderboardMetric {
@@ -348,4 +349,10 @@ message ListChatMessagesRequest {
 
 message ListChatMessagesResponse {
   repeated ChatMessage messages = 1;
+}
+
+message PurgeExpiredChatMessagesRequest {}
+
+message PurgeExpiredChatMessagesResponse {
+  int32 removed = 1;
 }

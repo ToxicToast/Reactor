@@ -90,6 +90,15 @@ export class TypeOrmChatMessageRepository
       .getMany();
   }
 
+  async deleteSentBefore(cutoff: Date): Promise<number> {
+    const result = await this.repository()
+      .createQueryBuilder()
+      .delete()
+      .where('sent_at < :cutoff', { cutoff })
+      .execute();
+    return result.affected ?? 0;
+  }
+
   private async markVisible(
     condition: string,
     params: ObjectLiteral,

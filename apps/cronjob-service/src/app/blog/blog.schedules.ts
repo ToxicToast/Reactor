@@ -1,32 +1,23 @@
 import { InjectQueue } from '@nestjs/bullmq';
-import {
-  Injectable,
-  Logger,
-  type OnApplicationBootstrap,
-} from '@nestjs/common';
-import { optionalEnv } from '@toxictoast/shared-system';
+import { Injectable } from '@nestjs/common';
 import type { Queue } from 'bullmq';
-import { defaultJobOptionsFromEnv } from '../functions/index.js';
+import type { ScheduledJob } from '../common/interfaces/index.js';
+import { JobSchedules } from '../common/schedules/index.js';
 import { BLOG_QUEUE, BlogJobs } from './constants/index.js';
 
 @Injectable()
-export class BlogSchedules implements OnApplicationBootstrap {
-  private readonly logger = new Logger(BlogSchedules.name);
+export class BlogSchedules extends JobSchedules {
+  constructor(@InjectQueue(BLOG_QUEUE) queue: Queue) {
+    super(queue);
+  }
 
-  constructor(@InjectQueue(BLOG_QUEUE) private readonly queue: Queue) {}
-
-  async onApplicationBootstrap(): Promise<void> {
-    const pattern =
-      optionalEnv('BLOG_MEDIA_CLEANUP_CRON', undefined) ?? '0 3 * * *';
-    const tz = optionalEnv('CRONJOB_TIMEZONE', undefined) ?? 'Europe/Berlin';
-
-    await this.queue.upsertJobScheduler(
-      BlogJobs.MEDIA_CLEANUP,
-      { pattern, tz },
-      { name: BlogJobs.MEDIA_CLEANUP, opts: defaultJobOptionsFromEnv() },
-    );
-    this.logger.log(
-      `Scheduled ${BlogJobs.MEDIA_CLEANUP} at "${pattern}" (${tz})`,
-    );
+  protected jobs(): ReadonlyArray<ScheduledJob> {
+    return [
+      {
+        name: BlogJobs.MEDIA_CLEANUP,
+        patternEnv: 'BLOG_MEDIA_CLEANUP_CRON',
+        defaultPattern: '0 3 * * *',
+      },
+    ];
   }
 }

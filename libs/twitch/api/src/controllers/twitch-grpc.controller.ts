@@ -32,6 +32,7 @@ import {
   type WatchLiveResponse,
   ListChatMessagesRequest,
   ListChatMessagesResponse,
+  type PurgeExpiredChatMessagesResponse,
 } from '@toxictoast/contracts-grpc';
 import {
   mapEnum,
@@ -61,6 +62,7 @@ import {
   ListRewardsUseCase,
   ListSessionsUseCase,
   ListStatsChannelsUseCase,
+  PurgeExpiredChatMessagesUseCase,
   type LiveChannel,
   type TwitchFeedSource,
 } from '@toxictoast/twitch-application';
@@ -98,6 +100,7 @@ export class TwitchGrpcController implements TwitchServiceController {
     private readonly listRewardsUseCase: ListRewardsUseCase,
     private readonly listPollsUseCase: ListPollsUseCase,
     private readonly listChatMessagesUseCase: ListChatMessagesUseCase,
+    private readonly purgeExpiredChatMessagesUseCase: PurgeExpiredChatMessagesUseCase,
     private readonly createWebhookUseCase: CreateWebhookUseCase,
     private readonly listWebhooksUseCase: ListWebhooksUseCase,
     private readonly updateWebhookUseCase: UpdateWebhookUseCase,
@@ -207,6 +210,14 @@ export class TwitchGrpcController implements TwitchServiceController {
     return {
       messages: messages.map((message) => this.stats.toChatMessage(message)),
     };
+  }
+
+  async purgeExpiredChatMessages(): Promise<PurgeExpiredChatMessagesResponse> {
+    requirePermission(this.actors.current(), TwitchPermission.CHAT_PURGE);
+    const { removed } = unwrap(
+      await this.purgeExpiredChatMessagesUseCase.execute(),
+    );
+    return { removed };
   }
 
   // ── Streams ───────────────────────────────────

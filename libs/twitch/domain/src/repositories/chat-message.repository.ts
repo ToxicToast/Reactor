@@ -3,7 +3,6 @@ import type { ChatMessage, ChatMessageFilter } from '../interfaces/index.js';
 import type { ChatDeletionReason } from '../types/index.js';
 
 export interface ChatMessageRepository {
-  /** true, wenn die Nachricht neu war */
   record(message: ChatMessage): Promise<boolean>;
   markDeleted(
     channelId: string,
@@ -11,7 +10,6 @@ export interface ChatMessageRepository {
     at: Date,
     reason: ChatDeletionReason,
   ): Promise<void>;
-  /** markiert alle noch sichtbaren Nachrichten des Users seit `since`, gibt die Anzahl zurück */
   markUserCleared(
     channelId: string,
     userId: string,
@@ -24,4 +22,5 @@ export interface ChatMessageRepository {
     limit: number,
     offset?: Optional<number>,
   ): Promise<Array<ChatMessage>>;
+  deleteSentBefore(cutoff: Date): Promise<number>;
 }

@@ -13,6 +13,7 @@ import { BlogJobsModule } from './blog/blog-jobs.module.js';
 import { CronjobConfigModule } from './cronjob-config.module.js';
 import { defaultJobOptionsFromEnv } from './functions/index.js';
 import { TwitchBotJobsModule } from './twitch-bot/twitch-bot-jobs.module.js';
+import { TwitchJobsModule } from './twitch/twitch-jobs.module.js';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { TwitchBotJobsModule } from './twitch-bot/twitch-bot-jobs.module.js';
     BlogJobsModule,
     AuditJobsModule,
     TwitchBotJobsModule,
+    TwitchJobsModule,
   ],
 })
 export class AppModule {}

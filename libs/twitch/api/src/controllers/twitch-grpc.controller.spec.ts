@@ -34,6 +34,7 @@ import {
   ListRewardsUseCase,
   ListSessionsUseCase,
   ListStatsChannelsUseCase,
+  PurgeExpiredChatMessagesUseCase,
 } from '@toxictoast/twitch-application';
 import {
   observation,
@@ -87,6 +88,9 @@ describe('TwitchGrpcController', () => {
       new ListRewardsUseCase(harness.rewards, harness.config),
       new ListPollsUseCase(harness.polls),
       new ListChatMessagesUseCase(harness.chatMessages),
+      new PurgeExpiredChatMessagesUseCase(harness.chatMessages, 365, {
+        now: () => new Date(),
+      }),
       new CreateWebhookUseCase(webhookFactory, harness.webhooks, secrets),
       new ListWebhooksUseCase(harness.webhooks),
       new UpdateWebhookUseCase(webhookFactory, harness.webhooks),

@@ -24,6 +24,8 @@ import {
   PresenceTracker,
   RecordTwitchEventUseCase,
   SessionTracker,
+  PurgeExpiredChatMessagesUseCase,
+  CHAT_LOG,
 } from '@toxictoast/twitch-application';
 import { StreamSessionFactory } from '@toxictoast/twitch-domain';
 import {
@@ -43,6 +45,9 @@ import {
 import { DataSource } from 'typeorm';
 import { TWITCH_SERVICE_TOKENS } from './constants/index.js';
 import { TwitchFeedLifecycle } from './lifecycles/index.js';
+import type { Clock } from '@toxictoast/shared-kernel';
+import { numberEnv } from '@toxictoast/shared-system';
+import type { ChatMessageRepository } from '@toxictoast/twitch-domain';
 
 const {
   STATS_CONFIG,
@@ -166,6 +171,20 @@ const DATABASE = [DataSource, TransactionContext];
       UNIT_OF_WORK,
     ]),
     provideClass(ListChatMessagesUseCase, [CHAT_MESSAGE_REPOSITORY]),
+    {
+      provide: PurgeExpiredChatMessagesUseCase,
+      inject: [CHAT_MESSAGE_REPOSITORY, TOKENS.CLOCK],
+      useFactory: (messages: ChatMessageRepository, clock: Clock) => {
+        return new PurgeExpiredChatMessagesUseCase(
+          messages,
+          numberEnv(
+            'TWITCH_CHAT_RETENTION_DAYS',
+            CHAT_LOG.DEFAULT_RETENTION_DAYS,
+          ),
+          clock,
+        );
+      },
+    },
     provideClass(ListStatsChannelsUseCase, [
       CHANNEL_DIRECTORY_REPOSITORY,
       STREAM_SESSION_REPOSITORY,
