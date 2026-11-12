@@ -49,6 +49,8 @@ import { createUuidTestContext } from '@toxictoast/shared-kernel/testing';
 
 const CHANNEL_ID = TWITCH_TEST_CHANNEL.channel_id;
 const UNKNOWN_ID = '0192f3a0-0000-7000-8000-0000000000ff';
+const RETENTION_DAYS = { retention_days: 365 };
+const CLOCK = { now: () => new Date() };
 
 const flush = (): Promise<void> => {
   return new Promise((resolve) => setImmediate(resolve));
@@ -88,9 +90,11 @@ describe('TwitchGrpcController', () => {
       new ListRewardsUseCase(harness.rewards, harness.config),
       new ListPollsUseCase(harness.polls),
       new ListChatMessagesUseCase(harness.chatMessages),
-      new PurgeExpiredChatMessagesUseCase(harness.chatMessages, 365, {
-        now: () => new Date(),
-      }),
+      new PurgeExpiredChatMessagesUseCase(
+        harness.chatMessages,
+        RETENTION_DAYS,
+        CLOCK,
+      ),
       new CreateWebhookUseCase(webhookFactory, harness.webhooks, secrets),
       new ListWebhooksUseCase(harness.webhooks),
       new UpdateWebhookUseCase(webhookFactory, harness.webhooks),

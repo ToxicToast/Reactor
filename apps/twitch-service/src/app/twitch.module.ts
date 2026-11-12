@@ -25,11 +25,11 @@ import {
   RecordTwitchEventUseCase,
   SessionTracker,
   PurgeExpiredChatMessagesUseCase,
-  CHAT_LOG,
 } from '@toxictoast/twitch-application';
 import { StreamSessionFactory } from '@toxictoast/twitch-domain';
 import {
   RedisTwitchFeed,
+  twitchChatConfigFromEnv,
   twitchStatsConfigFromEnv,
   TypeOrmChannelDirectoryRepository,
   TypeOrmChannelStatsRepository,
@@ -45,9 +45,6 @@ import {
 import { DataSource } from 'typeorm';
 import { TWITCH_SERVICE_TOKENS } from './constants/index.js';
 import { TwitchFeedLifecycle } from './lifecycles/index.js';
-import type { Clock } from '@toxictoast/shared-kernel';
-import { numberEnv } from '@toxictoast/shared-system';
-import type { ChatMessageRepository } from '@toxictoast/twitch-domain';
 
 const {
   STATS_CONFIG,
@@ -61,9 +58,10 @@ const {
   POLL_REPOSITORY,
   CHANNEL_DIRECTORY_REPOSITORY,
   CHAT_MESSAGE_REPOSITORY,
+  CHAT_CONFIG,
 } = TWITCH_SERVICE_TOKENS;
 
-const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER } = TOKENS;
+const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
 const DATABASE = [DataSource, TransactionContext];
 
 @Module({
@@ -73,6 +71,10 @@ const DATABASE = [DataSource, TransactionContext];
     {
       provide: STATS_CONFIG,
       useFactory: () => twitchStatsConfigFromEnv(),
+    },
+    {
+      provide: CHAT_CONFIG,
+      useFactory: () => twitchChatConfigFromEnv(),
     },
 
     // ── Domain ──────────────────────────────────
@@ -171,20 +173,11 @@ const DATABASE = [DataSource, TransactionContext];
       UNIT_OF_WORK,
     ]),
     provideClass(ListChatMessagesUseCase, [CHAT_MESSAGE_REPOSITORY]),
-    {
-      provide: PurgeExpiredChatMessagesUseCase,
-      inject: [CHAT_MESSAGE_REPOSITORY, TOKENS.CLOCK],
-      useFactory: (messages: ChatMessageRepository, clock: Clock) => {
-        return new PurgeExpiredChatMessagesUseCase(
-          messages,
-          numberEnv(
-            'TWITCH_CHAT_RETENTION_DAYS',
-            CHAT_LOG.DEFAULT_RETENTION_DAYS,
-          ),
-          clock,
-        );
-      },
-    },
+    provideClass(PurgeExpiredChatMessagesUseCase, [
+      CHAT_MESSAGE_REPOSITORY,
+      CHAT_CONFIG,
+      CLOCK,
+    ]),
     provideClass(ListStatsChannelsUseCase, [
       CHANNEL_DIRECTORY_REPOSITORY,
       STREAM_SESSION_REPOSITORY,

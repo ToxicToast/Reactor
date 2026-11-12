@@ -3,7 +3,7 @@ import { optionalEnv } from '@toxictoast/shared-system';
 import type { Queue } from 'bullmq';
 import { defaultJobOptionsFromEnv } from '../../functions/index.js';
 import type { ScheduledJob } from '../interfaces/index.js';
-import { DEFAULT_TIMEZONE } from '../constants';
+import { DEFAULT_TIMEZONE } from '../constants/index.js';
 
 export abstract class JobSchedules implements OnApplicationBootstrap {
   private readonly logger = new Logger(this.constructor.name);

@@ -3,9 +3,6 @@ import type { Nullable } from '@toxictoast/shared-types';
 import { SECRET_CIPHER } from '../constants/index.js';
 import type { ParsedSecret, SecretKeyring } from '../interfaces/index.js';
 
-const V2_PARTS = 5;
-const V1_PARTS = 4;
-
 export class SecretCipher {
   private readonly currentKey: Buffer;
 
@@ -80,13 +77,16 @@ export class SecretCipher {
 
   private parse(value: string): Nullable<ParsedSecret> {
     const parts = value.split(SECRET_CIPHER.SEPARATOR);
-    if (parts[0] === SECRET_CIPHER.VERSION && parts.length === V2_PARTS) {
+    if (
+      parts[0] === SECRET_CIPHER.VERSION &&
+      parts.length === SECRET_CIPHER.PARTS
+    ) {
       const [, keyId, iv, tag, data] = parts;
       return { keyId, iv, tag, data };
     }
     if (
       parts[0] === SECRET_CIPHER.LEGACY_VERSION &&
-      parts.length === V1_PARTS
+      parts.length === SECRET_CIPHER.LEGACY_PARTS
     ) {
       const [, iv, tag, data] = parts;
       return { keyId: null, iv, tag, data };

@@ -21,9 +21,11 @@ describe('PurgeExpiredChatMessagesUseCase', () => {
     const messages = new InMemoryChatMessageRepository();
     await messages.record(stored('old', '2025-11-10T00:00:00Z'));
     await messages.record(stored('fresh', '2026-11-01T00:00:00Z'));
-    const useCase = new PurgeExpiredChatMessagesUseCase(messages, 365, {
-      now: () => NOW,
-    });
+    const useCase = new PurgeExpiredChatMessagesUseCase(
+      messages,
+      { retention_days: 365 },
+      { now: () => NOW },
+    );
 
     const result = await useCase.execute();
 

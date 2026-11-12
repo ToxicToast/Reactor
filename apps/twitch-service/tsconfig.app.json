@@ -23,12 +23,6 @@
   ],
   "references": [
     {
-      "path": "../../libs/shared/system/tsconfig.lib.json"
-    },
-    {
-      "path": "../../libs/shared/kernel/tsconfig.lib.json"
-    },
-    {
       "path": "../../libs/shared/webhooks/infrastructure/tsconfig.lib.json"
     },
     {

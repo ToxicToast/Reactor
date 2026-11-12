@@ -17,3 +17,4 @@ export * from './sub-tier-name.function.js';
 export * from './format-duration.function.js';
 export * from './optional-text.function.js';
 export * from './count-field.function.js';
+export * from './twitch-chat-config-from-env.function.js';
