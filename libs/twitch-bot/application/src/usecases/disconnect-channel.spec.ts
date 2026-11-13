@@ -58,7 +58,7 @@ describe('DisconnectChannelUseCase', () => {
   });
 
   it('fails for an unknown channel', async () => {
-    const result = await useCase.execute({ id: 'unknown' });
+    const result = await useCase.execute({ id: 'unknown' as TwitchChannelId });
 
     expect(result.isFailure).toBe(true);
     expect(result.error.code).toBe('NOT_FOUND');

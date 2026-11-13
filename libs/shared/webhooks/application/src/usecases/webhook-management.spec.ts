@@ -148,22 +148,23 @@ describe('webhook management', () => {
   });
 
   it('fails for an unknown webhook', async () => {
+    const unknown = 'unknown' as WebhookId;
     const results = await Promise.all([
       new UpdateWebhookUseCase(factory, repository, persistence).execute({
-        id: 'unknown',
+        id: unknown,
         url: 'https://hooks.example.com',
         events: ['*'],
         active: true,
       }),
       new DeleteWebhookUseCase(factory, repository, persistence).execute({
-        id: 'unknown',
+        id: unknown,
       }),
       new RotateWebhookSecretUseCase(
         factory,
         repository,
         persistence,
         secrets,
-      ).execute({ id: 'unknown' }),
+      ).execute({ id: unknown }),
     ]);
 
     expect(results.map((result) => result.error.code)).toEqual([

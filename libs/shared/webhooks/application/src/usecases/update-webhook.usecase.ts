@@ -8,7 +8,6 @@ import type {
   WebhookAnemic,
   WebhookDomain,
   WebhookFactory,
-  WebhookId,
   WebhookRepository,
 } from '@toxictoast/shared-webhooks-domain';
 import type { UpdateWebhookInput } from '../data/index.js';
@@ -29,7 +28,7 @@ export class UpdateWebhookUseCase implements UseCase<
   }
 
   execute(input: UpdateWebhookInput): Promise<Result<WebhookAnemic>> {
-    return this.editor.change(input.id as WebhookId, (webhook) => {
+    return this.editor.change(input.id, (webhook) => {
       return webhook.update(input);
     });
   }

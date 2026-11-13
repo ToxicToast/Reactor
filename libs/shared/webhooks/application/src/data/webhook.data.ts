@@ -2,6 +2,7 @@ import type { Optional } from '@toxictoast/shared-types';
 import type {
   WebhookAnemic,
   WebhookDeliveryStatusValue,
+  WebhookId,
 } from '@toxictoast/shared-webhooks-domain';
 
 export interface CreateWebhookInput {
@@ -12,7 +13,7 @@ export interface CreateWebhookInput {
 }
 
 export interface UpdateWebhookInput {
-  readonly id: string;
+  readonly id: WebhookId;
   readonly url: string;
   readonly events: ReadonlyArray<string>;
   readonly description?: Optional<string>;
@@ -21,7 +22,7 @@ export interface UpdateWebhookInput {
 }
 
 export interface WebhookIdInput {
-  readonly id: string;
+  readonly id: WebhookId;
 }
 
 export interface WebhookWithSecret {
@@ -30,7 +31,7 @@ export interface WebhookWithSecret {
 }
 
 export interface ListWebhookDeliveriesInput {
-  readonly webhook_id: string;
+  readonly webhook_id: WebhookId;
   readonly status?: Optional<WebhookDeliveryStatusValue>;
   readonly limit?: Optional<number>;
   readonly offset?: Optional<number>;

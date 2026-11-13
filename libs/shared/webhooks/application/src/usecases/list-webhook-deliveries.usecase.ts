@@ -3,7 +3,6 @@ import { NotFoundError, Result } from '@toxictoast/shared-kernel';
 import type {
   WebhookDeliveryAnemic,
   WebhookDeliveryRepository,
-  WebhookId,
   WebhookRepository,
 } from '@toxictoast/shared-webhooks-domain';
 import type { ListWebhookDeliveriesInput } from '../data/index.js';
@@ -20,15 +19,14 @@ export class ListWebhookDeliveriesUseCase implements UseCase<
   async execute(
     input: ListWebhookDeliveriesInput,
   ): Promise<Result<Array<WebhookDeliveryAnemic>>> {
-    const webhookId = input.webhook_id as WebhookId;
-    const webhook = await this.webhooks.findById(webhookId, true);
+    const webhook = await this.webhooks.findById(input.webhook_id, true);
     if (!webhook) {
       return Result.fail(new NotFoundError('Webhook', input.webhook_id));
     }
 
     return Result.ok(
       await this.deliveries.findByWebhook(
-        webhookId,
+        input.webhook_id,
         input.status,
         input.limit,
         input.offset,

@@ -1,4 +1,8 @@
-import { ObservationKinds, StatsIntervals } from '@toxictoast/twitch-domain';
+import {
+  ObservationKinds,
+  StatsIntervals,
+  StreamSessionId,
+} from '@toxictoast/twitch-domain';
 import {
   observation,
   TWITCH_TEST_CHANNEL,
@@ -113,7 +117,7 @@ describe('twitch stats queries', () => {
 
   it('fails for an unknown session', async () => {
     const result = await new GetSessionUseCase(harness.sessions).execute({
-      id: 'unknown',
+      id: 'unknown' as StreamSessionId,
     });
 
     expect(result.error.code).toBe('NOT_FOUND');

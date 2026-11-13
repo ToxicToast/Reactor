@@ -1,5 +1,7 @@
+import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
+
 export interface DisconnectChannelInput {
-  readonly id: string;
+  readonly id: TwitchChannelId;
 }
 
 export interface RevokeChannelInput {

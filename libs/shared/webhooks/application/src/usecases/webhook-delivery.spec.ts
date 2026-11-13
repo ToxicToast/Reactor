@@ -1,4 +1,3 @@
-import { WebhookDeliveryFactory } from '@toxictoast/shared-webhooks-domain';
 import {
   createWebhookTestContext,
   InMemoryWebhookDeliveryRepository,
@@ -8,6 +7,10 @@ import {
 } from '../testing/index.js';
 import { DispatchWebhookEventUseCase } from './dispatch-webhook-event.usecase.js';
 import { ListWebhookDeliveriesUseCase } from './list-webhook-deliveries.usecase.js';
+import {
+  WebhookDeliveryFactory,
+  type WebhookId,
+} from '@toxictoast/shared-webhooks-domain';
 
 const EVENT = {
   event_id: 'event-1',
@@ -79,8 +82,10 @@ describe('webhook deliveries', () => {
     await dispatch.execute(EVENT);
     const list = new ListWebhookDeliveriesUseCase(webhooks, deliveries);
 
-    const result = await list.execute({ webhook_id: 'exact' });
-    const deleted = await list.execute({ webhook_id: 'deleted' });
+    const result = await list.execute({ webhook_id: 'exact' as WebhookId });
+    const deleted = await list.execute({
+      webhook_id: 'deleted' as WebhookId,
+    });
 
     expect(result.value).toHaveLength(1);
     expect(deleted.value).toEqual([]);
@@ -90,7 +95,7 @@ describe('webhook deliveries', () => {
     const result = await new ListWebhookDeliveriesUseCase(
       webhooks,
       deliveries,
-    ).execute({ webhook_id: 'unknown' });
+    ).execute({ webhook_id: 'unknown' as WebhookId });
 
     expect(result.error.code).toBe('NOT_FOUND');
   });

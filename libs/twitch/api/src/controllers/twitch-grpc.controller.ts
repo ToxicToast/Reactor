@@ -290,7 +290,7 @@ export class TwitchGrpcController implements TwitchServiceController {
     this.requireWebhookManage();
     const webhook = unwrap(
       await this.updateWebhookUseCase.execute({
-        id: parseId(request.id),
+        id: parseId<'Webhook'>(request.id),
         url: request.url,
         events: request.events,
         description: request.description,
@@ -306,7 +306,9 @@ export class TwitchGrpcController implements TwitchServiceController {
   ): Promise<DeleteTwitchWebhookResponse> {
     this.requireWebhookManage();
     const webhook = unwrap(
-      await this.deleteWebhookUseCase.execute({ id: parseId(request.id) }),
+      await this.deleteWebhookUseCase.execute({
+        id: parseId<'Webhook'>(request.id),
+      }),
     );
     return { webhook: this.webhooks.toWebhook(webhook) };
   }
@@ -317,7 +319,7 @@ export class TwitchGrpcController implements TwitchServiceController {
     this.requireWebhookManage();
     const { webhook, secret } = unwrap(
       await this.rotateWebhookSecretUseCase.execute({
-        id: parseId(request.id),
+        id: parseId<'Webhook'>(request.id),
       }),
     );
     return { webhook: this.webhooks.toWebhook(webhook), secret };
@@ -329,7 +331,7 @@ export class TwitchGrpcController implements TwitchServiceController {
     this.requireWebhookManage();
     const deliveries = unwrap(
       await this.listWebhookDeliveriesUseCase.execute({
-        webhook_id: parseId(request.webhook_id, 'webhook_id'),
+        webhook_id: parseId<'Webhook'>(request.webhook_id, 'webhook_id'),
         status: mapOptionalEnum(
           WEBHOOK_DELIVERY_STATUS_FROM_PROTO,
           request.status,
