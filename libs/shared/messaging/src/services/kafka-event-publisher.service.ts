@@ -1,10 +1,8 @@
-import type { Producer } from '@platformatic/kafka';
 import type { EventPublisher, PublishedEvent } from '../interfaces/index.js';
+import type { StringProducer } from '../types/index.js';
 
 export class KafkaEventPublisher implements EventPublisher {
-  constructor(
-    private readonly producer: Producer<string, string, string, string>,
-  ) {}
+  constructor(private readonly producer: StringProducer) {}
 
   async publish(events: ReadonlyArray<PublishedEvent>): Promise<void> {
     if (events.length === 0) {

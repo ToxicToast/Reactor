@@ -4,7 +4,6 @@ import {
   type DynamicModule,
   type Provider,
 } from '@nestjs/common';
-import type { Producer } from '@platformatic/kafka';
 import type { Clock } from '@toxictoast/shared-kernel';
 import {
   createKafkaAdmin,
@@ -16,6 +15,7 @@ import {
   OutboxRelay,
   TopicProvisioner,
   type EventPublisher,
+  type StringProducer,
 } from '@toxictoast/shared-messaging';
 import {
   ActorContext,
@@ -31,8 +31,6 @@ import { TOKENS } from '../constants/index.js';
 import type { MessagingModuleOptions } from '../interfaces/index.js';
 import { MessagingLifecycle } from '../lifecycles/index.js';
 import { AdvisoryLock } from '@toxictoast/shared-persistence';
-
-type StringProducer = Producer<string, string, string, string>;
 
 const outboxProviders = (logger: Logger): Array<Provider> => {
   return [
