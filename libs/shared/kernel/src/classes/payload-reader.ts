@@ -2,8 +2,7 @@ import type { Nullable } from '@toxictoast/shared-types';
 import { InvalidPayloadError } from '../errors/invalid-payload.error.js';
 import { isUuid } from '../functions/is-uuid.function.js';
 import { parseIsoDate } from '../functions/parse-iso-date.function.js';
-
-type PayloadRecord = Readonly<Record<string, unknown>>;
+import type { PayloadRecord } from '../types/payload-record.type.js';
 
 const isRecord = (value: unknown): value is PayloadRecord => {
   return typeof value === 'object' && value !== null && !Array.isArray(value);

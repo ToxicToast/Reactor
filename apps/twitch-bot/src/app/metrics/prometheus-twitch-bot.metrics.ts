@@ -1,12 +1,12 @@
 import type { TwitchBotMetrics } from '@toxictoast/twitch-bot-infrastructure';
 import type { TwitchSocketTracker } from '@toxictoast/twitch-bot-infrastructure';
 import { Counter, Gauge, type Registry } from 'prom-client';
-
-type EventLabels = 'channel' | 'topic' | 'name';
+import { EVENT_METRIC_LABELS } from '../constants/index.js';
+import type { EventMetricLabel } from '../types/index.js';
 
 export class PrometheusTwitchBotMetrics implements TwitchBotMetrics {
-  private readonly received: Counter<EventLabels>;
-  private readonly publishFailures: Counter<EventLabels>;
+  private readonly received: Counter<EventMetricLabel>;
+  private readonly publishFailures: Counter<EventMetricLabel>;
   private readonly subscriptionFailures: Counter;
   private readonly revocations: Counter<'status'>;
   private readonly refreshes: Counter<'result'>;
@@ -15,13 +15,13 @@ export class PrometheusTwitchBotMetrics implements TwitchBotMetrics {
     this.received = new Counter({
       name: 'twitch_events_received_total',
       help: 'Twitch events received over EventSub',
-      labelNames: ['channel', 'topic', 'name'],
+      labelNames: [...EVENT_METRIC_LABELS],
       registers: [registry],
     });
     this.publishFailures = new Counter({
       name: 'twitch_event_publish_failures_total',
       help: 'Twitch events that could not be written to the outbox',
-      labelNames: ['channel', 'topic', 'name'],
+      labelNames: [...EVENT_METRIC_LABELS],
       registers: [registry],
     });
     this.subscriptionFailures = new Counter({

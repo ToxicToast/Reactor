@@ -7,3 +7,4 @@ export * from './session-chatter-row.interface.js';
 export * from './presence-row.interface.js';
 export * from './reward-row.interface.js';
 export * from './reward-day-row.interface.js';
+export * from './raw-reward-stat.interface.js';
