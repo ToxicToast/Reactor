@@ -115,7 +115,7 @@
     "jose": "^5.10.0",
     "nestjs-zod": "^5.5.0",
     "zod": "^4.6.7",
-    "cookie": "^1.0.0",
+    "cookie": "^2.0.0",
     "http-proxy-middleware": "^3.0.0",
     "@toxictoast/contracts-events": "*",
     "@toxictoast/shared-messaging": "*"
