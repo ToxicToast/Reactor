@@ -10,15 +10,11 @@ import {
 } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { ActorContext } from '@toxictoast/shared-system';
-import { parse } from 'cookie';
-import type { CookieOptions, Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { firstValueFrom, type Observable } from 'rxjs';
 import { ADMIN_MESSAGES, ADMIN_PATHS } from '../../admin/constants/index.js';
 import { adminActor, randomToken } from '../../admin/functions/index.js';
-import type {
-  AdminAuthConfig,
-  AdminSession,
-} from '../../admin/interfaces/index.js';
+import type { AdminSession } from '../../admin/interfaces/index.js';
 import { AdminSessions, SealedCookie } from '../../admin/services/index.js';
 import { GATEWAY_TOKENS } from '../../constants/index.js';
 import {
@@ -41,8 +37,6 @@ export class TwitchConnectController {
     private readonly actors: ActorContext,
     @Inject(GATEWAY_TOKENS.TWITCH_ADMIN_CONFIG)
     private readonly config: TwitchAdminConfig,
-    @Inject(GATEWAY_TOKENS.ADMIN_AUTH_CONFIG)
-    private readonly adminConfig: AdminAuthConfig,
   ) {}
 
   @Get('connect')
@@ -66,10 +60,12 @@ export class TwitchConnectController {
     });
 
     const connect: TwitchConnectState = { state };
-    response.cookie(
+    await this.cookies.write(
+      response,
       TWITCH_COOKIES.STATE,
-      await this.cookies.seal(connect, TWITCH_STATE_TTL_SECONDS),
-      this.cookieOptions(),
+      connect,
+      ADMIN_PATHS.TWITCH,
+      TWITCH_STATE_TTL_SECONDS,
     );
     response.redirect(url);
   }
@@ -82,11 +78,11 @@ export class TwitchConnectController {
     @Req() request: Request,
     @Res() response: Response,
   ): Promise<void> {
-    const cookies = parse(request.headers.cookie ?? '');
-    const connect = await this.cookies.open<TwitchConnectState>(
-      cookies[TWITCH_COOKIES.STATE],
+    const connect = await this.cookies.read<TwitchConnectState>(
+      request,
+      TWITCH_COOKIES.STATE,
     );
-    response.clearCookie(TWITCH_COOKIES.STATE, { path: ADMIN_PATHS.TWITCH });
+    this.cookies.clear(response, TWITCH_COOKIES.STATE, ADMIN_PATHS.TWITCH);
     if (!connect || state !== connect.state) {
       throw new UnauthorizedException('invalid or expired twitch login');
     }
@@ -119,15 +115,5 @@ export class TwitchConnectController {
   ): Promise<T> {
     const actor = adminActor(session, request.ip ?? null);
     return firstValueFrom(this.actors.run(actor, call));
-  }
-
-  private cookieOptions(): CookieOptions {
-    return {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: this.adminConfig.secureCookies,
-      path: ADMIN_PATHS.TWITCH,
-      maxAge: TWITCH_STATE_TTL_SECONDS * 1000,
-    };
   }
 }

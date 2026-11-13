@@ -8,8 +8,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
-import { parse } from 'cookie';
-import type { CookieOptions, Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { actorFromToken } from '../../auth/functions/index.js';
 import { KeycloakTokenVerifier } from '../../auth/services/index.js';
 import { GATEWAY_TOKENS } from '../../constants/index.js';
@@ -54,10 +53,12 @@ export class AdminAuthController {
       return_to: safeReturnTo(returnTo),
     };
 
-    response.cookie(
+    await this.cookies.write(
+      response,
       ADMIN_COOKIES.LOGIN,
-      await this.cookies.seal(login, ADMIN_LOGIN_TTL_SECONDS),
-      this.cookieOptions(ADMIN_PATHS.AUTH, ADMIN_LOGIN_TTL_SECONDS),
+      login,
+      ADMIN_PATHS.AUTH,
+      ADMIN_LOGIN_TTL_SECONDS,
     );
     response.redirect(
       this.oidc.authorizationUrl(state, pkceChallenge(verifier)),
@@ -71,10 +72,11 @@ export class AdminAuthController {
     @Req() request: Request,
     @Res() response: Response,
   ): Promise<void> {
-    const login = await this.cookies.open<AdminLoginState>(
-      parse(request.headers.cookie ?? '')[ADMIN_COOKIES.LOGIN],
+    const login = await this.cookies.read<AdminLoginState>(
+      request,
+      ADMIN_COOKIES.LOGIN,
     );
-    response.clearCookie(ADMIN_COOKIES.LOGIN, { path: ADMIN_PATHS.AUTH });
+    this.cookies.clear(response, ADMIN_COOKIES.LOGIN, ADMIN_PATHS.AUTH);
     if (!login || typeof code !== 'string' || state !== login.state) {
       throw new UnauthorizedException('invalid or expired login');
     }
@@ -93,27 +95,19 @@ export class AdminAuthController {
       sub: actor.id,
       permissions: actor.permissions,
     };
-    response.cookie(
+    await this.cookies.write(
+      response,
       ADMIN_COOKIES.SESSION,
-      await this.cookies.seal(session, this.config.sessionTtlSeconds),
-      this.cookieOptions(ADMIN_PATHS.ROOT, this.config.sessionTtlSeconds),
+      session,
+      ADMIN_PATHS.ROOT,
+      this.config.sessionTtlSeconds,
     );
     response.redirect(login.return_to);
   }
 
   @Get('logout')
   logout(@Res() response: Response): void {
-    response.clearCookie(ADMIN_COOKIES.SESSION, { path: ADMIN_PATHS.ROOT });
+    this.cookies.clear(response, ADMIN_COOKIES.SESSION, ADMIN_PATHS.ROOT);
     response.redirect(this.oidc.logoutUrl());
-  }
-
-  private cookieOptions(path: string, ttlSeconds: number): CookieOptions {
-    return {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: this.config.secureCookies,
-      path,
-      maxAge: ttlSeconds * 1000,
-    };
   }
 }
