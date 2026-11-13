@@ -58,7 +58,7 @@ import { DiscordWebhookFormatter } from '@toxictoast/shared-webhooks-infrastruct
         ...WEBHOOK_TOPIC_RETENTION_MS,
       },
     }),
-    HealthModule.forRoot({ database: true }),
+    HealthModule.forRoot({ database: true, redis: true }),
     MetricsModule.forRoot({ outbox: true, consumer: true }),
     TwitchModule,
   ],

@@ -9,6 +9,7 @@ import {
   ConsumerHealthIndicator,
   DatabaseHealthIndicator,
   ProbeHealthIndicator,
+  RedisHealthIndicator,
 } from '../indicators/index.js';
 
 @Controller('health')
@@ -16,6 +17,7 @@ export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
     @Optional() private readonly database?: DatabaseHealthIndicator,
+    @Optional() private readonly redis?: RedisHealthIndicator,
     @Optional() private readonly consumer?: ConsumerHealthIndicator,
     @Optional() private readonly probes?: ProbeHealthIndicator,
   ) {}
@@ -33,6 +35,10 @@ export class HealthController {
     if (this.database) {
       const database = this.database;
       checks.push(() => database.isHealthy());
+    }
+    if (this.redis) {
+      const redis = this.redis;
+      checks.push(() => redis.isHealthy());
     }
     if (this.consumer) {
       const consumer = this.consumer;

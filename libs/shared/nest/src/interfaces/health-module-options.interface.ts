@@ -3,6 +3,8 @@ import type { ReadinessProbesProvider } from './readiness-probes-provider.interf
 
 export interface HealthModuleOptions {
   readonly database: boolean;
+  /** Setzt RedisModule voraus. */
+  readonly redis?: Optional<boolean>;
   readonly replay?: Optional<boolean>;
   readonly probes?: Optional<ReadinessProbesProvider>;
 }
