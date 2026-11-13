@@ -24,7 +24,7 @@
     "@toxictoast/moderation-application": "*",
     "@toxictoast/contracts-events": "*",
     "@toxictoast/shared-kernel": "*",
-    "@nestjs/common": "^11.0.0"
+    "@nestjs/common": "^12.0.0"
   },
   "devDependencies": {
     "@toxictoast/moderation-domain": "*"
