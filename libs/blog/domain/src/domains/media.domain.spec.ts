@@ -120,7 +120,7 @@ describe('MediaDomain', () => {
 
     it('refuses deleted media', () => {
       const media = createMedia();
-      media.deleteMedia();
+      media.delete();
 
       const result = media.markReady(2048);
 
@@ -159,7 +159,7 @@ describe('MediaDomain', () => {
 
     it('refuses deleted media', () => {
       const media = createMedia();
-      media.deleteMedia();
+      media.delete();
 
       const result = media.updateAltText('Neu');
 
@@ -172,10 +172,10 @@ describe('MediaDomain', () => {
     it('soft-deletes and restores the media', () => {
       const media = createMedia();
 
-      media.deleteMedia();
+      media.delete();
       expect(media.toAnemic().deleted_at).toEqual(NOW);
 
-      media.restoreMedia();
+      media.restore();
       expect(media.toAnemic().deleted_at).toBeNull();
 
       expect(media.toEvents().map((e) => e.event_name)).toEqual([

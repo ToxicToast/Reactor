@@ -25,7 +25,7 @@ export class PostDomain extends BaseDomain<PostAnemic, PostEventPayload> {
     };
   }
 
-  createPost(): void {
+  create(): void {
     this.raise(PostEvents.CREATED);
   }
 
@@ -142,11 +142,11 @@ export class PostDomain extends BaseDomain<PostAnemic, PostEventPayload> {
     return Result.ok();
   }
 
-  deletePost(): void {
+  delete(): void {
     this.markDeleted(PostEvents.DELETED);
   }
 
-  restorePost(): void {
+  restore(): void {
     this.markRestored(PostEvents.RESTORED);
   }
 

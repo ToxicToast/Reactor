@@ -38,7 +38,7 @@ export class CleanupPendingMediaUseCase implements UseCase<
     let removed = 0;
     for (const anemic of pending) {
       const media = this.factory.reconstitute(anemic);
-      media.deleteMedia();
+      media.delete();
 
       const saved = await this.persistence.persist(media, this.repository);
       if (saved.isFailure) {

@@ -31,7 +31,7 @@ export class DeleteCommentUseCase implements UseCase<
   execute(input: CommentIdInput): Promise<Result<CommentAnemic>> {
     return this.editor.change(
       input.id,
-      (comment) => comment.deleteComment(),
+      (comment) => comment.delete(),
       INCLUDING_DELETED,
     );
   }

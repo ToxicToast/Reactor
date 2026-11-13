@@ -73,7 +73,7 @@ export class PostFactory implements Factory<PostAnemic, PostDomain, PostData> {
       },
       this.ctx,
     );
-    domain.createPost();
+    domain.create();
     return Result.ok(domain);
   }
 }

@@ -28,7 +28,7 @@ export class DeletePostUseCase implements UseCase<PostIdInput, PostAnemic> {
   execute(input: PostIdInput): Promise<Result<PostAnemic>> {
     return this.editor.change(
       input.id,
-      (post) => post.deletePost(),
+      (post) => post.delete(),
       INCLUDING_DELETED,
     );
   }

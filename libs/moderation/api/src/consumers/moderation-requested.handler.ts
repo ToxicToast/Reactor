@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ModerateContentUseCase } from '@toxictoast/moderation-application';
-import { isModerationRequestedPayload } from '../functions/index.js';
+import { readPayload } from '@toxictoast/shared-kernel';
 
 @Injectable()
 export class ModerationRequestedHandler {
@@ -11,23 +11,32 @@ export class ModerationRequestedHandler {
   ) {}
 
   async handle(payload: unknown): Promise<void> {
-    if (!isModerationRequestedPayload(payload)) {
+    const request = readPayload(payload, (reader) => {
+      return {
+        id: reader.uuid('id'),
+        content: reader.string('content'),
+        deleted_at: reader.nullableString('deleted_at'),
+      };
+    });
+    if (request.isFailure) {
       this.logger.warn(
-        'Ignoring invalid blog.comment.moderation.requested payload',
+        `Ignoring invalid blog.comment.moderation.requested payload: ${request.error.message}`,
       );
       return;
     }
-    if (payload.deleted_at !== null) {
-      this.logger.log(`Skipping deleted comment ${payload.id}`);
+
+    const { id, content, deleted_at } = request.value;
+    if (deleted_at !== null) {
+      this.logger.log(`Skipping deleted comment ${id}`);
       return;
     }
 
     const result = await this.moderateContentUseCase.execute({
-      content_id: payload.id,
-      content: payload.content,
+      content_id: id,
+      content,
     });
     this.logger.log(
-      `Comment ${payload.id}: ${result.value.decision} (${result.value.confidence})`,
+      `Comment ${id}: ${result.value.decision} (${result.value.confidence})`,
     );
   }
 }

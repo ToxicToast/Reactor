@@ -47,7 +47,7 @@ export class RestoreCategoryUseCase implements UseCase<
       return allowed;
     }
 
-    category.restoreCategory();
+    category.restore();
     return Result.ok();
   }
 }

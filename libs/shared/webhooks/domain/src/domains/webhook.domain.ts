@@ -21,7 +21,7 @@ export class WebhookDomain extends BaseDomain<
     return this.isActive && matchesEventKey(this.state.events, eventKey);
   }
 
-  createWebhook(): void {
+  create(): void {
     this.raise(WebhookEvents.CREATED);
   }
 

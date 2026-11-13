@@ -8,7 +8,7 @@ import {
   MODERATION_PROMPT_VERSION,
   MODERATION_SYSTEM_PROMPT,
 } from '../constants/index.js';
-import { isClassification } from '../functions/index.js';
+import { readClassification } from '../functions/index.js';
 import type { ChatCompletionResponse, NimConfig } from '../interfaces/index.js';
 
 export class NimContentClassifier implements ContentClassifier {
@@ -76,9 +76,9 @@ export class NimContentClassifier implements ContentClassifier {
     }
 
     try {
-      const value: unknown = JSON.parse(text);
-      if (isClassification(value)) {
-        return value;
+      const classification = readClassification(JSON.parse(text));
+      if (classification.isSuccess) {
+        return classification.value;
       }
       return this.invalid(
         `response does not match the schema (finish_reason: ${finish})`,

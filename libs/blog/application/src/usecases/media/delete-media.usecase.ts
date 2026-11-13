@@ -28,7 +28,7 @@ export class DeleteMediaUseCase implements UseCase<MediaIdInput, MediaAnemic> {
   execute(input: MediaIdInput): Promise<Result<MediaAnemic>> {
     return this.editor.change(
       input.id,
-      (media) => media.deleteMedia(),
+      (media) => media.delete(),
       INCLUDING_DELETED,
     );
   }

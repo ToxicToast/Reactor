@@ -48,7 +48,7 @@ export class CategoryFactory implements Factory<
       },
       this.ctx,
     );
-    domain.createCategory();
+    domain.create();
     return Result.ok(domain);
   }
 }

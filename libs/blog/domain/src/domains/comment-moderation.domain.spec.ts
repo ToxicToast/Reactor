@@ -114,7 +114,7 @@ describe('CommentDomain moderation', () => {
 
     it('ignores decisions for deleted comments', () => {
       const comment = pending();
-      comment.deleteComment();
+      comment.delete();
       comment.toEvents();
 
       const result = comment.applyDecision(

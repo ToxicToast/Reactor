@@ -1,5 +1,4 @@
 import { auditInputFromEvent } from './audit-input-from-event.function.js';
-import { isAuditableEvent } from './is-auditable-event.function.js';
 
 const EVENT = {
   event_id: '0192F3A0-0000-7000-8000-000000000001',
@@ -13,25 +12,9 @@ const EVENT = {
   payload: { title: 'KI' },
 };
 
-describe('isAuditableEvent', () => {
-  it('accepts a complete event', () => {
-    expect(isAuditableEvent(EVENT)).toBe(true);
-  });
-
-  it.each([
-    [{ event_id: 'event-1' }],
-    [{ aggregate_id: 'x'.repeat(65) }],
-    [{ occurred_at: 'gestern' }],
-    [{ payload: null }],
-    [{ event_version: 1.5 }],
-  ])('refuses %p', (override) => {
-    expect(isAuditableEvent({ ...EVENT, ...override })).toBe(false);
-  });
-});
-
 describe('auditInputFromEvent', () => {
   it('maps the event with its actor and correlation id', () => {
-    expect(auditInputFromEvent(EVENT)).toEqual({
+    expect(auditInputFromEvent(EVENT).value).toEqual({
       event_id: '0192f3a0-0000-7000-8000-000000000001',
       event_namespace: 'blog.tag',
       event_name: 'create',
@@ -53,11 +36,25 @@ describe('auditInputFromEvent', () => {
       correlation_id: 'kaputt',
     });
 
-    expect(input).toMatchObject({
+    expect(input.value).toMatchObject({
       actor_type: 'unknown',
       actor_id: null,
       actor_ip: null,
       correlation_id: null,
     });
+  });
+
+  it.each([
+    ['no object', null],
+    ['an invalid event id', { ...EVENT, event_id: 'event-1' }],
+    ['a too long aggregate id', { ...EVENT, aggregate_id: 'x'.repeat(65) }],
+    ['an invalid date', { ...EVENT, occurred_at: 'gestern' }],
+    ['a missing payload', { ...EVENT, payload: null }],
+    ['a fractional version', { ...EVENT, event_version: 1.5 }],
+  ])('refuses %s', (_case, event) => {
+    const result = auditInputFromEvent(event);
+
+    expect(result.isFailure).toBe(true);
+    expect(result.error.code).toBe('VALIDATION');
   });
 });

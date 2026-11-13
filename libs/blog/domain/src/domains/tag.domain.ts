@@ -8,7 +8,7 @@ import type { TagAnemic } from '../anemics/index.js';
 import { TagEvents, type TagEventPayload } from '../events/index.js';
 
 export class TagDomain extends BaseDomain<TagAnemic, TagEventPayload> {
-  createTag(): void {
+  create(): void {
     this.raise(TagEvents.CREATED);
   }
 
@@ -30,11 +30,11 @@ export class TagDomain extends BaseDomain<TagAnemic, TagEventPayload> {
     return Result.ok();
   }
 
-  deleteTag(): void {
+  delete(): void {
     this.markDeleted(TagEvents.DELETED);
   }
 
-  restoreTag(): void {
+  restore(): void {
     this.markRestored(TagEvents.RESTORED);
   }
 

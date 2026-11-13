@@ -1,5 +1,6 @@
 import type { Nullable } from '@toxictoast/shared-types';
 import { InvalidPayloadError } from '../errors/invalid-payload.error.js';
+import { isUuid } from '../functions/is-uuid.function.js';
 import { parseIsoDate } from '../functions/parse-iso-date.function.js';
 
 type PayloadRecord = Readonly<Record<string, unknown>>;
@@ -14,6 +15,10 @@ const isString = (value: unknown): value is string => {
 
 const isNumber = (value: unknown): value is number => {
   return typeof value === 'number' && Number.isFinite(value);
+};
+
+const isInteger = (value: unknown): value is number => {
+  return Number.isInteger(value);
 };
 
 const isBoolean = (value: unknown): value is boolean => {
@@ -42,6 +47,11 @@ export class PayloadReader {
     return this.values[key] !== undefined && this.values[key] !== null;
   }
 
+  /** Der ungeprüfte Rohwert – nur für eigene Guards wie isActorIdentity. */
+  value(key: string): unknown {
+    return this.values[key];
+  }
+
   string(key: string): string {
     return this.read(key, isString, 'a string');
   }
@@ -50,8 +60,37 @@ export class PayloadReader {
     return this.has(key) ? this.string(key) : null;
   }
 
+  boundedString(key: string, maxLength: number): string {
+    const value = this.string(key);
+    if (value.length === 0 || value.length > maxLength) {
+      throw new InvalidPayloadError(
+        `${key} must have between 1 and ${maxLength} characters`,
+      );
+    }
+    return value;
+  }
+
+  oneOf<T extends string>(key: string, values: ReadonlyArray<T>): T {
+    const value = this.string(key);
+    if (!(values as ReadonlyArray<string>).includes(value)) {
+      throw new InvalidPayloadError(
+        `${key} must be one of ${values.join(', ')}`,
+      );
+    }
+    return value as T;
+  }
+
+  /** Immer kleingeschrieben, damit IDs überall gleich aussehen. */
+  uuid(key: string): string {
+    return this.read(key, isUuid, 'a uuid').toLowerCase();
+  }
+
   number(key: string): number {
     return this.read(key, isNumber, 'a number');
+  }
+
+  integer(key: string): number {
+    return this.read(key, isInteger, 'an integer');
   }
 
   boolean(key: string): boolean {
@@ -64,6 +103,10 @@ export class PayloadReader {
 
   nullableDate(key: string): Nullable<Date> {
     return this.has(key) ? this.date(key) : null;
+  }
+
+  record(key: string): PayloadReader {
+    return new PayloadReader(this.read(key, isRecord, 'an object'));
   }
 
   list(key: string): Array<PayloadReader> {
