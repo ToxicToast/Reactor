@@ -36,19 +36,19 @@ export class WebhookFactory implements Factory<
       return Result.fail(secret.error);
     }
 
-    return Result.ok(
-      new WebhookDomain(
-        {
-          id: this.ctx.id.generate<'Webhook'>(),
-          ...normalized.value,
-          active: true,
-          secret: data.secret,
-          created_at: this.ctx.date.now(),
-          updated_at: null,
-          deleted_at: null,
-        },
-        this.ctx,
-      ),
+    const domain = new WebhookDomain(
+      {
+        id: this.ctx.id.generate<'Webhook'>(),
+        ...normalized.value,
+        active: true,
+        secret: data.secret,
+        created_at: this.ctx.date.now(),
+        updated_at: null,
+        deleted_at: null,
+      },
+      this.ctx,
     );
+    domain.createWebhook();
+    return Result.ok(domain);
   }
 }

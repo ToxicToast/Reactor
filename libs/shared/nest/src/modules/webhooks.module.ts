@@ -1,4 +1,5 @@
 import { Logger, Module, type DynamicModule } from '@nestjs/common';
+import { DomainPersistence } from '@toxictoast/shared-application';
 import type { Clock } from '@toxictoast/shared-kernel';
 import {
   AdvisoryLock,
@@ -47,6 +48,7 @@ const { WEBHOOK_REPOSITORY, WEBHOOK_DELIVERY_REPOSITORY } = TOKENS;
 const { WEBHOOK_SECRET_CIPHER, WEBHOOK_SECRET_GENERATOR } = TOKENS;
 const { WEBHOOK_RELAY_WORKER } = TOKENS;
 const DATABASE = [DataSource, TransactionContext];
+const WEBHOOK_EDITING = [WebhookFactory, WEBHOOK_REPOSITORY, DomainPersistence];
 
 const USE_CASES = [
   CreateWebhookUseCase,
@@ -106,22 +108,14 @@ export class WebhooksModule {
 
         // ── Use Cases ───────────────────────────────
         provideClass(CreateWebhookUseCase, [
-          WebhookFactory,
-          WEBHOOK_REPOSITORY,
+          ...WEBHOOK_EDITING,
           WEBHOOK_SECRET_GENERATOR,
         ]),
         provideClass(ListWebhooksUseCase, [WEBHOOK_REPOSITORY]),
-        provideClass(UpdateWebhookUseCase, [
-          WebhookFactory,
-          WEBHOOK_REPOSITORY,
-        ]),
-        provideClass(DeleteWebhookUseCase, [
-          WebhookFactory,
-          WEBHOOK_REPOSITORY,
-        ]),
+        provideClass(UpdateWebhookUseCase, WEBHOOK_EDITING),
+        provideClass(DeleteWebhookUseCase, WEBHOOK_EDITING),
         provideClass(RotateWebhookSecretUseCase, [
-          WebhookFactory,
-          WEBHOOK_REPOSITORY,
+          ...WEBHOOK_EDITING,
           WEBHOOK_SECRET_GENERATOR,
         ]),
         provideClass(ListWebhookDeliveriesUseCase, [

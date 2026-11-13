@@ -1,6 +1,7 @@
 import { BaseDomain, ConflictError, Result } from '@toxictoast/shared-kernel';
 import type { WebhookAnemic } from '../anemics/index.js';
 import type { UpdateWebhookData } from '../data/index.js';
+import { WebhookEvents, type WebhookEventPayload } from '../events/index.js';
 import {
   isWebhookActive,
   matchesEventKey,
@@ -8,13 +9,20 @@ import {
   validateWebhookSecret,
 } from '../functions/index.js';
 
-export class WebhookDomain extends BaseDomain<WebhookAnemic> {
+export class WebhookDomain extends BaseDomain<
+  WebhookAnemic,
+  WebhookEventPayload
+> {
   get isActive(): boolean {
     return isWebhookActive(this.state);
   }
 
   subscribesTo(eventKey: string): boolean {
     return this.isActive && matchesEventKey(this.state.events, eventKey);
+  }
+
+  createWebhook(): void {
+    this.raise(WebhookEvents.CREATED);
   }
 
   update(data: UpdateWebhookData): Result<void> {
@@ -36,6 +44,7 @@ export class WebhookDomain extends BaseDomain<WebhookAnemic> {
     this.state.format = normalized.value.format;
     this.state.active = data.active;
     this.touch();
+    this.raise(WebhookEvents.UPDATED);
     return Result.ok();
   }
 
@@ -51,6 +60,7 @@ export class WebhookDomain extends BaseDomain<WebhookAnemic> {
 
     this.state.secret = secret;
     this.touch();
+    this.raise(WebhookEvents.SECRET_ROTATED);
     return Result.ok();
   }
 
@@ -61,9 +71,21 @@ export class WebhookDomain extends BaseDomain<WebhookAnemic> {
     }
 
     this.state.active = false;
-    this.state.deleted_at = this.ctx.date.now();
-    this.touch();
+    this.markDeleted(WebhookEvents.DELETED);
     return Result.ok();
+  }
+
+  protected override toEventPayload(): WebhookEventPayload {
+    return {
+      id: this.state.id,
+      events: [...this.state.events],
+      description: this.state.description,
+      active: this.state.active,
+      format: this.state.format,
+      created_at: this.state.created_at,
+      updated_at: this.state.updated_at,
+      deleted_at: this.state.deleted_at,
+    };
   }
 
   private ensureNotDeleted(): Result<void> {

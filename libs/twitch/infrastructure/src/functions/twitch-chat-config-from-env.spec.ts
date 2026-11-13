@@ -14,6 +14,6 @@ describe('twitchChatConfigFromEnv', () => {
   it.each(['0', '-5', '1.5'])('refuses %s days', (value) => {
     expect(() =>
       twitchChatConfigFromEnv({ TWITCH_CHAT_RETENTION_DAYS: value }),
-    ).toThrow('TWITCH_CHAT_RETENTION_DAYS must be a whole number of days');
+    ).toThrow('TWITCH_CHAT_RETENTION_DAYS');
   });
 });

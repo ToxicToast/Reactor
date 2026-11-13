@@ -46,6 +46,7 @@ import {
 import { ObservationKinds } from '@toxictoast/twitch-domain';
 import { TwitchGrpcController } from './twitch-grpc.controller.js';
 import { createUuidTestContext } from '@toxictoast/shared-kernel/testing';
+import { DomainPersistence } from '@toxictoast/shared-application';
 
 const CHANNEL_ID = TWITCH_TEST_CHANNEL.channel_id;
 const UNKNOWN_ID = '0192f3a0-0000-7000-8000-0000000000ff';
@@ -78,6 +79,10 @@ describe('TwitchGrpcController', () => {
     const webhookFactory = new WebhookFactory(
       createUuidTestContext(new Date('2026-10-28T20:00:00Z')),
     );
+    const webhookPersistence = new DomainPersistence(
+      harness.outbox,
+      harness.uow,
+    );
     const secrets = new FixedWebhookSecretGenerator();
 
     controller = new TwitchGrpcController(
@@ -95,11 +100,29 @@ describe('TwitchGrpcController', () => {
         RETENTION_DAYS,
         CLOCK,
       ),
-      new CreateWebhookUseCase(webhookFactory, harness.webhooks, secrets),
+      new CreateWebhookUseCase(
+        webhookFactory,
+        harness.webhooks,
+        webhookPersistence,
+        secrets,
+      ),
       new ListWebhooksUseCase(harness.webhooks),
-      new UpdateWebhookUseCase(webhookFactory, harness.webhooks),
-      new DeleteWebhookUseCase(webhookFactory, harness.webhooks),
-      new RotateWebhookSecretUseCase(webhookFactory, harness.webhooks, secrets),
+      new UpdateWebhookUseCase(
+        webhookFactory,
+        harness.webhooks,
+        webhookPersistence,
+      ),
+      new DeleteWebhookUseCase(
+        webhookFactory,
+        harness.webhooks,
+        webhookPersistence,
+      ),
+      new RotateWebhookSecretUseCase(
+        webhookFactory,
+        harness.webhooks,
+        webhookPersistence,
+        secrets,
+      ),
       new ListWebhookDeliveriesUseCase(harness.webhooks, harness.deliveries),
       harness.feed,
       actors,
