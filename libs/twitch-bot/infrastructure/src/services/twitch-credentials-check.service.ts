@@ -1,7 +1,7 @@
 import type { Clock } from '@toxictoast/shared-kernel';
 import type { Nullable } from '@toxictoast/shared-types';
-import { TWITCH_CREDENTIALS_TTL } from '../constants';
-import type { TwitchCredentialsStatus } from '../interfaces';
+import { TWITCH_CREDENTIALS_TTL } from '../constants/index.js';
+import type { TwitchCredentialsStatus } from '../interfaces/index.js';
 import { errorMessage } from '@toxictoast/shared-system';
 
 export class TwitchCredentialsCheck {

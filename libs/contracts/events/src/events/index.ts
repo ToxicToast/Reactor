@@ -7,3 +7,4 @@ export * from './moderation-requested.event.js';
 export * from './moderation-decided.event.js';
 export * from './access-denied.event.js';
 export * from './ip-ban.event.js';
+export * from './webhook.event.js';

@@ -24,10 +24,12 @@ import {
   PresenceTracker,
   RecordTwitchEventUseCase,
   SessionTracker,
+  PurgeExpiredChatMessagesUseCase,
 } from '@toxictoast/twitch-application';
 import { StreamSessionFactory } from '@toxictoast/twitch-domain';
 import {
   RedisTwitchFeed,
+  twitchChatConfigFromEnv,
   twitchStatsConfigFromEnv,
   TypeOrmChannelDirectoryRepository,
   TypeOrmChannelStatsRepository,
@@ -56,9 +58,10 @@ const {
   POLL_REPOSITORY,
   CHANNEL_DIRECTORY_REPOSITORY,
   CHAT_MESSAGE_REPOSITORY,
+  CHAT_CONFIG,
 } = TWITCH_SERVICE_TOKENS;
 
-const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER } = TOKENS;
+const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
 const DATABASE = [DataSource, TransactionContext];
 
 @Module({
@@ -68,6 +71,10 @@ const DATABASE = [DataSource, TransactionContext];
     {
       provide: STATS_CONFIG,
       useFactory: () => twitchStatsConfigFromEnv(),
+    },
+    {
+      provide: CHAT_CONFIG,
+      useFactory: () => twitchChatConfigFromEnv(),
     },
 
     // ── Domain ──────────────────────────────────
@@ -166,6 +173,11 @@ const DATABASE = [DataSource, TransactionContext];
       UNIT_OF_WORK,
     ]),
     provideClass(ListChatMessagesUseCase, [CHAT_MESSAGE_REPOSITORY]),
+    provideClass(PurgeExpiredChatMessagesUseCase, [
+      CHAT_MESSAGE_REPOSITORY,
+      CHAT_CONFIG,
+      CLOCK,
+    ]),
     provideClass(ListStatsChannelsUseCase, [
       CHANNEL_DIRECTORY_REPOSITORY,
       STREAM_SESSION_REPOSITORY,

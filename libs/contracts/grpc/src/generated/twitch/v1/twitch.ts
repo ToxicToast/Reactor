@@ -341,6 +341,13 @@ export interface ListChatMessagesResponse {
   messages: ChatMessage[];
 }
 
+export interface PurgeExpiredChatMessagesRequest {
+}
+
+export interface PurgeExpiredChatMessagesResponse {
+  removed: number;
+}
+
 export interface TwitchServiceClient {
   listStatsChannels(request: ListStatsChannelsRequest, metadata?: Metadata): Observable<ListStatsChannelsResponse>;
 
@@ -388,6 +395,11 @@ export interface TwitchServiceClient {
     request: ListTwitchWebhookDeliveriesRequest,
     metadata?: Metadata,
   ): Observable<ListTwitchWebhookDeliveriesResponse>;
+
+  purgeExpiredChatMessages(
+    request: PurgeExpiredChatMessagesRequest,
+    metadata?: Metadata,
+  ): Observable<PurgeExpiredChatMessagesResponse>;
 }
 
 export interface TwitchServiceController {
@@ -470,6 +482,14 @@ export interface TwitchServiceController {
     | Promise<ListTwitchWebhookDeliveriesResponse>
     | Observable<ListTwitchWebhookDeliveriesResponse>
     | ListTwitchWebhookDeliveriesResponse;
+
+  purgeExpiredChatMessages(
+    request: PurgeExpiredChatMessagesRequest,
+    metadata?: Metadata,
+  ):
+    | Promise<PurgeExpiredChatMessagesResponse>
+    | Observable<PurgeExpiredChatMessagesResponse>
+    | PurgeExpiredChatMessagesResponse;
 }
 
 export function TwitchServiceControllerMethods() {
@@ -491,6 +511,7 @@ export function TwitchServiceControllerMethods() {
       "deleteTwitchWebhook",
       "rotateTwitchWebhookSecret",
       "listTwitchWebhookDeliveries",
+      "purgeExpiredChatMessages",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

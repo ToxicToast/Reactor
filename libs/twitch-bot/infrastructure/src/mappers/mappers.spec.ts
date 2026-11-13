@@ -23,7 +23,9 @@ describe('TwitchChannelMapper', () => {
 });
 
 describe('TwitchTokenMapper', () => {
-  const mapper = new TwitchTokenMapper(new SecretCipher(randomBytes(32)));
+  const mapper = new TwitchTokenMapper(
+    SecretCipher.withSingleKey(randomBytes(32)),
+  );
 
   it('stores both tokens encrypted and restores them', () => {
     const row = mapper.toRow(

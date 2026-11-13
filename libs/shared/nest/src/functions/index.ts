@@ -6,3 +6,4 @@ export * from './create-grpc-client-options.function.js';
 export * from './actor-to-metadata.function.js';
 export * from './correlation-from-metadata.function.js';
 export * from './add-correlation-metadata.function.js';
+export * from './provide-secret-rotation.function.js';

@@ -3,6 +3,8 @@ import {
   TWITCH_EVENT_TOPICS,
   TWITCH_TOPIC_RETENTION_MS,
   TwitchStatsTopics,
+  WEBHOOK_TOPIC_RETENTION_MS,
+  WebhookTopics,
 } from '@toxictoast/contracts-events';
 import { FALLBACK_HANDLER } from '@toxictoast/shared-messaging';
 import {
@@ -32,7 +34,7 @@ import { DiscordWebhookFormatter } from '@toxictoast/shared-webhooks-infrastruct
     }),
     RedisModule.forRoot({ subscriber: true }),
     WebhooksModule.forRoot({
-      secretKeyEnv: 'WEBHOOK_SECRET_KEY',
+      secretKeyEnvPrefix: 'WEBHOOK_SECRET',
       formatters: [new DiscordWebhookFormatter(TWITCH_DISCORD_EMBEDS)],
     }),
     MessagingModule.forRoot({
@@ -46,9 +48,15 @@ import { DiscordWebhookFormatter } from '@toxictoast/shared-webhooks-infrastruct
           };
         },
       },
-      topics: [...Object.values(TwitchStatsTopics)],
+      topics: [
+        ...Object.values(TwitchStatsTopics),
+        ...Object.values(WebhookTopics),
+      ],
       consumeTopics: TWITCH_EVENT_TOPICS,
-      topicRetentionMs: TWITCH_TOPIC_RETENTION_MS,
+      topicRetentionMs: {
+        ...TWITCH_TOPIC_RETENTION_MS,
+        ...WEBHOOK_TOPIC_RETENTION_MS,
+      },
     }),
     HealthModule.forRoot({ database: true }),
     MetricsModule.forRoot({ outbox: true, consumer: true }),

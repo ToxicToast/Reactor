@@ -1,4 +1,5 @@
 import { Logger, Module, type DynamicModule } from '@nestjs/common';
+import { DomainPersistence } from '@toxictoast/shared-application';
 import type { Clock } from '@toxictoast/shared-kernel';
 import {
   AdvisoryLock,
@@ -9,7 +10,7 @@ import {
   numberEnv,
   PollingWorker,
   SecretCipher,
-  secretKeyEnv,
+  secretKeyringEnv,
 } from '@toxictoast/shared-system';
 import {
   CreateWebhookUseCase,
@@ -34,10 +35,11 @@ import {
   TypeOrmWebhookDeliveryRepository,
   TypeOrmWebhookRepository,
   WebhookRelay,
+  WebhookSchema,
 } from '@toxictoast/shared-webhooks-infrastructure';
 import { DataSource } from 'typeorm';
 import { TOKENS } from '../constants/index.js';
-import { provideClass } from '../functions/index.js';
+import { provideClass, provideSecretRotation } from '../functions/index.js';
 import type { WebhooksModuleOptions } from '../interfaces/index.js';
 import { PollingWorkerLifecycle } from '../lifecycles/index.js';
 
@@ -46,6 +48,7 @@ const { WEBHOOK_REPOSITORY, WEBHOOK_DELIVERY_REPOSITORY } = TOKENS;
 const { WEBHOOK_SECRET_CIPHER, WEBHOOK_SECRET_GENERATOR } = TOKENS;
 const { WEBHOOK_RELAY_WORKER } = TOKENS;
 const DATABASE = [DataSource, TransactionContext];
+const WEBHOOK_EDITING = [WebhookFactory, WEBHOOK_REPOSITORY, DomainPersistence];
 
 const USE_CASES = [
   CreateWebhookUseCase,
@@ -74,8 +77,12 @@ export class WebhooksModule {
         {
           provide: WEBHOOK_SECRET_CIPHER,
           useFactory: () =>
-            new SecretCipher(secretKeyEnv(options.secretKeyEnv)),
+            new SecretCipher(secretKeyringEnv(options.secretKeyEnvPrefix)),
         },
+        provideSecretRotation(WEBHOOK_SECRET_CIPHER, WebhookSchema, [
+          'url',
+          'secret',
+        ]),
         provideClass(
           RandomWebhookSecretGenerator,
           [],
@@ -101,22 +108,14 @@ export class WebhooksModule {
 
         // ── Use Cases ───────────────────────────────
         provideClass(CreateWebhookUseCase, [
-          WebhookFactory,
-          WEBHOOK_REPOSITORY,
+          ...WEBHOOK_EDITING,
           WEBHOOK_SECRET_GENERATOR,
         ]),
         provideClass(ListWebhooksUseCase, [WEBHOOK_REPOSITORY]),
-        provideClass(UpdateWebhookUseCase, [
-          WebhookFactory,
-          WEBHOOK_REPOSITORY,
-        ]),
-        provideClass(DeleteWebhookUseCase, [
-          WebhookFactory,
-          WEBHOOK_REPOSITORY,
-        ]),
+        provideClass(UpdateWebhookUseCase, WEBHOOK_EDITING),
+        provideClass(DeleteWebhookUseCase, WEBHOOK_EDITING),
         provideClass(RotateWebhookSecretUseCase, [
-          WebhookFactory,
-          WEBHOOK_REPOSITORY,
+          ...WEBHOOK_EDITING,
           WEBHOOK_SECRET_GENERATOR,
         ]),
         provideClass(ListWebhookDeliveriesUseCase, [

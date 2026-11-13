@@ -1,45 +1,34 @@
 import { InjectQueue } from '@nestjs/bullmq';
-import {
-  Injectable,
-  Logger,
-  type OnApplicationBootstrap,
-} from '@nestjs/common';
-import { optionalEnv } from '@toxictoast/shared-system';
+import { Injectable } from '@nestjs/common';
 import type { Queue } from 'bullmq';
-import { defaultJobOptionsFromEnv } from '../functions/index.js';
-import { TWITCH_BOT_QUEUE, TwitchBotJobs } from './constants/index.js';
+import type { ScheduledJob } from '../common/interfaces/index.js';
+import { JobSchedules } from '../common/schedules/index.js';
+import {
+  TWITCH_BOT_JOB_ATTEMPTS,
+  TWITCH_BOT_QUEUE,
+  TwitchBotJobs,
+} from './constants/index.js';
 
 @Injectable()
-export class TwitchBotSchedules implements OnApplicationBootstrap {
-  private readonly logger = new Logger(TwitchBotSchedules.name);
-
-  constructor(@InjectQueue(TWITCH_BOT_QUEUE) private readonly queue: Queue) {}
-
-  async onApplicationBootstrap(): Promise<void> {
-    const tz = optionalEnv('CRONJOB_TIMEZONE', undefined) ?? 'Europe/Berlin';
-
-    await this.schedule(
-      TwitchBotJobs.CHATTERS_SYNC,
-      optionalEnv('TWITCH_CHATTERS_SYNC_CRON', undefined) ?? '* * * * *',
-      tz,
-    );
-    await this.schedule(
-      TwitchBotJobs.CLIPS_SYNC,
-      optionalEnv('TWITCH_CLIPS_SYNC_CRON', undefined) ?? '*/5 * * * *',
-      tz,
-    );
+export class TwitchBotSchedules extends JobSchedules {
+  constructor(@InjectQueue(TWITCH_BOT_QUEUE) queue: Queue) {
+    super(queue);
   }
 
-  private async schedule(
-    name: string,
-    pattern: string,
-    tz: string,
-  ): Promise<void> {
-    await this.queue.upsertJobScheduler(
-      name,
-      { pattern, tz },
-      { name, opts: { ...defaultJobOptionsFromEnv(), attempts: 1 } },
-    );
-    this.logger.log(`Scheduled ${name} at "${pattern}" (${tz})`);
+  protected jobs(): ReadonlyArray<ScheduledJob> {
+    return [
+      {
+        name: TwitchBotJobs.CHATTERS_SYNC,
+        patternEnv: 'TWITCH_CHATTERS_SYNC_CRON',
+        defaultPattern: '* * * * *',
+        attempts: TWITCH_BOT_JOB_ATTEMPTS.SYNC,
+      },
+      {
+        name: TwitchBotJobs.CLIPS_SYNC,
+        patternEnv: 'TWITCH_CLIPS_SYNC_CRON',
+        defaultPattern: '*/5 * * * *',
+        attempts: TWITCH_BOT_JOB_ATTEMPTS.SYNC,
+      },
+    ];
   }
 }

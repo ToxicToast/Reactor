@@ -1,4 +1,7 @@
-import type { UseCase } from '@toxictoast/shared-application';
+import type {
+  DomainPersistence,
+  UseCase,
+} from '@toxictoast/shared-application';
 import { Result } from '@toxictoast/shared-kernel';
 import type {
   WebhookFactory,
@@ -14,6 +17,7 @@ export class CreateWebhookUseCase implements UseCase<
   constructor(
     private readonly factory: WebhookFactory,
     private readonly repository: WebhookRepository,
+    private readonly persistence: DomainPersistence,
     private readonly secrets: WebhookSecretGenerator,
   ) {}
 
@@ -24,9 +28,13 @@ export class CreateWebhookUseCase implements UseCase<
       return Result.fail(created.error);
     }
 
-    const webhook = await this.repository.save(
-      this.factory.constitute(created.value),
+    const webhook = await this.persistence.persist(
+      created.value,
+      this.repository,
     );
-    return Result.ok({ webhook, secret });
+    if (webhook.isFailure) {
+      return Result.fail(webhook.error);
+    }
+    return Result.ok({ webhook: webhook.value, secret });
   }
 }

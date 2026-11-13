@@ -8,5 +8,5 @@ export * from './list-env.function.js';
 export * from './redis-connection-from-env.function.js';
 export * from './create-redis-client.function.js';
 export * from './uuid-env.function.js';
-export * from './secret-key-env.function.js';
+export * from './secret-keyring-env.function.js';
 export * from './error-message.function.js';

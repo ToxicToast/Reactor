@@ -86,6 +86,17 @@ export class InMemoryChatMessageRepository implements ChatMessageRepository {
     return paginate(messages, limit, offset);
   }
 
+  async deleteSentBefore(cutoff: Date): Promise<number> {
+    let removed = 0;
+    for (const [id, message] of this.items) {
+      if (message.sent_at < cutoff) {
+        this.items.delete(id);
+        removed++;
+      }
+    }
+    return removed;
+  }
+
   private mark(
     matches: (message: ChatMessage) => boolean,
     at: Date,
