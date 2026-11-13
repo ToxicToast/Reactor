@@ -60,6 +60,7 @@ export class TwitchTestHarness {
   readonly outbox = new InMemoryOutbox();
   readonly feed = new RecordingTwitchFeed();
   readonly uow = new ImmediateUnitOfWork();
+  readonly persistence = new DomainPersistence(this.outbox, this.uow);
   readonly sessionFactory = new StreamSessionFactory(this.ctx);
   readonly liveStatus = new LiveStatusReader(
     this.directory,
@@ -72,7 +73,7 @@ export class TwitchTestHarness {
     this.presence,
     this.channelStats,
     this.viewerStats,
-    new DomainPersistence(this.outbox, this.uow),
+    this.persistence,
     this.config,
   );
   readonly record = new RecordTwitchEventUseCase(
@@ -80,6 +81,7 @@ export class TwitchTestHarness {
     this.directory,
     this.sessionFactory,
     this.sessions,
+    this.persistence,
     this.polls,
     this.sessionTracker,
     new PresenceTracker(

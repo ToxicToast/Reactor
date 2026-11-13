@@ -162,6 +162,7 @@ const DATABASE = [DataSource, TransactionContext];
       CHANNEL_DIRECTORY_REPOSITORY,
       StreamSessionFactory,
       STREAM_SESSION_REPOSITORY,
+      DomainPersistence,
       POLL_REPOSITORY,
       SessionTracker,
       PresenceTracker,
