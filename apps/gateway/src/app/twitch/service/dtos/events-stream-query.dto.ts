@@ -1,13 +1,9 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
-import { TWITCH_ID_PATTERN } from '../constants/index.js';
 
 export class EventsStreamQueryDto extends createZodDto(
   z.object({
-    channel_id: z
-      .string()
-      .regex(TWITCH_ID_PATTERN, 'must be a twitch id')
-      .optional(),
+    channel_id: z.string().trim().min(1).optional(),
     topics: z
       .string()
       .optional()
