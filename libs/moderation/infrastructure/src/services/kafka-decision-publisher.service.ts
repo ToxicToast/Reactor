@@ -13,7 +13,7 @@ import type {
   DomainContext,
 } from '@toxictoast/shared-kernel';
 import type { EventPublisher } from '@toxictoast/shared-messaging';
-import { DECISION_TO_EVENT } from '../mappings/index.js';
+import { DECISION_TO_EVENT } from '../constants/index.js';
 
 export class KafkaDecisionPublisher implements DecisionPublisher {
   constructor(

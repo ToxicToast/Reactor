@@ -1,7 +1,7 @@
 import type { PostAnemic } from '@toxictoast/blog-domain';
 import type { Post } from '@toxictoast/contracts-grpc';
 import { toIso } from '@toxictoast/shared-grpc';
-import { POST_STATUS_TO_GRPC } from '../mappings/index.js';
+import { POST_STATUS_TO_GRPC } from '../constants/index.js';
 
 export class PostGrpcMapper {
   toProto(anemic: PostAnemic): Post {

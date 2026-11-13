@@ -3,7 +3,7 @@ import { ApplyModerationDecisionUseCase } from '@toxictoast/blog-application';
 import type { CommentId } from '@toxictoast/blog-domain';
 import { isUuid } from '@toxictoast/shared-kernel';
 import { isModerationDecidedPayload } from '../functions/index.js';
-import { MODERATION_DECISION_FROM_EVENT } from '../mappings/index.js';
+import { MODERATION_DECISION_FROM_EVENT } from '../constants/index.js';
 
 @Injectable()
 export class ModerationDecidedHandler {

@@ -43,7 +43,7 @@ import { CommentGrpcMapper } from '../mappers/index.js';
 import {
   COMMENT_STATUS_FROM_GRPC,
   MODERATION_STATUS_FROM_GRPC,
-} from '../mappings/index.js';
+} from '../constants/index.js';
 
 @Controller()
 @CommentServiceControllerMethods()

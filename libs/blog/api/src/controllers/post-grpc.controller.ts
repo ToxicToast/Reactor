@@ -47,7 +47,7 @@ import {
   unwrap,
 } from '@toxictoast/shared-grpc';
 import { PostGrpcMapper, PostUpdateGrpcMapper } from '../mappers/index.js';
-import { POST_STATUS_FROM_GRPC } from '../mappings/index.js';
+import { POST_STATUS_FROM_GRPC } from '../constants/index.js';
 
 @Controller()
 @PostServiceControllerMethods()
