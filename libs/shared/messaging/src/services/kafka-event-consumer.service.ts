@@ -26,7 +26,7 @@ export class KafkaEventConsumer {
   private stream: Nullable<StringStream> = null;
   private processing: Nullable<Promise<void>> = null;
   private stopping = false;
-  private caughtUp = true;
+  private caughtUp: boolean;
   private readonly pending = new Map<string, bigint>();
   private running = false;
   private restarts = 0;
@@ -38,7 +38,10 @@ export class KafkaEventConsumer {
     private readonly actors: ActorContext,
     private readonly correlations: CorrelationContext,
     private readonly options: KafkaEventConsumerOptions,
-  ) {}
+  ) {
+    /** Im Replay-Modus erst bereit, wenn alles gelesen ist – nicht schon vor dem ersten listOffsets. */
+    this.caughtUp = options.replay !== true;
+  }
 
   get topics(): Array<string> {
     const namespaces = Object.keys(this.options.handlers)
