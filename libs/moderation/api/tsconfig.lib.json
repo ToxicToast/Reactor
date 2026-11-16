@@ -7,9 +7,7 @@
     "emitDeclarationOnly": true,
     "forceConsistentCasingInFileNames": true,
     "types": ["node"],
-    "target": "es2021",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "target": "es2021"
   },
   "include": ["src/**/*.ts"],
   "references": [
