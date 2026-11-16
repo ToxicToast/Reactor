@@ -47,6 +47,13 @@ export enum TwitchWebhookDeliveryStatus {
   TWITCH_WEBHOOK_DELIVERY_STATUS_FAILED = "TWITCH_WEBHOOK_DELIVERY_STATUS_FAILED",
 }
 
+export enum TwitchChatDeletionReason {
+  TWITCH_CHAT_DELETION_REASON_UNSPECIFIED = "TWITCH_CHAT_DELETION_REASON_UNSPECIFIED",
+  TWITCH_CHAT_DELETION_REASON_DELETED = "TWITCH_CHAT_DELETION_REASON_DELETED",
+  TWITCH_CHAT_DELETION_REASON_BANNED = "TWITCH_CHAT_DELETION_REASON_BANNED",
+  TWITCH_CHAT_DELETION_REASON_TIMED_OUT = "TWITCH_CHAT_DELETION_REASON_TIMED_OUT",
+}
+
 export interface StatsChannel {
   channel_id: string;
   login: string;
@@ -322,7 +329,7 @@ export interface ChatMessage {
   session_id?: string | undefined;
   sent_at: string;
   deleted_at?: string | undefined;
-  deleted_reason?: string | undefined;
+  deleted_reason: TwitchChatDeletionReason;
 }
 
 export interface ListChatMessagesRequest {

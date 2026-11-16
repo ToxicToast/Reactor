@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { enumKeys } from '../../common/functions/index.js';
+import { AUDIT_ACTOR_TYPE_QUERY } from '../constants/index.js';
 
 export const AuditEventSchema = z.object({
   event_id: z.uuid(),
@@ -8,7 +10,7 @@ export const AuditEventSchema = z.object({
   aggregate_id: z.string(),
   occurred_at: z.string(),
   actor: z.object({
-    type: z.string(),
+    type: z.enum(enumKeys(AUDIT_ACTOR_TYPE_QUERY)),
     id: z.string().optional(),
     ip: z.string().optional(),
   }),

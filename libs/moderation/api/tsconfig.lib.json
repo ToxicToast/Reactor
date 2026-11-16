@@ -17,9 +17,6 @@
       "path": "../../shared/kernel/tsconfig.lib.json"
     },
     {
-      "path": "../../contracts/events/tsconfig.lib.json"
-    },
-    {
       "path": "../application/tsconfig.lib.json"
     },
     {

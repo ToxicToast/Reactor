@@ -12,6 +12,7 @@ import {
   type PurgeExpiredEventsResponse,
 } from '@toxictoast/contracts-grpc';
 import {
+  mapOptionalEnum,
   parseDate,
   parseOptionalUuid,
   requirePermission,
@@ -19,6 +20,7 @@ import {
 } from '@toxictoast/shared-grpc';
 import { ActorProvider } from '@toxictoast/shared-kernel';
 import { AuditEventGrpcMapper } from '../mappers/index.js';
+import { AUDIT_ACTOR_TYPE_FROM_PROTO } from '../constants/index.js';
 
 @Controller()
 @AuditServiceControllerMethods()
@@ -40,7 +42,11 @@ export class AuditGrpcController implements AuditServiceController {
           'correlation_id',
         ),
         actor_id: request.actor_id,
-        actor_type: request.actor_type,
+        actor_type: mapOptionalEnum(
+          AUDIT_ACTOR_TYPE_FROM_PROTO,
+          request.actor_type,
+          'actor_type',
+        ),
         aggregate_id: request.aggregate_id,
         event_namespace: request.event_namespace,
         from: parseDate(request.from, 'from'),

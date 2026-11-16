@@ -1,10 +1,11 @@
-import type {
+import {
   ChatMessage as ProtoChatMessage,
   LiveChannel as ProtoLiveChannel,
   StatsChannel as ProtoStatsChannel,
   StreamSession as ProtoStreamSession,
   TwitchEvent as ProtoTwitchEvent,
   TwitchPoll as ProtoTwitchPoll,
+  TwitchChatDeletionReason as ProtoTwitchChatDeletionReason,
 } from '@toxictoast/contracts-grpc';
 import { toIso } from '@toxictoast/shared-grpc';
 import type {
@@ -19,6 +20,7 @@ import {
   type StreamSessionAnemic,
 } from '@toxictoast/twitch-domain';
 import { pickCounters } from '../functions/pick-counters.function.js';
+import { CHAT_DELETION_REASON_TO_PROTO } from '../constants/index.js';
 
 export class TwitchStatsGrpcMapper {
   toChannel(channel: StatsChannel): ProtoStatsChannel {
@@ -76,7 +78,10 @@ export class TwitchStatsGrpcMapper {
       session_id: message.session_id ?? undefined,
       sent_at: message.sent_at.toISOString(),
       deleted_at: toIso(message.deleted_at),
-      deleted_reason: message.deleted_reason ?? undefined,
+      deleted_reason:
+        message.deleted_reason === null
+          ? ProtoTwitchChatDeletionReason.TWITCH_CHAT_DELETION_REASON_UNSPECIFIED
+          : CHAT_DELETION_REASON_TO_PROTO[message.deleted_reason],
     };
   }
 

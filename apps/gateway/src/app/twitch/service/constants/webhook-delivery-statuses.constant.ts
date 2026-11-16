@@ -1,4 +1,5 @@
 import { TwitchWebhookDeliveryStatus } from '@toxictoast/contracts-grpc';
+import { enumNames } from '../../../common/functions/index.js';
 
 export const WEBHOOK_DELIVERY_STATUS_QUERY = {
   pending: TwitchWebhookDeliveryStatus.TWITCH_WEBHOOK_DELIVERY_STATUS_PENDING,
@@ -7,10 +8,6 @@ export const WEBHOOK_DELIVERY_STATUS_QUERY = {
   failed: TwitchWebhookDeliveryStatus.TWITCH_WEBHOOK_DELIVERY_STATUS_FAILED,
 } as const;
 
-export const WEBHOOK_DELIVERY_STATUS_NAMES: Readonly<
-  Partial<Record<TwitchWebhookDeliveryStatus, string>>
-> = Object.fromEntries(
-  Object.entries(WEBHOOK_DELIVERY_STATUS_QUERY).map(([name, status]) => {
-    return [status, name];
-  }),
+export const WEBHOOK_DELIVERY_STATUS_NAMES = enumNames(
+  WEBHOOK_DELIVERY_STATUS_QUERY,
 );

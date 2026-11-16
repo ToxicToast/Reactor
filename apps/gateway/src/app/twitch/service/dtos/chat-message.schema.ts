@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { enumKeys } from '../../../common/functions/index.js';
+import { CHAT_DELETION_REASONS } from '../constants/index.js';
 
 export const ChatMessageSchema = z.object({
   message_id: z.string(),
@@ -14,5 +16,5 @@ export const ChatMessageSchema = z.object({
   session_id: z.uuid().optional(),
   sent_at: z.string(),
   deleted_at: z.string().optional(),
-  deleted_reason: z.enum(['deleted', 'banned', 'timed_out']).optional(),
+  deleted_reason: z.enum(enumKeys(CHAT_DELETION_REASONS)).optional(),
 });

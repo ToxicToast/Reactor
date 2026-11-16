@@ -1,5 +1,6 @@
 import type { AuditEntry } from '@toxictoast/audit-domain';
 import type { AuditEvent } from '@toxictoast/contracts-grpc';
+import { auditActorTypeToProto } from '../functions/index.js';
 
 export class AuditEventGrpcMapper {
   toProto(entry: AuditEntry): AuditEvent {
@@ -11,7 +12,7 @@ export class AuditEventGrpcMapper {
       aggregate_id: entry.aggregate_id,
       occurred_at: entry.occurred_at.toISOString(),
       actor: {
-        type: entry.actor_type,
+        type: auditActorTypeToProto(entry.actor_type),
         id: entry.actor_id ?? undefined,
         ip: entry.actor_ip ?? undefined,
       },

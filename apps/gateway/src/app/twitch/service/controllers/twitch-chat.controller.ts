@@ -1,12 +1,13 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import type { ListChatMessagesResponse } from '@toxictoast/contracts-grpc';
-import type { Observable } from 'rxjs';
+import { map, type Observable } from 'rxjs';
 import {
   ChannelIdParamDto,
   ChatMessageListResponseDto,
   ChatQueryDto,
 } from '../dtos/index.js';
+import { chatMessageView } from '../functions/index.js';
+import type { ChatMessageView } from '../interfaces/index.js';
 import { TwitchServiceGateway } from '../twitch-service.gateway.js';
 
 @ApiTags('Admin · Twitch')
@@ -20,7 +21,13 @@ export class TwitchChatController {
   list(
     @Param() { channel_id }: ChannelIdParamDto,
     @Query() { q, ...query }: ChatQueryDto,
-  ): Observable<ListChatMessagesResponse> {
-    return this.twitch.listChatMessages({ channel_id, ...query, query: q });
+  ): Observable<{ messages: Array<ChatMessageView> }> {
+    return this.twitch
+      .listChatMessages({ channel_id, ...query, query: q })
+      .pipe(
+        map((response) => {
+          return { messages: response.messages.map(chatMessageView) };
+        }),
+      );
   }
 }

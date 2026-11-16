@@ -1,4 +1,5 @@
-import type { AuditEvent } from '@toxictoast/contracts-grpc';
+import { AuditActorType, type AuditEvent } from '@toxictoast/contracts-grpc';
+import { AUDIT_ACTOR_TYPE_NAMES } from '../constants/index.js';
 import type { AuditEventView } from '../interfaces/index.js';
 
 const parsePayload = (json: string): unknown => {
@@ -10,6 +11,7 @@ const parsePayload = (json: string): unknown => {
 };
 
 export const auditEventView = (event: AuditEvent): AuditEventView => {
+  const type = event.actor?.type ?? AuditActorType.AUDIT_ACTOR_TYPE_UNKNOWN;
   return {
     event_id: event.event_id,
     event_namespace: event.event_namespace,
@@ -18,7 +20,7 @@ export const auditEventView = (event: AuditEvent): AuditEventView => {
     aggregate_id: event.aggregate_id,
     occurred_at: event.occurred_at,
     actor: {
-      type: event.actor?.type ?? 'unknown',
+      type: AUDIT_ACTOR_TYPE_NAMES[type] ?? type,
       id: event.actor?.id,
       ip: event.actor?.ip,
     },

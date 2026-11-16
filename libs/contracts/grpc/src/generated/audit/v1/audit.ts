@@ -9,8 +9,17 @@ import type { Metadata } from "@grpc/grpc-js";
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
 
+export enum AuditActorType {
+  AUDIT_ACTOR_TYPE_UNSPECIFIED = "AUDIT_ACTOR_TYPE_UNSPECIFIED",
+  AUDIT_ACTOR_TYPE_USER = "AUDIT_ACTOR_TYPE_USER",
+  AUDIT_ACTOR_TYPE_AI = "AUDIT_ACTOR_TYPE_AI",
+  AUDIT_ACTOR_TYPE_SYSTEM = "AUDIT_ACTOR_TYPE_SYSTEM",
+  AUDIT_ACTOR_TYPE_ANONYMOUS = "AUDIT_ACTOR_TYPE_ANONYMOUS",
+  AUDIT_ACTOR_TYPE_UNKNOWN = "AUDIT_ACTOR_TYPE_UNKNOWN",
+}
+
 export interface AuditActor {
-  type: string;
+  type: AuditActorType;
   id?: string | undefined;
   ip?: string | undefined;
 }
@@ -31,7 +40,7 @@ export interface AuditEvent {
 export interface ListEventsRequest {
   correlation_id?: string | undefined;
   actor_id?: string | undefined;
-  actor_type?: string | undefined;
+  actor_type?: AuditActorType | undefined;
   aggregate_id?: string | undefined;
   event_namespace?: string | undefined;
   from?: string | undefined;
