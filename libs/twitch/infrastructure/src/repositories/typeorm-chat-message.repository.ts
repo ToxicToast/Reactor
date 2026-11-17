@@ -12,10 +12,7 @@ import type {
 import type { DataSource, ObjectLiteral } from 'typeorm';
 import { insertOnce, whereWithin } from '../functions/index.js';
 import { TwitchChatMessageSchema } from '../schemas/index.js';
-
-/** sprachneutral, weil im Chat Deutsch, Englisch und Emotes gemischt sind */
-const TEXT_SEARCH =
-  "to_tsvector('simple', m.text) @@ websearch_to_tsquery('simple', :query)";
+import { CHAT_SEARCH } from '../constants/index.js';
 
 export class TypeOrmChatMessageRepository
   extends TypeOrmTableRepository<ChatMessage>
@@ -81,7 +78,7 @@ export class TypeOrmChatMessageRepository
       query.andWhere('m.deleted_at IS NULL');
     }
     if (filter.query !== null) {
-      query.andWhere(TEXT_SEARCH, { query: filter.query });
+      query.andWhere(CHAT_SEARCH.TEXT_QUERY, { query: filter.query });
     }
     return whereWithin(query, 'm.sent_at', filter)
       .orderBy('m.sent_at', 'DESC')

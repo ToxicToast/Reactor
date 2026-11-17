@@ -1,18 +1,12 @@
 import type { ChatMessage } from '@toxictoast/twitch-domain';
 import { EntitySchema } from 'typeorm';
-import { TWITCH_COLUMNS } from '../constants/index.js';
 import { primaryColumn } from '../functions/index.js';
 import {
+  codeColumn,
   externalIdColumn,
   twitchIdColumn,
   viewerColumns,
 } from './twitch.columns.js';
-
-const code = {
-  type: 'varchar',
-  length: TWITCH_COLUMNS.CODE_LENGTH,
-  nullable: true,
-} as const;
 
 export const TwitchChatMessageSchema = new EntitySchema<ChatMessage>({
   name: 'TwitchChatMessage',
@@ -22,14 +16,14 @@ export const TwitchChatMessageSchema = new EntitySchema<ChatMessage>({
     channel_id: twitchIdColumn,
     ...viewerColumns,
     text: { type: 'text' },
-    color: code,
+    color: codeColumn,
     badges: { type: 'text', array: true },
     bits: { type: 'int', default: 0 },
     reply_to_message_id: { ...externalIdColumn, nullable: true },
     session_id: { type: 'uuid', nullable: true },
     sent_at: { type: 'timestamptz' },
     deleted_at: { type: 'timestamptz', nullable: true },
-    deleted_reason: code,
+    deleted_reason: codeColumn,
   },
   indices: [
     {

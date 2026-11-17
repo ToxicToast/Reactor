@@ -3,3 +3,4 @@ export * from './twitch-feed-topics.constant.js';
 export * from './twitch-discord.constant.js';
 export * from './twitch-discord-embeds.constant.js';
 export * from './twitch-env.constant.js';
+export * from './chat-search.constant.js';

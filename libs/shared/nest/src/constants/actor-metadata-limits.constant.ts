@@ -1,0 +1,4 @@
+export const ACTOR_METADATA_LIMITS = {
+  ID_LENGTH: 64,
+  PERMISSION_LENGTH: 100,
+} as const;

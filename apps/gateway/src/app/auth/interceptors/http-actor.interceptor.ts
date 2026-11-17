@@ -12,8 +12,7 @@ import type { Request } from 'express';
 import { from, Observable, switchMap } from 'rxjs';
 import { actorFromToken } from '../functions/index.js';
 import { KeycloakTokenVerifier } from '../services/index.js';
-
-const BEARER = /^Bearer\s+(.+)$/i;
+import { KEYCLOAK_TOKEN } from '../constants/index.js';
 
 @Injectable()
 export class HttpActorInterceptor implements NestInterceptor {
@@ -54,7 +53,7 @@ export class HttpActorInterceptor implements NestInterceptor {
     if (!header) {
       return null;
     }
-    const match = BEARER.exec(header);
+    const match = KEYCLOAK_TOKEN.BEARER.exec(header);
     if (!match) {
       throw new UnauthorizedException('malformed authorization header');
     }
