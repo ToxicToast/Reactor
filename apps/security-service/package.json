@@ -111,7 +111,6 @@
     "@toxictoast/security-infrastructure": "*",
     "@toxictoast/shared-application": "*",
     "@toxictoast/shared-nest": "*",
-    "@toxictoast/shared-persistence": "*",
     "@nestjs/microservices": "^11.2.7",
     "@grpc/grpc-js": "^1.14.6",
     "typeorm": "^1.1.2",

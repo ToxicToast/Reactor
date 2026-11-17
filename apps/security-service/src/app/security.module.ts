@@ -15,16 +15,12 @@ import {
   TypeOrmIpBanRepository,
 } from '@toxictoast/security-infrastructure';
 import { DomainPersistence } from '@toxictoast/shared-application';
-import { provideClass, TOKENS } from '@toxictoast/shared-nest';
-import { TransactionContext } from '@toxictoast/shared-persistence';
-import { DataSource } from 'typeorm';
+import { DATABASE_INJECT, provideClass, TOKENS } from '@toxictoast/shared-nest';
 import { SECURITY_TOKENS } from './constants/index.js';
 
 const { BAN_POLICY_CONFIG } = SECURITY_TOKENS;
 const { IP_BAN_REPOSITORY, FAILED_ATTEMPT_COUNTER } = SECURITY_TOKENS;
 const { CLOCK, DOMAIN_CONTEXT, REDIS } = TOKENS;
-const DATABASE = [DataSource, TransactionContext];
-
 @Module({
   controllers: [BanGrpcController],
   providers: [
@@ -39,7 +35,7 @@ const DATABASE = [DataSource, TransactionContext];
     provideClass(IpBanFactory, [DOMAIN_CONTEXT]),
 
     // ── Infrastructure ──────────────────────────
-    provideClass(TypeOrmIpBanRepository, DATABASE, IP_BAN_REPOSITORY),
+    provideClass(TypeOrmIpBanRepository, DATABASE_INJECT, IP_BAN_REPOSITORY),
     provideClass(RedisFailedAttemptCounter, [REDIS], FAILED_ATTEMPT_COUNTER),
 
     // ── Use Cases ───────────────────────────────

@@ -3,3 +3,4 @@ export * from './actor-metadata.constant.js';
 export * from './grpc-loader-options.constant.js';
 export * from './correlation-metadata.constant.js';
 export * from './health.constant.js';
+export * from './database-inject.constant.js';

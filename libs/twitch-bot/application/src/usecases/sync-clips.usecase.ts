@@ -15,8 +15,7 @@ import type {
   PublishedClipLedger,
   TwitchClipSource,
 } from '../interfaces/index.js';
-
-const HOUR_MS = 3_600_000;
+import { TIME_MS } from '@toxictoast/shared-types';
 
 export class SyncClipsUseCase implements UseCase<void, SyncClipsOutput> {
   constructor(
@@ -39,7 +38,7 @@ export class SyncClipsUseCase implements UseCase<void, SyncClipsOutput> {
 
   private async sync(channel: TwitchChannelAnemic): Promise<number> {
     const since = new Date(
-      this.ctx.date.now().getTime() - this.lookbackHours * HOUR_MS,
+      this.ctx.date.now().getTime() - this.lookbackHours * TIME_MS.HOUR,
     );
     const clips = await this.source.listClips(channel, since);
     if (clips.length === 0) {

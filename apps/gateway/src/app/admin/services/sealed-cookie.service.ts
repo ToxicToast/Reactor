@@ -1,4 +1,8 @@
-import type { Nullable, Optional } from '@toxictoast/shared-types';
+import {
+  type Nullable,
+  type Optional,
+  TIME_MS,
+} from '@toxictoast/shared-types';
 import { parse } from 'cookie';
 import type { CookieOptions, Request, Response } from 'express';
 import { EncryptJWT, jwtDecrypt } from 'jose';
@@ -59,7 +63,7 @@ export class SealedCookie {
       sameSite: SEALED_COOKIE.SAME_SITE,
       secure: this.config.secureCookies,
       path,
-      maxAge: ttlSeconds * SEALED_COOKIE.MS_PER_SECOND,
+      maxAge: ttlSeconds * TIME_MS.SECOND,
     };
   }
 }

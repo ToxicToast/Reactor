@@ -20,9 +20,6 @@
   ],
   "references": [
     {
-      "path": "../../libs/shared/persistence/tsconfig.lib.json"
-    },
-    {
       "path": "../../libs/shared/nest/tsconfig.lib.json"
     },
     {

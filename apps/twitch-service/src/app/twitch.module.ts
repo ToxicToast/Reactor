@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DomainPersistence } from '@toxictoast/shared-application';
-import { provideClass, TOKENS } from '@toxictoast/shared-nest';
-import { TransactionContext } from '@toxictoast/shared-persistence';
+import { DATABASE_INJECT, provideClass, TOKENS } from '@toxictoast/shared-nest';
 import { DispatchWebhookEventUseCase } from '@toxictoast/shared-webhooks-application';
 import {
   TWITCH_API_TOKENS,
@@ -42,7 +41,6 @@ import {
   TypeOrmTwitchEventLog,
   TypeOrmViewerStatsRepository,
 } from '@toxictoast/twitch-infrastructure';
-import { DataSource } from 'typeorm';
 import { TWITCH_SERVICE_TOKENS } from './constants/index.js';
 import { TwitchFeedLifecycle } from './lifecycles/index.js';
 
@@ -62,8 +60,6 @@ const {
 } = TWITCH_SERVICE_TOKENS;
 
 const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
-const DATABASE = [DataSource, TransactionContext];
-
 @Module({
   controllers: [TwitchGrpcController],
   providers: [
@@ -83,42 +79,46 @@ const DATABASE = [DataSource, TransactionContext];
     // ── Infrastructure ──────────────────────────
     provideClass(
       TypeOrmStreamSessionRepository,
-      DATABASE,
+      DATABASE_INJECT,
       STREAM_SESSION_REPOSITORY,
     ),
     provideClass(
       TypeOrmChannelStatsRepository,
-      DATABASE,
+      DATABASE_INJECT,
       CHANNEL_STATS_REPOSITORY,
     ),
     provideClass(
       TypeOrmViewerStatsRepository,
-      DATABASE,
+      DATABASE_INJECT,
       VIEWER_STATS_REPOSITORY,
     ),
     provideClass(
       TypeOrmChatterActivityRepository,
-      DATABASE,
+      DATABASE_INJECT,
       CHATTER_ACTIVITY_REPOSITORY,
     ),
-    provideClass(TypeOrmPresenceRepository, DATABASE, PRESENCE_REPOSITORY),
+    provideClass(
+      TypeOrmPresenceRepository,
+      DATABASE_INJECT,
+      PRESENCE_REPOSITORY,
+    ),
     provideClass(
       TypeOrmRewardStatsRepository,
-      DATABASE,
+      DATABASE_INJECT,
       REWARD_STATS_REPOSITORY,
     ),
-    provideClass(TypeOrmPollRepository, DATABASE, POLL_REPOSITORY),
+    provideClass(TypeOrmPollRepository, DATABASE_INJECT, POLL_REPOSITORY),
     provideClass(
       TypeOrmChatMessageRepository,
-      DATABASE,
+      DATABASE_INJECT,
       CHAT_MESSAGE_REPOSITORY,
     ),
     provideClass(
       TypeOrmChannelDirectoryRepository,
-      DATABASE,
+      DATABASE_INJECT,
       CHANNEL_DIRECTORY_REPOSITORY,
     ),
-    provideClass(TypeOrmTwitchEventLog, DATABASE, TWITCH_EVENT_LOG),
+    provideClass(TypeOrmTwitchEventLog, DATABASE_INJECT, TWITCH_EVENT_LOG),
     provideClass(RedisTwitchFeed, [REDIS, REDIS_SUBSCRIBER]),
     { provide: TWITCH_API_TOKENS.FEED_SOURCE, useExisting: RedisTwitchFeed },
 
