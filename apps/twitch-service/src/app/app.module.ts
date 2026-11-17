@@ -24,6 +24,7 @@ import {
 } from '@toxictoast/twitch-infrastructure';
 import { TwitchModule } from './twitch.module.js';
 import { DiscordWebhookFormatter } from '@toxictoast/shared-webhooks-infrastructure';
+import { TWITCH_SERVICE_ENV } from './constants/index.js';
 
 @Module({
   imports: [
@@ -34,7 +35,7 @@ import { DiscordWebhookFormatter } from '@toxictoast/shared-webhooks-infrastruct
     }),
     RedisModule.forRoot({ subscriber: true }),
     WebhooksModule.forRoot({
-      secretKeyEnvPrefix: 'WEBHOOK_SECRET',
+      secretKeyEnvPrefix: TWITCH_SERVICE_ENV.WEBHOOK_SECRET_KEYRING_PREFIX,
       formatters: [new DiscordWebhookFormatter(TWITCH_DISCORD_EMBEDS)],
     }),
     MessagingModule.forRoot({

@@ -1,0 +1,3 @@
+export const TWITCH_SERVICE_ENV = {
+  WEBHOOK_SECRET_KEYRING_PREFIX: 'WEBHOOK_SECRET',
+} as const;

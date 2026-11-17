@@ -68,7 +68,7 @@ import {
 } from '@toxictoast/blog-infrastructure';
 import { DomainPersistence } from '@toxictoast/shared-application';
 import { DATABASE_INJECT, provideClass, TOKENS } from '@toxictoast/shared-nest';
-import { BLOG_TOKENS } from './constants/index.js';
+import { BLOG_DEFAULTS, BLOG_ENV, BLOG_TOKENS } from './constants/index.js';
 import { numberEnv } from '@toxictoast/shared-system';
 
 const { TAG_REPOSITORY, CATEGORY_REPOSITORY, MEDIA_REPOSITORY } = BLOG_TOKENS;
@@ -87,7 +87,11 @@ const { CLOCK, DOMAIN_CONTEXT, FILE_STORAGE } = TOKENS;
     // ── Configs ───────────────────────────────
     {
       provide: PENDING_MEDIA_MAX_AGE_HOURS,
-      useFactory: () => numberEnv('BLOG_PENDING_MEDIA_MAX_AGE_HOURS', 24),
+      useFactory: () =>
+        numberEnv(
+          BLOG_ENV.PENDING_MEDIA_MAX_AGE_HOURS,
+          BLOG_DEFAULTS.PENDING_MEDIA_MAX_AGE_HOURS,
+        ),
     },
     // ── Factories ───────────────────────────────
     provideClass(TagFactory, [DOMAIN_CONTEXT]),

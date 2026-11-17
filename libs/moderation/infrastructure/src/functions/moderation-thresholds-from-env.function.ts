@@ -1,5 +1,6 @@
 import type { ModerationThresholds } from '@toxictoast/moderation-domain';
 import { decimalEnv } from '@toxictoast/shared-system';
+import { MODERATION_DEFAULTS, MODERATION_ENV } from '../constants/index.js';
 
 const threshold = (
   name: string,
@@ -17,8 +18,20 @@ export const moderationThresholdsFromEnv = (
   source: NodeJS.ProcessEnv = process.env,
 ): ModerationThresholds => {
   return {
-    approve: threshold('MODERATION_APPROVE_THRESHOLD', 0.95, source),
-    spam: threshold('MODERATION_SPAM_THRESHOLD', 0.85, source),
-    hate: threshold('MODERATION_HATE_THRESHOLD', 0.85, source),
+    approve: threshold(
+      MODERATION_ENV.APPROVE_THRESHOLD,
+      MODERATION_DEFAULTS.APPROVE_THRESHOLD,
+      source,
+    ),
+    spam: threshold(
+      MODERATION_ENV.SPAM_THRESHOLD,
+      MODERATION_DEFAULTS.SPAM_THRESHOLD,
+      source,
+    ),
+    hate: threshold(
+      MODERATION_ENV.HATE_THRESHOLD,
+      MODERATION_DEFAULTS.HATE_THRESHOLD,
+      source,
+    ),
   };
 };

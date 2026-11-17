@@ -48,7 +48,7 @@ import {
   type TwitchConfig,
   TwitchTokenSchema,
 } from '@toxictoast/twitch-bot-infrastructure';
-import { TWITCH_BOT_TOKENS } from './constants/index.js';
+import { TWITCH_BOT_ENV, TWITCH_BOT_TOKENS } from './constants/index.js';
 import { TwitchSubscriptionLifecycle } from './lifecycles/index.js';
 import { PrometheusTwitchBotMetrics } from './metrics/index.js';
 import { TwitchReadinessProbe } from './probes/index.js';
@@ -76,7 +76,8 @@ const logError = (error: unknown, context: string): void => {
     },
     {
       provide: TOKEN_CIPHER,
-      useFactory: () => new SecretCipher(secretKeyringEnv('TWITCH_TOKEN')),
+      useFactory: () =>
+        new SecretCipher(secretKeyringEnv(TWITCH_BOT_ENV.TOKEN_KEYRING_PREFIX)),
     },
     provideSecretRotation(TOKEN_CIPHER, TwitchTokenSchema, [
       'access_token',
