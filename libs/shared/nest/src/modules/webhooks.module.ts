@@ -35,7 +35,12 @@ import {
   WebhookSchema,
 } from '@toxictoast/shared-webhooks-infrastructure';
 import { DataSource } from 'typeorm';
-import { DATABASE_INJECT, TOKENS } from '../constants/index.js';
+import {
+  DATABASE_INJECT,
+  SERVICE_DEFAULTS,
+  SERVICE_ENV,
+  TOKENS,
+} from '../constants/index.js';
 import { provideClass, provideSecretRotation } from '../functions/index.js';
 import type { WebhooksModuleOptions } from '../interfaces/index.js';
 import { PollingWorkerLifecycle } from '../lifecycles/index.js';
@@ -154,7 +159,10 @@ export class WebhooksModule {
               clock,
             );
             return new PollingWorker(relay, {
-              intervalMs: numberEnv('WEBHOOK_INTERVAL_MS', 1000),
+              intervalMs: numberEnv(
+                SERVICE_ENV.WEBHOOK_INTERVAL_MS,
+                SERVICE_DEFAULTS.WEBHOOK_INTERVAL_MS,
+              ),
               onError: (error) => {
                 logger.error('Webhook relay failed', describeError(error));
               },

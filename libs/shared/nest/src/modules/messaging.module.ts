@@ -16,6 +16,8 @@ import {
   TopicProvisioner,
   type EventPublisher,
   type StringProducer,
+  MESSAGING_ENV,
+  MESSAGING_DEFAULTS,
 } from '@toxictoast/shared-messaging';
 import {
   ActorContext,
@@ -46,7 +48,10 @@ const outboxProviders = (logger: Logger): Array<Provider> => {
           new AdvisoryLock(dataSource),
           publisher,
           clock,
-          numberEnv('OUTBOX_BATCH_SIZE', 100),
+          numberEnv(
+            MESSAGING_ENV.OUTBOX_BATCH_SIZE,
+            MESSAGING_DEFAULTS.OUTBOX_BATCH_SIZE,
+          ),
         );
       },
     },
@@ -55,7 +60,10 @@ const outboxProviders = (logger: Logger): Array<Provider> => {
       inject: [OutboxRelay],
       useFactory: (relay: OutboxRelay) => {
         return new PollingWorker(relay, {
-          intervalMs: numberEnv('OUTBOX_INTERVAL_MS', 500),
+          intervalMs: numberEnv(
+            MESSAGING_ENV.OUTBOX_INTERVAL_MS,
+            MESSAGING_DEFAULTS.OUTBOX_INTERVAL_MS,
+          ),
           onError: (error) => {
             logger.error('Outbox relay failed', describeError(error));
           },
@@ -138,7 +146,12 @@ export class MessagingModule {
           useFactory: async (
             consumer: Nullable<KafkaEventConsumer>,
           ): Promise<Nullable<TopicProvisioner>> => {
-            if (!booleanEnv('KAFKA_AUTO_CREATE_TOPICS', true)) {
+            if (
+              !booleanEnv(
+                MESSAGING_ENV.AUTO_CREATE_TOPICS,
+                MESSAGING_DEFAULTS.AUTO_CREATE_TOPICS,
+              )
+            ) {
               return null;
             }
             const topics = [
@@ -149,8 +162,14 @@ export class MessagingModule {
               await createKafkaAdmin(kafkaConfigFromEnv()),
               topics,
               {
-                partitions: numberEnv('KAFKA_TOPIC_PARTITIONS', 3),
-                replicas: numberEnv('KAFKA_TOPIC_REPLICAS', 1),
+                partitions: numberEnv(
+                  MESSAGING_ENV.TOPIC_PARTITIONS,
+                  MESSAGING_DEFAULTS.TOPIC_PARTITIONS,
+                ),
+                replicas: numberEnv(
+                  MESSAGING_ENV.TOPIC_REPLICAS,
+                  MESSAGING_DEFAULTS.TOPIC_REPLICAS,
+                ),
                 retentionMs: options.topicRetentionMs,
               },
             );

@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import type { GrpcOptions } from '@nestjs/microservices';
 import { CorrelationContext, numberEnv } from '@toxictoast/shared-system';
 import type { Optional } from '@toxictoast/shared-types';
+import { SERVICE_DEFAULTS, SERVICE_ENV } from '../constants/index.js';
 import type { GrpcServerConfig } from '../interfaces/index.js';
 import { CorrelationLogger } from '../loggers/index.js';
 import { createGrpcOptions } from './create-grpc-options.function.js';
@@ -20,5 +21,7 @@ export const bootstrapService = async (
     });
     await app.startAllMicroservices();
   }
-  await app.listen(numberEnv('HTTP_PORT', 3000));
+  await app.listen(
+    numberEnv(SERVICE_ENV.HTTP_PORT, SERVICE_DEFAULTS.HTTP_PORT),
+  );
 };

@@ -1,0 +1,11 @@
+export const SERVICE_ENV = {
+  HTTP_PORT: 'HTTP_PORT',
+  GRPC_URL: 'GRPC_URL',
+  WEBHOOK_INTERVAL_MS: 'WEBHOOK_INTERVAL_MS',
+} as const;
+
+export const SERVICE_DEFAULTS = {
+  HTTP_PORT: 3000,
+  GRPC_URL: '0.0.0.0:50051',
+  WEBHOOK_INTERVAL_MS: 1000,
+} as const;

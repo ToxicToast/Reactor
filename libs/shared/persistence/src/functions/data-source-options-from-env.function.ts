@@ -1,5 +1,6 @@
 import { numberEnv, requiredEnv } from '@toxictoast/shared-system';
 import type { DataSourceOptions } from 'typeorm';
+import { DATABASE_DEFAULTS, DATABASE_ENV } from '../constants/index.js';
 import type { DataSourceConfig } from '../interfaces/index.js';
 
 export const dataSourceOptionsFromEnv = (
@@ -8,13 +9,13 @@ export const dataSourceOptionsFromEnv = (
 ): DataSourceOptions => {
   return {
     type: 'postgres',
-    host: requiredEnv('DB_HOST', source),
-    port: numberEnv('DB_PORT', 5432, source),
-    username: requiredEnv('DB_USER', source),
-    password: requiredEnv('DB_PASSWORD', source),
-    database: requiredEnv('DB_NAME', source),
+    host: requiredEnv(DATABASE_ENV.HOST, source),
+    port: numberEnv(DATABASE_ENV.PORT, DATABASE_DEFAULTS.PORT, source),
+    username: requiredEnv(DATABASE_ENV.USER, source),
+    password: requiredEnv(DATABASE_ENV.PASSWORD, source),
+    database: requiredEnv(DATABASE_ENV.NAME, source),
     entities: config.schemas,
     migrations: config.migrations,
-    migrationsTableName: 'migrations',
+    migrationsTableName: DATABASE_DEFAULTS.MIGRATIONS_TABLE,
   };
 };
