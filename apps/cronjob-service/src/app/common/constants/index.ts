@@ -1,1 +1,1 @@
-export * from './timezone.constant';
+export * from './timezone.constant.js';

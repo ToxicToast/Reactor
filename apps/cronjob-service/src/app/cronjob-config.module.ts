@@ -1,13 +1,13 @@
 import { Global, Module } from '@nestjs/common';
-import { CRONJOB_TOKENS } from './constants/index.js';
 import { uuidEnv } from '@toxictoast/shared-system';
+import { CRONJOB_ENV, CRONJOB_TOKENS } from './constants/index.js';
 
 @Global()
 @Module({
   providers: [
     {
       provide: CRONJOB_TOKENS.ACTOR_ID,
-      useFactory: () => uuidEnv('CRONJOB_ACTOR_ID'),
+      useFactory: () => uuidEnv(CRONJOB_ENV.ACTOR_ID),
     },
   ],
   exports: [CRONJOB_TOKENS.ACTOR_ID],

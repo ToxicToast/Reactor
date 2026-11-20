@@ -2,7 +2,10 @@ import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { TWITCH_GRPC_CLIENT } from '@toxictoast/contracts-grpc';
+import {
+  TWITCH_GRPC_CLIENT,
+  GRPC_CLIENT_ENV,
+} from '@toxictoast/contracts-grpc';
 import {
   TWITCH_PACKAGE,
   TWITCH_PROTO_FILES,
@@ -23,7 +26,7 @@ import { TwitchSchedules } from './twitch.schedules.js';
       name: TWITCH_GRPC_CLIENT,
       package: TWITCH_PACKAGE,
       protoPath: TWITCH_PROTO_FILES,
-      urlEnv: 'TWITCH_GRPC_URL',
+      urlEnv: GRPC_CLIENT_ENV.TWITCH,
     }),
   ],
   providers: [TwitchProcessor, TwitchSchedules],
