@@ -40,7 +40,7 @@
     "@toxictoast/twitch-domain": "*",
     "@toxictoast/contracts-events": "*",
     "@toxictoast/shared-kernel": "*",
-    "ioredis": "^5.11.1",
+    "ioredis": "^6.0.0",
     "typeorm": "^1.1.2"
   }
 }
