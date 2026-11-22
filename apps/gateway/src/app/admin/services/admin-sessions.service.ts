@@ -1,7 +1,6 @@
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import type { Actor } from '@toxictoast/shared-kernel';
 import type { Nullable } from '@toxictoast/shared-types';
-import { parse } from 'cookie';
 import type { Request } from 'express';
 import { ADMIN_COOKIES, ADMIN_MESSAGES } from '../constants/index.js';
 import { adminActor, missingPermissionMessage } from '../functions/index.js';
@@ -12,9 +11,7 @@ export class AdminSessions {
   constructor(private readonly cookies: SealedCookie) {}
 
   open(request: Request): Promise<Nullable<AdminSession>> {
-    return this.cookies.open<AdminSession>(
-      parse(request.headers.cookie ?? '')[ADMIN_COOKIES.SESSION],
-    );
+    return this.cookies.read<AdminSession>(request, ADMIN_COOKIES.SESSION);
   }
 
   async requireActor(request: Request, permission: string): Promise<Actor> {

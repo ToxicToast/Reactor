@@ -1,0 +1,7 @@
+export const BAN_POLICY_DEFAULTS = {
+  THRESHOLD: 20,
+  WINDOW_SECONDS: 300,
+  DURATIONS_MINUTES: ['30', '120', '720', '10080'],
+  STRIKE_WINDOW_DAYS: 30,
+  ALLOWLIST: ['127.0.0.1', '::1'],
+} as const;

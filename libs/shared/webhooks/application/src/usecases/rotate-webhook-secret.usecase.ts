@@ -8,7 +8,6 @@ import type {
   WebhookAnemic,
   WebhookDomain,
   WebhookFactory,
-  WebhookId,
   WebhookRepository,
 } from '@toxictoast/shared-webhooks-domain';
 import type { WebhookIdInput, WebhookWithSecret } from '../data/index.js';
@@ -32,9 +31,9 @@ export class RotateWebhookSecretUseCase implements UseCase<
 
   async execute(input: WebhookIdInput): Promise<Result<WebhookWithSecret>> {
     const secret = this.secrets.generate();
-    const webhook = await this.editor.change(input.id as WebhookId, (domain) =>
-      domain.rotateSecret(secret),
-    );
+    const webhook = await this.editor.change(input.id, (domain) => {
+      return domain.rotateSecret(secret);
+    });
     if (webhook.isFailure) {
       return Result.fail(webhook.error);
     }

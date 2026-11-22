@@ -47,7 +47,7 @@ export class DeleteCategoryUseCase implements UseCase<
       return allowed;
     }
 
-    category.deleteCategory();
+    category.delete();
     return Result.ok();
   }
 }

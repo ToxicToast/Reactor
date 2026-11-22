@@ -1,11 +1,12 @@
 import { Result, ValidationError } from '@toxictoast/shared-kernel';
 import type { Nullable, Optional } from '@toxictoast/shared-types';
-import { WEBHOOK_LIMITS, WebhookFormats } from '../constants/index.js';
+import {
+  WEBHOOK_LIMITS,
+  WEBHOOK_VALIDATION,
+  WebhookFormats,
+} from '../constants/index.js';
 import type { WebhookData, WebhookDataInput } from '../data/index.js';
 import { isWebhookFormat } from './is-webhook-format.function.js';
-
-const EVENT_PATTERN = /^(\*|[a-z0-9_-]+(\.[a-z0-9_-]+)*(\.\*)?)$/;
-const PROTOCOLS: ReadonlySet<string> = new Set(['http:', 'https:']);
 
 const normalizeDescription = (
   description: Optional<Nullable<string>>,
@@ -22,7 +23,7 @@ export const normalizeWebhookData = (
     return Result.fail(new ValidationError(`Invalid webhook url ${data.url}`));
   }
   const parsed = new URL(url);
-  if (!PROTOCOLS.has(parsed.protocol)) {
+  if (!WEBHOOK_VALIDATION.URL_PROTOCOLS.has(parsed.protocol)) {
     return Result.fail(
       new ValidationError('Webhook url must use http or https'),
     );
@@ -41,7 +42,19 @@ export const normalizeWebhookData = (
       ),
     );
   }
-  const invalid = events.filter((event) => !EVENT_PATTERN.test(event));
+  const tooLong = events.filter((event) => {
+    return event.length > WEBHOOK_LIMITS.EVENT_KEY_LENGTH;
+  });
+  if (tooLong.length > 0) {
+    return Result.fail(
+      new ValidationError(
+        `Event patterns must be at most ${WEBHOOK_LIMITS.EVENT_KEY_LENGTH} characters`,
+      ),
+    );
+  }
+  const invalid = events.filter((event) => {
+    return !WEBHOOK_VALIDATION.EVENT_PATTERN.test(event);
+  });
   if (invalid.length > 0) {
     return Result.fail(
       new ValidationError(`Invalid event patterns: ${invalid.join(', ')}`),

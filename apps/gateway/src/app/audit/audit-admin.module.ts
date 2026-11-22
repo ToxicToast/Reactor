@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AUDIT_GRPC_CLIENT } from '@toxictoast/contracts-grpc';
+import { AUDIT_GRPC_CLIENT, GRPC_CLIENT_ENV } from '@toxictoast/contracts-grpc';
 import { AUDIT_PACKAGE, AUDIT_PROTO_FILES } from '@toxictoast/contracts-proto';
 import { GrpcClientModule, provideClass } from '@toxictoast/shared-nest';
 import { GrpcModule } from '../grpc/grpc.module.js';
@@ -14,7 +14,7 @@ import { AuditGateway } from './audit.gateway.js';
       name: AUDIT_GRPC_CLIENT,
       package: AUDIT_PACKAGE,
       protoPath: AUDIT_PROTO_FILES,
-      urlEnv: 'AUDIT_GRPC_URL',
+      urlEnv: GRPC_CLIENT_ENV.AUDIT,
     }),
   ],
   controllers: [AuditController],

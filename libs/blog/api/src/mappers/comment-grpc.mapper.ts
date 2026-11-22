@@ -8,7 +8,7 @@ import type { Optional } from '@toxictoast/shared-types';
 import {
   COMMENT_MODERATOR_TO_GRPC,
   COMMENT_STATUS_TO_GRPC,
-} from '../mappings/index.js';
+} from '../constants/index.js';
 
 export class CommentGrpcMapper {
   toProto(anemic: CommentAnemic): Comment {

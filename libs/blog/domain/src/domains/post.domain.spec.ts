@@ -192,7 +192,7 @@ describe('PostDomain', () => {
 
     it('refuses to update a deleted post', () => {
       const post = createPost();
-      post.deletePost();
+      post.delete();
 
       const result = post.updatePost({ title: 'Neu' });
 
@@ -278,7 +278,7 @@ describe('PostDomain', () => {
 
     it('refuses a deleted post', () => {
       const post = createPost();
-      post.deletePost();
+      post.delete();
 
       const result = post.publishPost();
 
@@ -334,7 +334,7 @@ describe('PostDomain', () => {
 
     it('refuses to archive a deleted post', () => {
       const post = createPublishedPost();
-      post.deletePost();
+      post.delete();
 
       const result = post.archivePost();
 
@@ -347,10 +347,10 @@ describe('PostDomain', () => {
     it('soft-deletes and restores the post', () => {
       const post = createPost();
 
-      post.deletePost();
+      post.delete();
       expect(post.toAnemic().deleted_at).toEqual(NOW);
 
-      post.restorePost();
+      post.restore();
       expect(post.toAnemic().deleted_at).toBeNull();
 
       expect(post.toEvents().map((e) => e.event_name)).toEqual([
@@ -362,8 +362,8 @@ describe('PostDomain', () => {
     it('keeps the status through delete and restore', () => {
       const post = createArchivedPost();
 
-      post.deletePost();
-      post.restorePost();
+      post.delete();
+      post.restore();
 
       expect(post.toAnemic().status).toBe(PostStatus.ARCHIVED);
     });

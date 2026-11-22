@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "@toxictoast/moderation-application": "*",
-    "@toxictoast/contracts-events": "*",
     "@toxictoast/shared-kernel": "*",
     "@nestjs/common": "^11.0.0"
   },

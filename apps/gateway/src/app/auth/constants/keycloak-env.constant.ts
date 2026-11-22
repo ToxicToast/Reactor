@@ -1,0 +1,11 @@
+export const KEYCLOAK_ENV = {
+  ISSUER: 'KEYCLOAK_ISSUER',
+  AUDIENCE: 'KEYCLOAK_AUDIENCE',
+  AGENT_CLIENT_PREFIX: 'KEYCLOAK_AGENT_CLIENT_PREFIX',
+} as const;
+
+export const KEYCLOAK_DEFAULTS = {
+  AUDIENCE: 'azkaban-api',
+  AGENT_CLIENT_PREFIX: 'azkaban-agent-',
+  TRAILING_SLASHES: /\/+$/,
+} as const;

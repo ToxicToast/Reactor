@@ -1,9 +1,9 @@
-import type { Chainable, Nullable, Optional } from '@toxictoast/shared-types';
 import type { Repository } from '@toxictoast/shared-kernel';
+import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type { PostAnemic } from '../anemics/index.js';
 import type { PostFilter } from '../data/index.js';
 
-interface AdditionalMethods {
+export interface PostRepository extends Repository<PostAnemic> {
   findBySlug(
     slug: string,
     withDeleted?: Optional<boolean>,
@@ -14,8 +14,3 @@ interface AdditionalMethods {
     offset?: Optional<number>,
   ): Promise<Array<PostAnemic>>;
 }
-
-export type PostRepository = Chainable<
-  Repository<PostAnemic>,
-  AdditionalMethods
->;

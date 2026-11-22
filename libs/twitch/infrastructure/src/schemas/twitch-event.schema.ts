@@ -1,21 +1,19 @@
 import type { RecordedTwitchEvent } from '@toxictoast/twitch-application';
 import { EntitySchema } from 'typeorm';
-import { TWITCH_COLUMNS } from '../constants/index.js';
 import { primaryColumn } from '../functions/index.js';
-import { externalIdColumn, twitchIdColumn } from './twitch.columns.js';
-
-const keyPart = {
-  type: 'varchar',
-  length: TWITCH_COLUMNS.KEY_PART_LENGTH,
-} as const;
+import {
+  externalIdColumn,
+  keyPartColumn,
+  twitchIdColumn,
+} from './twitch.columns.js';
 
 export const TwitchEventSchema = new EntitySchema<RecordedTwitchEvent>({
   name: 'TwitchEvent',
   tableName: 'twitch_events',
   columns: {
     event_id: primaryColumn(externalIdColumn),
-    topic: keyPart,
-    name: keyPart,
+    topic: keyPartColumn,
+    name: keyPartColumn,
     channel_id: twitchIdColumn,
     occurred_at: { type: 'timestamptz' },
     payload: { type: 'jsonb' },

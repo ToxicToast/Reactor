@@ -1,9 +1,8 @@
 import { ActorType, type Actor } from '@toxictoast/shared-kernel';
 import type { Nullable } from '@toxictoast/shared-types';
 import type { JWTPayload } from 'jose';
+import { KEYCLOAK_TOKEN } from '../constants/index.js';
 import type { KeycloakConfig } from '../interfaces/index.js';
-
-const SERVICE_ACCOUNT_PREFIX = 'service-account-';
 
 const rolesOf = (
   payload: JWTPayload,
@@ -25,7 +24,7 @@ const serviceAccountClientOf = (payload: JWTPayload): Nullable<string> => {
   const username = payload['preferred_username'];
   if (
     typeof username !== 'string' ||
-    !username.startsWith(SERVICE_ACCOUNT_PREFIX)
+    !username.startsWith(KEYCLOAK_TOKEN.SERVICE_ACCOUNT_PREFIX)
   ) {
     return null;
   }
@@ -34,7 +33,7 @@ const serviceAccountClientOf = (payload: JWTPayload): Nullable<string> => {
   if (typeof client === 'string') {
     return client;
   }
-  return username.slice(SERVICE_ACCOUNT_PREFIX.length);
+  return username.slice(KEYCLOAK_TOKEN.SERVICE_ACCOUNT_PREFIX.length);
 };
 
 const typeOf = (payload: JWTPayload, agentClientPrefix: string): ActorType => {

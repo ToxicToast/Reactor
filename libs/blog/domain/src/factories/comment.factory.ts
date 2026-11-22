@@ -48,7 +48,7 @@ export class CommentFactory implements Factory<
       },
       this.ctx,
     );
-    domain.createComment();
+    domain.create();
     return Result.ok(domain);
   }
 }

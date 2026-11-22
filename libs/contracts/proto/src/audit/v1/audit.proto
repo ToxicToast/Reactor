@@ -2,13 +2,23 @@ syntax = "proto3";
 
 package audit.v1;
 
+enum AuditActorType {
+  AUDIT_ACTOR_TYPE_UNSPECIFIED = 0;
+  AUDIT_ACTOR_TYPE_USER = 1;
+  AUDIT_ACTOR_TYPE_AI = 2;
+  AUDIT_ACTOR_TYPE_SYSTEM = 3;
+  AUDIT_ACTOR_TYPE_ANONYMOUS = 4;
+  AUDIT_ACTOR_TYPE_UNKNOWN = 5;
+}
+
 service AuditService {
   rpc ListEvents(ListEventsRequest) returns (ListEventsResponse);
   rpc PurgeExpiredEvents(PurgeExpiredEventsRequest) returns (PurgeExpiredEventsResponse);
 }
 
 message AuditActor {
-  string type = 1;
+  reserved 1;
+  AuditActorType type = 4;
   optional string id = 2;
   optional string ip = 3;
 }
@@ -27,9 +37,10 @@ message AuditEvent {
 }
 
 message ListEventsRequest {
+  reserved 3;
   optional string correlation_id = 1;
   optional string actor_id = 2;
-  optional string actor_type = 3;
+  optional AuditActorType actor_type = 10;
   optional string aggregate_id = 4;
   optional string event_namespace = 5;
   optional string from = 6;

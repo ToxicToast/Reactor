@@ -28,7 +28,7 @@ export class RestorePostUseCase implements UseCase<PostIdInput, PostAnemic> {
   execute(input: PostIdInput): Promise<Result<PostAnemic>> {
     return this.editor.change(
       input.id,
-      (post) => post.restorePost(),
+      (post) => post.restore(),
       INCLUDING_DELETED,
     );
   }

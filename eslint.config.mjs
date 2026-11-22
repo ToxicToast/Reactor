@@ -35,6 +35,7 @@ const appRuntimePackages = [
   'express',
   'pg',
   'ioredis',
+  'typeorm',
 ];
 
 const dependencyChecks = (files, ignoredDependencies) => ({

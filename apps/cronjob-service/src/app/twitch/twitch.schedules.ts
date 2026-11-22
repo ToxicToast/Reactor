@@ -3,7 +3,11 @@ import { Injectable } from '@nestjs/common';
 import type { Queue } from 'bullmq';
 import type { ScheduledJob } from '../common/interfaces/index.js';
 import { JobSchedules } from '../common/schedules/index.js';
-import { TWITCH_QUEUE, TwitchJobs } from './constants/index.js';
+import {
+  TWITCH_QUEUE,
+  TWITCH_SCHEDULES,
+  TwitchJobs,
+} from './constants/index.js';
 
 @Injectable()
 export class TwitchSchedules extends JobSchedules {
@@ -15,8 +19,8 @@ export class TwitchSchedules extends JobSchedules {
     return [
       {
         name: TwitchJobs.CHAT_PURGE_EXPIRED,
-        patternEnv: 'TWITCH_CHAT_PURGE_CRON',
-        defaultPattern: '45 3 * * *',
+        patternEnv: TWITCH_SCHEDULES.CHAT_PURGE.PATTERN_ENV,
+        defaultPattern: TWITCH_SCHEDULES.CHAT_PURGE.DEFAULT_PATTERN,
       },
     ];
   }

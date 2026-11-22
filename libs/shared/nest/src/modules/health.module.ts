@@ -6,6 +6,7 @@ import {
   ConsumerHealthIndicator,
   DatabaseHealthIndicator,
   ProbeHealthIndicator,
+  RedisHealthIndicator,
 } from '../indicators/index.js';
 import type { HealthModuleOptions } from '../interfaces/index.js';
 
@@ -15,6 +16,9 @@ export class HealthModule {
     const providers: Array<Provider> = [];
     if (options.database) {
       providers.push(DatabaseHealthIndicator);
+    }
+    if (options.redis) {
+      providers.push(RedisHealthIndicator);
     }
     if (options.replay) {
       providers.push(ConsumerHealthIndicator);

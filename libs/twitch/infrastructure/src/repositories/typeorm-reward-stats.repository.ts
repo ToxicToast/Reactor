@@ -10,16 +10,8 @@ import type {
 } from '@toxictoast/twitch-domain';
 import type { DataSource } from 'typeorm';
 import { incrementCounters, whereWithin } from '../functions/index.js';
-import type { RewardDayRow } from '../interfaces/index.js';
+import type { RawRewardStat, RewardDayRow } from '../interfaces/index.js';
 import { TwitchRewardDaySchema, TwitchRewardSchema } from '../schemas/index.js';
-
-interface RawRewardStat {
-  reward_id: string;
-  title: string;
-  cost: number;
-  redemptions: string;
-  points_spent: string;
-}
 
 export class TypeOrmRewardStatsRepository
   extends TypeOrmTableRepository<RewardDayRow>

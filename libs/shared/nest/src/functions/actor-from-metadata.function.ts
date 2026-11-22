@@ -1,11 +1,8 @@
 import { isIP } from 'node:net';
 import { ActorType, isActorType, type Actor } from '@toxictoast/shared-kernel';
 import type { Nullable } from '@toxictoast/shared-types';
-import { ACTOR_METADATA } from '../constants/index.js';
 import type { GrpcMetadata } from '../interfaces/index.js';
-
-const MAX_ID_LENGTH = 64;
-const MAX_PERMISSION_LENGTH = 100;
+import { ACTOR_METADATA, ACTOR_METADATA_LIMITS } from '../constants/index.js';
 
 const read = (metadata: GrpcMetadata, key: string): Nullable<string> => {
   const value = metadata.get(key)[0];
@@ -30,7 +27,7 @@ const readIp = (metadata: GrpcMetadata): Nullable<string> => {
 
 const readId = (metadata: GrpcMetadata): Nullable<string> => {
   const id = read(metadata, ACTOR_METADATA.ID);
-  if (id === null || id.length > MAX_ID_LENGTH) {
+  if (id === null || id.length > ACTOR_METADATA_LIMITS.ID_LENGTH) {
     return null;
   }
   return id;
@@ -47,7 +44,8 @@ const readPermissions = (metadata: GrpcMetadata): ReadonlyArray<string> => {
     .map((permission) => permission.trim())
     .filter((permission) => {
       return (
-        permission.length > 0 && permission.length <= MAX_PERMISSION_LENGTH
+        permission.length > 0 &&
+        permission.length <= ACTOR_METADATA_LIMITS.PERMISSION_LENGTH
       );
     });
   return [...new Set(permissions)];

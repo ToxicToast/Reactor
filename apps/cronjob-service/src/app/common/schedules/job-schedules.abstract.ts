@@ -1,9 +1,10 @@
 import { Logger, type OnApplicationBootstrap } from '@nestjs/common';
 import { optionalEnv } from '@toxictoast/shared-system';
 import type { Queue } from 'bullmq';
+import { CRONJOB_ENV } from '../../constants/index.js';
 import { defaultJobOptionsFromEnv } from '../../functions/index.js';
-import type { ScheduledJob } from '../interfaces/index.js';
 import { DEFAULT_TIMEZONE } from '../constants/index.js';
+import type { ScheduledJob } from '../interfaces/index.js';
 
 export abstract class JobSchedules implements OnApplicationBootstrap {
   private readonly logger = new Logger(this.constructor.name);
@@ -13,7 +14,7 @@ export abstract class JobSchedules implements OnApplicationBootstrap {
   protected abstract jobs(): ReadonlyArray<ScheduledJob>;
 
   async onApplicationBootstrap(): Promise<void> {
-    const tz = optionalEnv('CRONJOB_TIMEZONE', undefined) ?? DEFAULT_TIMEZONE;
+    const tz = optionalEnv(CRONJOB_ENV.TIMEZONE, undefined) ?? DEFAULT_TIMEZONE;
     for (const job of this.jobs()) {
       await this.schedule(job, tz);
     }

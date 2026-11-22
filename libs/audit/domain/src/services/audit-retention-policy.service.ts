@@ -1,9 +1,8 @@
+import { TIME_MS } from '@toxictoast/shared-types';
 import type {
   AuditPurgeRule,
   AuditRetentionConfig,
 } from '../interfaces/index.js';
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 const assertDays = (name: string, days: number): void => {
   if (!Number.isInteger(days) || days < 1) {
@@ -38,6 +37,6 @@ export class AuditRetentionPolicy {
   }
 
   private daysBefore(now: Date, days: number): Date {
-    return new Date(now.getTime() - days * DAY_MS);
+    return new Date(now.getTime() - days * TIME_MS.DAY);
   }
 }

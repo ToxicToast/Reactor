@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import type { Queue } from 'bullmq';
 import type { ScheduledJob } from '../common/interfaces/index.js';
 import { JobSchedules } from '../common/schedules/index.js';
-import { AUDIT_QUEUE, AuditJobs } from './constants/index.js';
+import { AUDIT_QUEUE, AUDIT_SCHEDULES, AuditJobs } from './constants/index.js';
 
 @Injectable()
 export class AuditSchedules extends JobSchedules {
@@ -15,8 +15,8 @@ export class AuditSchedules extends JobSchedules {
     return [
       {
         name: AuditJobs.PURGE_EXPIRED,
-        patternEnv: 'AUDIT_PURGE_CRON',
-        defaultPattern: '30 3 * * *',
+        patternEnv: AUDIT_SCHEDULES.PURGE_EXPIRED.PATTERN_ENV,
+        defaultPattern: AUDIT_SCHEDULES.PURGE_EXPIRED.DEFAULT_PATTERN,
       },
     ];
   }

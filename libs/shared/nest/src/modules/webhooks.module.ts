@@ -1,10 +1,7 @@
 import { Logger, Module, type DynamicModule } from '@nestjs/common';
 import { DomainPersistence } from '@toxictoast/shared-application';
 import type { Clock } from '@toxictoast/shared-kernel';
-import {
-  AdvisoryLock,
-  TransactionContext,
-} from '@toxictoast/shared-persistence';
+import { AdvisoryLock } from '@toxictoast/shared-persistence';
 import {
   describeError,
   numberEnv,
@@ -38,7 +35,12 @@ import {
   WebhookSchema,
 } from '@toxictoast/shared-webhooks-infrastructure';
 import { DataSource } from 'typeorm';
-import { TOKENS } from '../constants/index.js';
+import {
+  DATABASE_INJECT,
+  SERVICE_DEFAULTS,
+  SERVICE_ENV,
+  TOKENS,
+} from '../constants/index.js';
 import { provideClass, provideSecretRotation } from '../functions/index.js';
 import type { WebhooksModuleOptions } from '../interfaces/index.js';
 import { PollingWorkerLifecycle } from '../lifecycles/index.js';
@@ -47,7 +49,6 @@ const { CLOCK, DOMAIN_CONTEXT } = TOKENS;
 const { WEBHOOK_REPOSITORY, WEBHOOK_DELIVERY_REPOSITORY } = TOKENS;
 const { WEBHOOK_SECRET_CIPHER, WEBHOOK_SECRET_GENERATOR } = TOKENS;
 const { WEBHOOK_RELAY_WORKER } = TOKENS;
-const DATABASE = [DataSource, TransactionContext];
 const WEBHOOK_EDITING = [WebhookFactory, WEBHOOK_REPOSITORY, DomainPersistence];
 
 const USE_CASES = [
@@ -97,12 +98,12 @@ export class WebhooksModule {
         // ── Infrastructure ──────────────────────────
         provideClass(
           TypeOrmWebhookRepository,
-          [...DATABASE, WEBHOOK_SECRET_CIPHER],
+          [...DATABASE_INJECT, WEBHOOK_SECRET_CIPHER],
           WEBHOOK_REPOSITORY,
         ),
         provideClass(
           TypeOrmWebhookDeliveryRepository,
-          DATABASE,
+          DATABASE_INJECT,
           WEBHOOK_DELIVERY_REPOSITORY,
         ),
 
@@ -158,7 +159,10 @@ export class WebhooksModule {
               clock,
             );
             return new PollingWorker(relay, {
-              intervalMs: numberEnv('WEBHOOK_INTERVAL_MS', 1000),
+              intervalMs: numberEnv(
+                SERVICE_ENV.WEBHOOK_INTERVAL_MS,
+                SERVICE_DEFAULTS.WEBHOOK_INTERVAL_MS,
+              ),
               onError: (error) => {
                 logger.error('Webhook relay failed', describeError(error));
               },

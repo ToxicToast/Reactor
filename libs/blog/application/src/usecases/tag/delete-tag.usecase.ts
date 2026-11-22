@@ -28,7 +28,7 @@ export class DeleteTagUseCase implements UseCase<TagIdInput, TagAnemic> {
   execute(input: TagIdInput): Promise<Result<TagAnemic>> {
     return this.editor.change(
       input.id,
-      (tag) => tag.deleteTag(),
+      (tag) => tag.delete(),
       INCLUDING_DELETED,
     );
   }

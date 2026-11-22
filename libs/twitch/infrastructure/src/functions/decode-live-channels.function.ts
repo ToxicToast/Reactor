@@ -1,9 +1,5 @@
-import type { Nullable } from '@toxictoast/shared-types';
 import type { LiveChannel } from '@toxictoast/twitch-application';
-
-type EncodedLiveChannel = Omit<LiveChannel, 'started_at'> & {
-  readonly started_at: Nullable<string>;
-};
+import type { EncodedLiveChannel } from '../types/index.js';
 
 export const decodeLiveChannels = (message: string): Array<LiveChannel> => {
   const channels = JSON.parse(message) as Array<EncodedLiveChannel>;

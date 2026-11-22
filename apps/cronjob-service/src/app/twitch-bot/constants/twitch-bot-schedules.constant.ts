@@ -1,0 +1,10 @@
+export const TWITCH_BOT_SCHEDULES = {
+  CHATTERS_SYNC: {
+    PATTERN_ENV: 'TWITCH_CHATTERS_SYNC_CRON',
+    DEFAULT_PATTERN: '* * * * *',
+  },
+  CLIPS_SYNC: {
+    PATTERN_ENV: 'TWITCH_CLIPS_SYNC_CRON',
+    DEFAULT_PATTERN: '*/5 * * * *',
+  },
+} as const;

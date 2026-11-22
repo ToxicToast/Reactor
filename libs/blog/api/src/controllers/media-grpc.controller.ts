@@ -41,7 +41,7 @@ import {
   unwrap,
 } from '@toxictoast/shared-grpc';
 import { MediaGrpcMapper } from '../mappers/index.js';
-import { MEDIA_STATUS_FROM_GRPC } from '../mappings/index.js';
+import { MEDIA_STATUS_FROM_GRPC } from '../constants/index.js';
 import { ActorProvider } from '@toxictoast/shared-kernel';
 
 @Controller()

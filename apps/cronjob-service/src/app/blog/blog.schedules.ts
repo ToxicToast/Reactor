@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import type { Queue } from 'bullmq';
 import type { ScheduledJob } from '../common/interfaces/index.js';
 import { JobSchedules } from '../common/schedules/index.js';
-import { BLOG_QUEUE, BlogJobs } from './constants/index.js';
+import { BLOG_QUEUE, BLOG_SCHEDULES, BlogJobs } from './constants/index.js';
 
 @Injectable()
 export class BlogSchedules extends JobSchedules {
@@ -15,8 +15,8 @@ export class BlogSchedules extends JobSchedules {
     return [
       {
         name: BlogJobs.MEDIA_CLEANUP,
-        patternEnv: 'BLOG_MEDIA_CLEANUP_CRON',
-        defaultPattern: '0 3 * * *',
+        patternEnv: BLOG_SCHEDULES.MEDIA_CLEANUP.PATTERN_ENV,
+        defaultPattern: BLOG_SCHEDULES.MEDIA_CLEANUP.DEFAULT_PATTERN,
       },
     ];
   }

@@ -13,7 +13,7 @@ export class MediaDomain extends BaseDomain<MediaAnemic, MediaEventPayload> {
     return this.state.status === MediaStatus.READY;
   }
 
-  createMedia(): void {
+  create(): void {
     this.raise(MediaEvents.CREATED);
   }
 
@@ -55,11 +55,11 @@ export class MediaDomain extends BaseDomain<MediaAnemic, MediaEventPayload> {
     return Result.ok();
   }
 
-  deleteMedia(): void {
+  delete(): void {
     this.markDeleted(MediaEvents.DELETED);
   }
 
-  restoreMedia(): void {
+  restore(): void {
     this.markRestored(MediaEvents.RESTORED);
   }
 

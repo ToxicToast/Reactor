@@ -41,7 +41,7 @@ export class TagFactory implements Factory<TagAnemic, TagDomain, TagData> {
       },
       this.ctx,
     );
-    domain.createTag();
+    domain.create();
     return Result.ok(domain);
   }
 }

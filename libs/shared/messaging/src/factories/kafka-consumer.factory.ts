@@ -1,10 +1,10 @@
-import type { Consumer } from '@platformatic/kafka';
 import type { KafkaConfig } from '../interfaces/index.js';
+import type { StringConsumer } from '../types/index.js';
 
 export const createKafkaConsumer = async (
   config: KafkaConfig,
   groupId: string,
-): Promise<Consumer<string, string, string, string>> => {
+): Promise<StringConsumer> => {
   const kafka = await import('@platformatic/kafka');
   return new kafka.Consumer({
     groupId,

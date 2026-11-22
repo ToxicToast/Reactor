@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { RecordAuditEventUseCase } from '@toxictoast/audit-application';
-import { auditInputFromEvent, isAuditableEvent } from '../functions/index.js';
+import { auditInputFromEvent } from '../functions/index.js';
 
 @Injectable()
 export class AuditEventHandler {
@@ -11,10 +11,13 @@ export class AuditEventHandler {
   ) {}
 
   async handle(event: unknown): Promise<void> {
-    if (!isAuditableEvent(event)) {
-      this.logger.warn('Ignoring an event that cannot be audited');
+    const input = auditInputFromEvent(event);
+    if (input.isFailure) {
+      this.logger.warn(
+        `Ignoring an event that cannot be audited: ${input.error.message}`,
+      );
       return;
     }
-    await this.recordAuditEventUseCase.execute(auditInputFromEvent(event));
+    await this.recordAuditEventUseCase.execute(input.value);
   }
 }

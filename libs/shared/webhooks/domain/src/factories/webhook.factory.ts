@@ -48,7 +48,7 @@ export class WebhookFactory implements Factory<
       },
       this.ctx,
     );
-    domain.createWebhook();
+    domain.create();
     return Result.ok(domain);
   }
 }

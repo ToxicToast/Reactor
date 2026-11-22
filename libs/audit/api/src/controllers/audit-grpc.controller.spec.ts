@@ -14,6 +14,7 @@ import {
   testActor,
 } from '@toxictoast/shared-grpc/testing';
 import { AuditGrpcController } from './audit-grpc.controller.js';
+import { AuditActorType } from '@toxictoast/contracts-grpc';
 
 const EVENT_ID = '0192f3a0-0000-7000-8000-000000000001';
 
@@ -43,7 +44,7 @@ describe('AuditGrpcController', () => {
       expect.objectContaining({
         event_id: EVENT_ID,
         actor: {
-          type: 'ai',
+          type: AuditActorType.AUDIT_ACTOR_TYPE_AI,
           id: '84b6270f-a853-417b-ab4b-8d56d9c36d94',
           ip: '203.0.113.7',
         },

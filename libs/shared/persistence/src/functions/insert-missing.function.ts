@@ -1,8 +1,5 @@
-import type { InsertQueryBuilder, ObjectLiteral, Repository } from 'typeorm';
-
-type InsertValues<T extends ObjectLiteral> = Parameters<
-  InsertQueryBuilder<T>['values']
->[0];
+import type { ObjectLiteral, Repository } from 'typeorm';
+import type { InsertValues } from '../types/index.js';
 
 /**
  * Fügt nur Zeilen ein, deren Primärschlüssel noch fehlt, und gibt die

@@ -8,7 +8,6 @@ import type {
   TwitchChannelAnemic,
   TwitchChannelDomain,
   TwitchChannelFactory,
-  TwitchChannelId,
   TwitchChannelRepository,
 } from '@toxictoast/twitch-bot-domain';
 import type { DisconnectChannelInput } from '../data/index.js';
@@ -44,10 +43,9 @@ export class DisconnectChannelUseCase implements UseCase<
   async execute(
     input: DisconnectChannelInput,
   ): Promise<Result<TwitchChannelAnemic>> {
-    const saved = await this.editor.change(
-      input.id as TwitchChannelId,
-      (channel) => channel.disconnect(),
-    );
+    const saved = await this.editor.change(input.id, (channel) => {
+      return channel.disconnect();
+    });
     if (saved.isFailure) {
       return saved;
     }

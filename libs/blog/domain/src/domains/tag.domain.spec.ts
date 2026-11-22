@@ -62,7 +62,7 @@ describe('TagDomain', () => {
 
     it('refuses to update a deleted tag', () => {
       const tag = createTag('Warhammer');
-      tag.deleteTag();
+      tag.delete();
       const result = tag.updateTitle('Neu');
       expect(result.isFailure).toBe(true);
       expect(result.error.code).toBe('CONFLICT');
@@ -73,11 +73,11 @@ describe('TagDomain', () => {
     it('soft-deletes and restores the tag', () => {
       const tag = createTag('Warhammer');
       tag.toEvents();
-      tag.deleteTag();
+      tag.delete();
       expect(tag.toAnemic().deleted_at).toEqual(
         new Date('2026-10-19T12:00:00Z'),
       );
-      tag.restoreTag();
+      tag.restore();
       expect(tag.toAnemic().deleted_at).toBeNull();
       expect(tag.toEvents().map((e) => e.event_name)).toEqual([
         TagEvents.DELETED.name,
@@ -89,8 +89,8 @@ describe('TagDomain', () => {
       const tag = createTag('Warhammer');
       tag.toEvents();
       expect(tag.toEvents()).toHaveLength(0);
-      tag.deleteTag();
-      tag.deleteTag();
+      tag.delete();
+      tag.delete();
       expect(tag.toEvents()).toHaveLength(1);
     });
   });

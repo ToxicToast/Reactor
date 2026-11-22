@@ -13,7 +13,7 @@ export class CategoryDomain extends BaseDomain<
   CategoryAnemic,
   CategoryEventPayload
 > {
-  createCategory(): void {
+  create(): void {
     this.raise(CategoryEvents.CREATED);
   }
 
@@ -61,11 +61,11 @@ export class CategoryDomain extends BaseDomain<
     return Result.ok();
   }
 
-  deleteCategory(): void {
+  delete(): void {
     this.markDeleted(CategoryEvents.DELETED);
   }
 
-  restoreCategory(): void {
+  restore(): void {
     this.markRestored(CategoryEvents.RESTORED);
   }
 

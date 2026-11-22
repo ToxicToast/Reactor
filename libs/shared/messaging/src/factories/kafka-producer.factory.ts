@@ -1,9 +1,9 @@
-import type { Producer } from '@platformatic/kafka';
 import type { KafkaConfig } from '../interfaces/index.js';
+import type { StringProducer } from '../types/index.js';
 
 export const createKafkaProducer = async (
   config: KafkaConfig,
-): Promise<Producer<string, string, string, string>> => {
+): Promise<StringProducer> => {
   const kafka = await import('@platformatic/kafka');
   return new kafka.Producer({
     clientId: config.clientId,

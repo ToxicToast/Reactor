@@ -1,10 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
+import { CronjobPermission } from '@toxictoast/contracts-grpc';
 import type { NextFunction, Request, Response } from 'express';
-import {
-  ADMIN_MESSAGES,
-  ADMIN_PATHS,
-  AdminPermission,
-} from '../constants/index.js';
+import { ADMIN_MESSAGES, ADMIN_PATHS } from '../constants/index.js';
 import { missingPermissionMessage } from '../functions/index.js';
 import { AdminSessions } from '../services/index.js';
 
@@ -32,10 +29,10 @@ export class AdminSessionMiddleware {
       return;
     }
 
-    if (!session.permissions.includes(AdminPermission.QUEUES_MANAGE)) {
+    if (!session.permissions.includes(CronjobPermission.QUEUES_MANAGE)) {
       response.status(HttpStatus.FORBIDDEN).json({
         status_code: HttpStatus.FORBIDDEN,
-        message: missingPermissionMessage(AdminPermission.QUEUES_MANAGE),
+        message: missingPermissionMessage(CronjobPermission.QUEUES_MANAGE),
       });
       return;
     }

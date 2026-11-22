@@ -1,4 +1,8 @@
-import type { Consumer, Message, MessagesStream } from '@platformatic/kafka';
+import type {
+  StringConsumer,
+  StringMessage,
+  StringStream,
+} from '../types/index.js';
 import {
   isActorIdentity,
   isUuid,
@@ -18,14 +22,11 @@ import type {
 import { randomUUID } from 'node:crypto';
 import { FALLBACK_HANDLER, KAFKA_ADMIN } from '../constants/index.js';
 
-type StringMessage = Message<string, string, string, string>;
-type StringStream = MessagesStream<string, string, string, string>;
-
 export class KafkaEventConsumer {
   private stream: Nullable<StringStream> = null;
   private processing: Nullable<Promise<void>> = null;
   private stopping = false;
-  private caughtUp = true;
+  private caughtUp: boolean;
   private readonly pending = new Map<string, bigint>();
   private running = false;
   private restarts = 0;
@@ -33,11 +34,14 @@ export class KafkaEventConsumer {
   private restartTimer: Nullable<ReturnType<typeof setTimeout>> = null;
 
   constructor(
-    private readonly consumer: Consumer<string, string, string, string>,
+    private readonly consumer: StringConsumer,
     private readonly actors: ActorContext,
     private readonly correlations: CorrelationContext,
     private readonly options: KafkaEventConsumerOptions,
-  ) {}
+  ) {
+    /** Im Replay-Modus erst bereit, wenn alles gelesen ist – nicht schon vor dem ersten listOffsets. */
+    this.caughtUp = options.replay !== true;
+  }
 
   get topics(): Array<string> {
     const namespaces = Object.keys(this.options.handlers)

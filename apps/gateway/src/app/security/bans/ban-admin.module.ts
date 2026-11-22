@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common';
-import { SECURITY_GRPC_CLIENT } from '@toxictoast/contracts-grpc';
+import {
+  GRPC_CLIENT_ENV,
+  SECURITY_GRPC_CLIENT,
+} from '@toxictoast/contracts-grpc';
 import {
   SECURITY_PACKAGE,
   SECURITY_PROTO_FILES,
@@ -17,7 +20,7 @@ import { BanGateway } from './ban.gateway.js';
       name: SECURITY_GRPC_CLIENT,
       package: SECURITY_PACKAGE,
       protoPath: SECURITY_PROTO_FILES,
-      urlEnv: 'SECURITY_GRPC_URL',
+      urlEnv: GRPC_CLIENT_ENV.SECURITY,
     }),
   ],
   controllers: [BanController],

@@ -1,0 +1,4 @@
+export const TWITCH_APP_ENV = {
+  CLIENT_ID: 'TWITCH_CLIENT_ID',
+  CLIENT_SECRET: 'TWITCH_CLIENT_SECRET',
+} as const;

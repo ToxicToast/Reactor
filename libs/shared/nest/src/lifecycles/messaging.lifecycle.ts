@@ -5,9 +5,9 @@ import {
   type BeforeApplicationShutdown,
   type OnApplicationBootstrap,
 } from '@nestjs/common';
-import type { Producer } from '@platformatic/kafka';
 import type {
   KafkaEventConsumer,
+  StringProducer,
   TopicProvisioner,
 } from '@toxictoast/shared-messaging';
 import type { PollingWorker } from '@toxictoast/shared-system';
@@ -26,7 +26,7 @@ export class MessagingLifecycle
     @Inject(TOKENS.EVENT_CONSUMER)
     private readonly consumer: Nullable<KafkaEventConsumer>,
     @Inject(TOKENS.KAFKA_PRODUCER)
-    private readonly producer: Producer<string, string, string, string>,
+    private readonly producer: StringProducer,
     @Inject(TOKENS.TOPIC_PROVISIONER)
     private readonly provisioner: Nullable<TopicProvisioner>,
   ) {}

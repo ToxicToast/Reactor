@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { BLOG_GRPC_CLIENT } from '@toxictoast/contracts-grpc';
+import { BLOG_GRPC_CLIENT, GRPC_CLIENT_ENV } from '@toxictoast/contracts-grpc';
 import { BLOG_PACKAGE, BLOG_PROTO_FILES } from '@toxictoast/contracts-proto';
 import { GrpcClientModule, provideClass } from '@toxictoast/shared-nest';
 import { GrpcModule } from '../grpc/grpc.module.js';
@@ -22,7 +22,7 @@ import { MediaGateway } from './media/media.gateway.js';
       name: BLOG_GRPC_CLIENT,
       package: BLOG_PACKAGE,
       protoPath: BLOG_PROTO_FILES,
-      urlEnv: 'BLOG_GRPC_URL',
+      urlEnv: GRPC_CLIENT_ENV.BLOG,
     }),
   ],
   controllers: [

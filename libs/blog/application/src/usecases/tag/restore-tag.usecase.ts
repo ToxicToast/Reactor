@@ -28,7 +28,7 @@ export class RestoreTagUseCase implements UseCase<TagIdInput, TagAnemic> {
   execute(input: TagIdInput): Promise<Result<TagAnemic>> {
     return this.editor.change(
       input.id,
-      (tag) => tag.restoreTag(),
+      (tag) => tag.restore(),
       INCLUDING_DELETED,
     );
   }

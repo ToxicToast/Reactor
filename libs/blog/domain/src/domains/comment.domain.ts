@@ -28,7 +28,7 @@ export class CommentDomain extends BaseDomain<
     return this.state.status === CommentStatus.PENDING;
   }
 
-  createComment(): void {
+  create(): void {
     this.raise(CommentEvents.CREATED);
     this.raise(CommentModerationEvents.REQUESTED);
   }
@@ -148,11 +148,11 @@ export class CommentDomain extends BaseDomain<
     return this.moderate(decision, moderator, note);
   }
 
-  deleteComment(): void {
+  delete(): void {
     this.markDeleted(CommentEvents.DELETED);
   }
 
-  restoreComment(): void {
+  restore(): void {
     this.markRestored(CommentEvents.RESTORED);
   }
 

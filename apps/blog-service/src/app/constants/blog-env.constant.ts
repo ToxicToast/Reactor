@@ -1,0 +1,7 @@
+export const BLOG_ENV = {
+  PENDING_MEDIA_MAX_AGE_HOURS: 'BLOG_PENDING_MEDIA_MAX_AGE_HOURS',
+} as const;
+
+export const BLOG_DEFAULTS = {
+  PENDING_MEDIA_MAX_AGE_HOURS: 24,
+} as const;

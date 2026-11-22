@@ -134,7 +134,7 @@ describe('CommentDomain', () => {
 
     it('refuses to update a deleted comment', () => {
       const comment = createComment();
-      comment.deleteComment();
+      comment.delete();
 
       const result = comment.updateContent('Neu', AUTHOR);
 
@@ -247,7 +247,7 @@ describe('CommentDomain', () => {
 
     it('refuses to moderate a deleted comment', () => {
       const comment = createComment();
-      comment.deleteComment();
+      comment.delete();
 
       const result = comment.approveComment(CommentModerator.AI);
 
@@ -296,7 +296,7 @@ describe('CommentDomain', () => {
 
     it('refuses to mark a deleted comment for review', () => {
       const comment = createComment();
-      comment.deleteComment();
+      comment.delete();
 
       const result = comment.markForReview(CommentModerator.AI, 'gelöscht');
 
@@ -309,10 +309,10 @@ describe('CommentDomain', () => {
     it('soft-deletes and restores the comment', () => {
       const comment = createComment();
 
-      comment.deleteComment();
+      comment.delete();
       expect(comment.toAnemic().deleted_at).toEqual(NOW);
 
-      comment.restoreComment();
+      comment.restore();
       expect(comment.toAnemic().deleted_at).toBeNull();
 
       expect(comment.toEvents().map((e) => e.event_name)).toEqual([
@@ -325,8 +325,8 @@ describe('CommentDomain', () => {
       const comment = createComment();
       comment.markAsHate(CommentModerator.AI);
 
-      comment.deleteComment();
-      comment.restoreComment();
+      comment.delete();
+      comment.restore();
 
       expect(comment.toAnemic().status).toBe(CommentStatus.HATE);
     });

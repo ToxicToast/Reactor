@@ -28,7 +28,7 @@ export class RestoreMediaUseCase implements UseCase<MediaIdInput, MediaAnemic> {
   execute(input: MediaIdInput): Promise<Result<MediaAnemic>> {
     return this.editor.change(
       input.id,
-      (media) => media.restoreMedia(),
+      (media) => media.restore(),
       INCLUDING_DELETED,
     );
   }

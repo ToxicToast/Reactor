@@ -1,6 +1,10 @@
 import { Transport, type GrpcOptions } from '@nestjs/microservices';
 import { optionalEnv } from '@toxictoast/shared-system';
-import { GRPC_LOADER_OPTIONS } from '../constants/index.js';
+import {
+  GRPC_LOADER_OPTIONS,
+  SERVICE_DEFAULTS,
+  SERVICE_ENV,
+} from '../constants/index.js';
 import type { GrpcServerConfig } from '../interfaces/index.js';
 
 export const createGrpcOptions = (config: GrpcServerConfig): GrpcOptions => {
@@ -9,7 +13,7 @@ export const createGrpcOptions = (config: GrpcServerConfig): GrpcOptions => {
     options: {
       package: config.package,
       protoPath: config.protoPath,
-      url: optionalEnv('GRPC_URL', '0.0.0.0:50051'),
+      url: optionalEnv(SERVICE_ENV.GRPC_URL, SERVICE_DEFAULTS.GRPC_URL),
       loader: { ...GRPC_LOADER_OPTIONS },
     },
   };

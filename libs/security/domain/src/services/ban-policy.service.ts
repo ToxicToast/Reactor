@@ -1,9 +1,7 @@
 import { BlockList, isIP } from 'node:net';
-import type { BanDecision, BanPolicyConfig } from '../interfaces/index.js';
 import { normalizeIp } from '@toxictoast/shared-kernel';
-
-const MINUTE_MS = 60 * 1000;
-const DAY_MS = 24 * 60 * MINUTE_MS;
+import { TIME_MS } from '@toxictoast/shared-types';
+import type { BanDecision, BanPolicyConfig } from '../interfaces/index.js';
 
 export class BanPolicy {
   private readonly allowlist = new BlockList();
@@ -41,7 +39,7 @@ export class BanPolicy {
   }
 
   strikesSince(now: Date): Date {
-    return new Date(now.getTime() - this.config.strikeWindowDays * DAY_MS);
+    return new Date(now.getTime() - this.config.strikeWindowDays * TIME_MS.DAY);
   }
 
   escalate(previousBans: number, now: Date): BanDecision {
@@ -50,7 +48,7 @@ export class BanPolicy {
     const minutes = durations[Math.min(level, durations.length) - 1];
     return {
       level,
-      banned_until: new Date(now.getTime() + minutes * MINUTE_MS),
+      banned_until: new Date(now.getTime() + minutes * TIME_MS.MINUTE),
     };
   }
 

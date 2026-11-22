@@ -5,8 +5,8 @@ import {
   provideClass,
   provideSecretRotation,
   TOKENS,
+  DATABASE_INJECT,
 } from '@toxictoast/shared-nest';
-import { TransactionContext } from '@toxictoast/shared-persistence';
 import {
   describeError,
   SecretCipher,
@@ -48,8 +48,7 @@ import {
   type TwitchConfig,
   TwitchTokenSchema,
 } from '@toxictoast/twitch-bot-infrastructure';
-import { DataSource } from 'typeorm';
-import { TWITCH_BOT_TOKENS } from './constants/index.js';
+import { TWITCH_BOT_ENV, TWITCH_BOT_TOKENS } from './constants/index.js';
 import { TwitchSubscriptionLifecycle } from './lifecycles/index.js';
 import { PrometheusTwitchBotMetrics } from './metrics/index.js';
 import { TwitchReadinessProbe } from './probes/index.js';
@@ -62,8 +61,6 @@ const { TWITCH_CLIP_SOURCE, TWITCH_EVENT_SUBSCRIBER } = TWITCH_BOT_TOKENS;
 const { TWITCH_BOT_METRICS } = TWITCH_BOT_TOKENS;
 const { CLOCK, DOMAIN_CONTEXT, OUTBOX, UNIT_OF_WORK } = TOKENS;
 const { METRICS_REGISTRY } = TOKENS;
-const DATABASE = [DataSource, TransactionContext];
-
 const logger = new Logger('Twitch');
 const logError = (error: unknown, context: string): void => {
   logger.error(context, describeError(error));
@@ -79,7 +76,8 @@ const logError = (error: unknown, context: string): void => {
     },
     {
       provide: TOKEN_CIPHER,
-      useFactory: () => new SecretCipher(secretKeyringEnv('TWITCH_TOKEN')),
+      useFactory: () =>
+        new SecretCipher(secretKeyringEnv(TWITCH_BOT_ENV.TOKEN_KEYRING_PREFIX)),
     },
     provideSecretRotation(TOKEN_CIPHER, TwitchTokenSchema, [
       'access_token',
@@ -93,18 +91,18 @@ const logError = (error: unknown, context: string): void => {
     // ── Infrastructure ──────────────────────────
     provideClass(
       TypeOrmTwitchChannelRepository,
-      DATABASE,
+      DATABASE_INJECT,
       TWITCH_CHANNEL_REPOSITORY,
     ),
-    provideClass(TypeOrmChatterRepository, DATABASE, CHATTER_REPOSITORY),
+    provideClass(TypeOrmChatterRepository, DATABASE_INJECT, CHATTER_REPOSITORY),
     provideClass(
       TypeOrmTwitchTokenStore,
-      [...DATABASE, TOKEN_CIPHER, CLOCK],
+      [...DATABASE_INJECT, TOKEN_CIPHER, CLOCK],
       TWITCH_TOKEN_STORE,
     ),
     provideClass(
       TypeOrmPublishedClipLedger,
-      [...DATABASE, CLOCK],
+      [...DATABASE_INJECT, CLOCK],
       PUBLISHED_CLIP_LEDGER,
     ),
     provideClass(TwitchSocketTracker, [CLOCK]),

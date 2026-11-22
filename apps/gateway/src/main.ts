@@ -4,7 +4,11 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { cleanupOpenApiDoc } from 'nestjs-zod';
 import { AppModule } from './app/app.module.js';
-import { CorrelationLogger } from '@toxictoast/shared-nest';
+import {
+  CorrelationLogger,
+  SERVICE_DEFAULTS,
+  SERVICE_ENV,
+} from '@toxictoast/shared-nest';
 import {
   CorrelationContext,
   numberEnv,
@@ -15,6 +19,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { ADMIN_PATHS } from './app/admin/constants/index.js';
 import { AdminSessionMiddleware } from './app/admin/middlewares/index.js';
 import { proxyErrorHandler } from './app/admin/functions/index.js';
+import { GATEWAY_DEFAULTS, GATEWAY_ENV } from './app/constants/index.js';
 import { CORS_HEADERS, CORS_METHODS } from './app/cors/constants/index.js';
 import { corsConfigFromEnv } from './app/cors/functions/index.js';
 
@@ -24,7 +29,10 @@ const bootstrap = async (): Promise<void> => {
   });
   app.useLogger(new CorrelationLogger(app.get(CorrelationContext)));
   app.enableShutdownHooks();
-  app.set('trust proxy', numberEnv('TRUST_PROXY_HOPS', 0));
+  app.set(
+    'trust proxy',
+    numberEnv(GATEWAY_ENV.TRUST_PROXY_HOPS, GATEWAY_DEFAULTS.TRUST_PROXY_HOPS),
+  );
   app.disable('x-powered-by');
 
   const cors = corsConfigFromEnv();
@@ -48,7 +56,7 @@ const bootstrap = async (): Promise<void> => {
   );
   app.use(
     createProxyMiddleware({
-      target: requiredEnv('CRONJOB_URL'),
+      target: requiredEnv(GATEWAY_ENV.CRONJOB_URL),
       changeOrigin: true,
       pathFilter: ADMIN_PATHS.QUEUES,
       on: {
@@ -68,7 +76,9 @@ const bootstrap = async (): Promise<void> => {
     cleanupOpenApiDoc(SwaggerModule.createDocument(app, config)),
   );
 
-  await app.listen(numberEnv('HTTP_PORT', 3000));
+  await app.listen(
+    numberEnv(SERVICE_ENV.HTTP_PORT, SERVICE_DEFAULTS.HTTP_PORT),
+  );
 };
 
 void bootstrap();

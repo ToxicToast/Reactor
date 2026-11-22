@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import type { FileStorage } from '@toxictoast/shared-application';
 import {
   createS3Client,
+  S3_ENV,
   S3FileStorage,
   s3ConfigFromEnv,
 } from '@toxictoast/shared-storage';
@@ -15,9 +16,9 @@ import { TOKENS } from '../constants/index.js';
       provide: TOKENS.FILE_STORAGE,
       useFactory: (): FileStorage => {
         return new S3FileStorage(
-          createS3Client(s3ConfigFromEnv('S3_ENDPOINT')),
-          createS3Client(s3ConfigFromEnv('S3_PUBLIC_ENDPOINT')),
-          requiredEnv('S3_BUCKET'),
+          createS3Client(s3ConfigFromEnv(S3_ENV.ENDPOINT)),
+          createS3Client(s3ConfigFromEnv(S3_ENV.PUBLIC_ENDPOINT)),
+          requiredEnv(S3_ENV.BUCKET),
         );
       },
     },

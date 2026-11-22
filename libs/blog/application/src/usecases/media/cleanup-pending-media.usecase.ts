@@ -10,8 +10,7 @@ import {
   type MediaRepository,
 } from '@toxictoast/blog-domain';
 import type { CleanupPendingMediaOutput } from '../../data/index.js';
-
-const HOUR_MS = 60 * 60 * 1000;
+import { TIME_MS } from '@toxictoast/shared-types';
 
 export class CleanupPendingMediaUseCase implements UseCase<
   void,
@@ -28,7 +27,7 @@ export class CleanupPendingMediaUseCase implements UseCase<
 
   async execute(): Promise<Result<CleanupPendingMediaOutput>> {
     const olderThan = new Date(
-      this.clock.now().getTime() - this.maxAgeHours * HOUR_MS,
+      this.clock.now().getTime() - this.maxAgeHours * TIME_MS.HOUR,
     );
     const pending = await this.repository.findByStatus(
       MediaStatus.PENDING,
@@ -38,7 +37,7 @@ export class CleanupPendingMediaUseCase implements UseCase<
     let removed = 0;
     for (const anemic of pending) {
       const media = this.factory.reconstitute(anemic);
-      media.deleteMedia();
+      media.delete();
 
       const saved = await this.persistence.persist(media, this.repository);
       if (saved.isFailure) {

@@ -1,9 +1,8 @@
-const MINUTE = 60;
-const HOUR = 60 * MINUTE;
+import { TIME_S } from '@toxictoast/shared-types';
 
 export const formatDuration = (seconds: number): string => {
-  const hours = Math.floor(seconds / HOUR);
-  const minutes = Math.floor((seconds % HOUR) / MINUTE);
+  const hours = Math.floor(seconds / TIME_S.HOUR);
+  const minutes = Math.floor((seconds % TIME_S.HOUR) / TIME_S.MINUTE);
   if (hours === 0) {
     return `${minutes} min`;
   }

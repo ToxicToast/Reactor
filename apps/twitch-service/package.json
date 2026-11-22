@@ -112,7 +112,6 @@
     "@toxictoast/shared-application": "*",
     "@toxictoast/shared-messaging": "*",
     "@toxictoast/shared-nest": "*",
-    "@toxictoast/shared-persistence": "*",
     "@toxictoast/shared-webhooks-application": "*",
     "@toxictoast/twitch-api": "*",
     "@toxictoast/twitch-application": "*",

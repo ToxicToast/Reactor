@@ -1,11 +1,6 @@
-import type { IpBanPayloadV1 } from '@toxictoast/contracts-events';
 import { normalizeIp, type Clock } from '@toxictoast/shared-kernel';
 import type { Nullable } from '@toxictoast/shared-types';
-
-type BanPayload = Pick<
-  IpBanPayloadV1,
-  'id' | 'ip' | 'banned_until' | 'lifted_at'
->;
+import type { BanPayload } from '../types/index.js';
 
 export class BanList {
   private readonly bans = new Map<string, Map<string, Date>>();

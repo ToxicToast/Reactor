@@ -119,7 +119,7 @@ describe('CategoryDomain', () => {
 
     it('refuses to update a deleted category', () => {
       const category = createCategory();
-      category.deleteCategory();
+      category.delete();
 
       const result = category.updateCategory('Neu', null);
 
@@ -169,7 +169,7 @@ describe('CategoryDomain', () => {
 
     it('refuses to change the parent of a deleted category', () => {
       const category = createCategory();
-      category.deleteCategory();
+      category.delete();
 
       const result = category.changeParent(PARENT_ID);
 
@@ -182,10 +182,10 @@ describe('CategoryDomain', () => {
     it('soft-deletes and restores the category', () => {
       const category = createCategory();
 
-      category.deleteCategory();
+      category.delete();
       expect(category.toAnemic().deleted_at).toEqual(NOW);
 
-      category.restoreCategory();
+      category.restore();
       expect(category.toAnemic().deleted_at).toBeNull();
 
       expect(category.toEvents().map((e) => e.event_name)).toEqual([
@@ -197,9 +197,9 @@ describe('CategoryDomain', () => {
     it('ignores a second delete and a restore without delete', () => {
       const category = createCategory();
 
-      category.restoreCategory();
-      category.deleteCategory();
-      category.deleteCategory();
+      category.restore();
+      category.delete();
+      category.delete();
 
       expect(category.toEvents()).toHaveLength(1);
     });

@@ -106,7 +106,6 @@
     "@toxictoast/contracts-events": "*",
     "@toxictoast/contracts-proto": "*",
     "@toxictoast/shared-nest": "*",
-    "@toxictoast/shared-persistence": "*",
     "@toxictoast/shared-system": "*",
     "@toxictoast/twitch-bot-api": "*",
     "@toxictoast/twitch-bot-application": "*",

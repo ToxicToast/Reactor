@@ -1,7 +1,7 @@
 import type { MediaAnemic } from '@toxictoast/blog-domain';
 import type { Media } from '@toxictoast/contracts-grpc';
 import { toIso } from '@toxictoast/shared-grpc';
-import { MEDIA_STATUS_TO_GRPC } from '../mappings/index.js';
+import { MEDIA_STATUS_TO_GRPC } from '../constants/index.js';
 
 export class MediaGrpcMapper {
   toProto(anemic: MediaAnemic): Media {

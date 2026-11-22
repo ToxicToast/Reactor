@@ -2,6 +2,7 @@ import type { Optional } from '@toxictoast/shared-types';
 import type {
   LeaderboardMetric,
   StatsIntervalValue,
+  StreamSessionId,
   TimelineMetric,
 } from '@toxictoast/twitch-domain';
 
@@ -24,7 +25,7 @@ export interface ListSessionsInput extends RangeQuery, PageQuery {}
 export interface ListPollsInput extends RangeQuery, PageQuery {}
 
 export interface GetSessionInput {
-  readonly id: string;
+  readonly id: StreamSessionId;
 }
 
 export interface GetLeaderboardInput extends RangeQuery {

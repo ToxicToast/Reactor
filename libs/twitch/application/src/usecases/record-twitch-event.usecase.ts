@@ -1,4 +1,8 @@
-import type { UnitOfWork, UseCase } from '@toxictoast/shared-application';
+import type {
+  DomainPersistence,
+  UnitOfWork,
+  UseCase,
+} from '@toxictoast/shared-application';
 import { DomainError, eventKey, Result } from '@toxictoast/shared-kernel';
 import type {
   DispatchWebhookEventUseCase,
@@ -40,6 +44,7 @@ export class RecordTwitchEventUseCase implements UseCase<
     private readonly directory: ChannelDirectoryRepository,
     private readonly factory: StreamSessionFactory,
     private readonly sessions: StreamSessionRepository,
+    private readonly persistence: DomainPersistence,
     private readonly polls: PollRepository,
     private readonly sessionTracker: SessionTracker,
     private readonly presenceTracker: PresenceTracker,
@@ -123,7 +128,7 @@ export class RecordTwitchEventUseCase implements UseCase<
     }
 
     if (session) {
-      await this.sessions.save(this.factory.constitute(session));
+      await this.persistence.save(session, this.sessions);
     }
   }
 

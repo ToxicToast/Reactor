@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TWITCH_BOT_GRPC_CLIENT } from '@toxictoast/contracts-grpc';
+import {
+  GRPC_CLIENT_ENV,
+  TWITCH_BOT_GRPC_CLIENT,
+} from '@toxictoast/contracts-grpc';
 import {
   TWITCH_BOT_PACKAGE,
   TWITCH_BOT_PROTO_FILES,
@@ -24,7 +27,7 @@ import { TwitchGateway } from './twitch.gateway.js';
       name: TWITCH_BOT_GRPC_CLIENT,
       package: TWITCH_BOT_PACKAGE,
       protoPath: TWITCH_BOT_PROTO_FILES,
-      urlEnv: 'TWITCH_BOT_GRPC_URL',
+      urlEnv: GRPC_CLIENT_ENV.TWITCH_BOT,
     }),
   ],
   controllers: [TwitchConnectController, TwitchChannelsController],

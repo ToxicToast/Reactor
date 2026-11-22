@@ -6,6 +6,7 @@ import { JobSchedules } from '../common/schedules/index.js';
 import {
   TWITCH_BOT_JOB_ATTEMPTS,
   TWITCH_BOT_QUEUE,
+  TWITCH_BOT_SCHEDULES,
   TwitchBotJobs,
 } from './constants/index.js';
 
@@ -19,14 +20,14 @@ export class TwitchBotSchedules extends JobSchedules {
     return [
       {
         name: TwitchBotJobs.CHATTERS_SYNC,
-        patternEnv: 'TWITCH_CHATTERS_SYNC_CRON',
-        defaultPattern: '* * * * *',
+        patternEnv: TWITCH_BOT_SCHEDULES.CHATTERS_SYNC.PATTERN_ENV,
+        defaultPattern: TWITCH_BOT_SCHEDULES.CHATTERS_SYNC.DEFAULT_PATTERN,
         attempts: TWITCH_BOT_JOB_ATTEMPTS.SYNC,
       },
       {
         name: TwitchBotJobs.CLIPS_SYNC,
-        patternEnv: 'TWITCH_CLIPS_SYNC_CRON',
-        defaultPattern: '*/5 * * * *',
+        patternEnv: TWITCH_BOT_SCHEDULES.CLIPS_SYNC.PATTERN_ENV,
+        defaultPattern: TWITCH_BOT_SCHEDULES.CLIPS_SYNC.DEFAULT_PATTERN,
         attempts: TWITCH_BOT_JOB_ATTEMPTS.SYNC,
       },
     ];

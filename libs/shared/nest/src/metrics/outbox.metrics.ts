@@ -2,12 +2,7 @@ import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
 import { Gauge, Registry } from 'prom-client';
 import { DataSource } from 'typeorm';
 import { TOKENS } from '../constants/index.js';
-import { Nullable } from '@toxictoast/shared-types';
-
-interface OutboxStats {
-  readonly count: string;
-  readonly oldest_seconds: Nullable<string>;
-}
+import type { OutboxStats } from '../interfaces/index.js';
 
 @Injectable()
 export class OutboxMetrics implements OnModuleInit {

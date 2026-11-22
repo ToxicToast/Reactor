@@ -286,6 +286,27 @@ describe('KafkaEventConsumer', () => {
     expect(decided.commit).not.toHaveBeenCalled();
   });
 
+  it('is not ready before a replay has even started', () => {
+    const { consumer } = fakeConsumer([]);
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
+      handlers: { 'moderation.decided': jest.fn() },
+      onError: jest.fn(),
+      replay: true,
+    });
+
+    expect(subject.isCaughtUp).toBe(false);
+  });
+
+  it('is caught up from the start without replay', () => {
+    const { consumer } = fakeConsumer([]);
+    const subject = new KafkaEventConsumer(consumer, actors, correlations, {
+      handlers: { 'moderation.decided': jest.fn() },
+      onError: jest.fn(),
+    });
+
+    expect(subject.isCaughtUp).toBe(true);
+  });
+
   it('is caught up once the replay reaches the end of every partition', async () => {
     const first = message(JSON.stringify(event('decided')), 0n);
     const second = message(JSON.stringify(event('decided')), 1n);

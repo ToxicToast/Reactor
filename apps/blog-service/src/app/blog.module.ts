@@ -67,18 +67,14 @@ import {
   TypeOrmTagRepository,
 } from '@toxictoast/blog-infrastructure';
 import { DomainPersistence } from '@toxictoast/shared-application';
-import { provideClass, TOKENS } from '@toxictoast/shared-nest';
-import { TransactionContext } from '@toxictoast/shared-persistence';
-import { DataSource } from 'typeorm';
-import { BLOG_TOKENS } from './constants/index.js';
+import { DATABASE_INJECT, provideClass, TOKENS } from '@toxictoast/shared-nest';
+import { BLOG_DEFAULTS, BLOG_ENV, BLOG_TOKENS } from './constants/index.js';
 import { numberEnv } from '@toxictoast/shared-system';
 
 const { TAG_REPOSITORY, CATEGORY_REPOSITORY, MEDIA_REPOSITORY } = BLOG_TOKENS;
 const { POST_REPOSITORY, COMMENT_REPOSITORY } = BLOG_TOKENS;
 const { PENDING_MEDIA_MAX_AGE_HOURS } = BLOG_TOKENS;
 const { CLOCK, DOMAIN_CONTEXT, FILE_STORAGE } = TOKENS;
-const DATABASE = [DataSource, TransactionContext];
-
 @Module({
   controllers: [
     TagGrpcController,
@@ -91,7 +87,11 @@ const DATABASE = [DataSource, TransactionContext];
     // ── Configs ───────────────────────────────
     {
       provide: PENDING_MEDIA_MAX_AGE_HOURS,
-      useFactory: () => numberEnv('BLOG_PENDING_MEDIA_MAX_AGE_HOURS', 24),
+      useFactory: () =>
+        numberEnv(
+          BLOG_ENV.PENDING_MEDIA_MAX_AGE_HOURS,
+          BLOG_DEFAULTS.PENDING_MEDIA_MAX_AGE_HOURS,
+        ),
     },
     // ── Factories ───────────────────────────────
     provideClass(TagFactory, [DOMAIN_CONTEXT]),
@@ -101,11 +101,15 @@ const DATABASE = [DataSource, TransactionContext];
     provideClass(CommentFactory, [DOMAIN_CONTEXT]),
 
     // ── Repositories ────────────────────────────
-    provideClass(TypeOrmTagRepository, DATABASE, TAG_REPOSITORY),
-    provideClass(TypeOrmCategoryRepository, DATABASE, CATEGORY_REPOSITORY),
-    provideClass(TypeOrmMediaRepository, DATABASE, MEDIA_REPOSITORY),
-    provideClass(TypeOrmPostRepository, DATABASE, POST_REPOSITORY),
-    provideClass(TypeOrmCommentRepository, DATABASE, COMMENT_REPOSITORY),
+    provideClass(TypeOrmTagRepository, DATABASE_INJECT, TAG_REPOSITORY),
+    provideClass(
+      TypeOrmCategoryRepository,
+      DATABASE_INJECT,
+      CATEGORY_REPOSITORY,
+    ),
+    provideClass(TypeOrmMediaRepository, DATABASE_INJECT, MEDIA_REPOSITORY),
+    provideClass(TypeOrmPostRepository, DATABASE_INJECT, POST_REPOSITORY),
+    provideClass(TypeOrmCommentRepository, DATABASE_INJECT, COMMENT_REPOSITORY),
 
     // ── Services ────────────────────────────────
     provideClass(CategoryHierarchyService, [CATEGORY_REPOSITORY]),

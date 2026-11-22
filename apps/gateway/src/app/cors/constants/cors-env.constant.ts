@@ -1,0 +1,11 @@
+export const CORS_ENV = {
+  ORIGINS: 'CORS_ORIGINS',
+  ALLOW_CREDENTIALS: 'CORS_ALLOW_CREDENTIALS',
+  MAX_AGE_SECONDS: 'CORS_MAX_AGE_SECONDS',
+} as const;
+
+export const CORS_DEFAULTS = {
+  ORIGINS: [],
+  ALLOW_CREDENTIALS: false,
+  MAX_AGE_SECONDS: 600,
+} as const;

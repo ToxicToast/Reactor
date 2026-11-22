@@ -31,7 +31,7 @@ export class RestoreCommentUseCase implements UseCase<
   execute(input: CommentIdInput): Promise<Result<CommentAnemic>> {
     return this.editor.change(
       input.id,
-      (comment) => comment.restoreComment(),
+      (comment) => comment.restore(),
       INCLUDING_DELETED,
     );
   }

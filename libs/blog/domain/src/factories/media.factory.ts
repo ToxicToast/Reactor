@@ -62,7 +62,7 @@ export class MediaFactory implements Factory<
       },
       this.ctx,
     );
-    domain.createMedia();
+    domain.create();
     return Result.ok(domain);
   }
 
