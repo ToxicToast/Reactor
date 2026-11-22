@@ -4,3 +4,4 @@ export * from './noop-twitch-bot-metrics.constant.js';
 export * from './lost-authorization-statuses.constant.js';
 export * from './twitch-credentials-ttl.constant.js';
 export * from './twitch-app-env.constant.js';
+export * from './video-thumbnail.constant.js';

@@ -1,3 +1,4 @@
+import type { Optional } from '@toxictoast/shared-types';
 import type {
   TwitchClip,
   TwitchClipSource,
@@ -12,11 +13,13 @@ export class TwurpleClipSource implements TwitchClipSource {
   async listClips(
     channel: TwitchChannelAnemic,
     since: Date,
+    until?: Optional<Date>,
   ): Promise<Array<TwitchClip>> {
     const api = await this.connection.use(channel);
     const clips = await api.clips
       .getClipsForBroadcasterPaginated(channel.twitch_id, {
         startDate: since.toISOString(),
+        endDate: until?.toISOString(),
       })
       .getAll();
     return clips.map(clipFromHelix);

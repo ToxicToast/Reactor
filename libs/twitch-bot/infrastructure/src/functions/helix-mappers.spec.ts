@@ -2,7 +2,9 @@ import type {
   HelixChannelFollower,
   HelixChatChatter,
   HelixClip,
+  HelixVideo,
 } from '@twurple/api';
+import { videoFromHelix } from './video-from-helix.function.js';
 import { followerFromHelix } from './follower-from-helix.function.js';
 import { chatterFromHelix } from './chatter-from-helix.function.js';
 import { clipFromHelix } from './clip-from-helix.function.js';
@@ -35,6 +37,7 @@ describe('clipFromHelix', () => {
       views: 12,
       thumbnailUrl: 'https://clips-media.twitch.tv/clip-1.jpg',
       videoId,
+      vodOffset: 754,
       creationDate: new Date('2026-10-26T19:30:00Z'),
     } as unknown as HelixClip;
   };
@@ -50,6 +53,7 @@ describe('clipFromHelix', () => {
       view_count: 12,
       thumbnail_url: 'https://clips-media.twitch.tv/clip-1.jpg',
       vod_id: 'vod-1',
+      vod_offset: 754,
       created_at: new Date('2026-10-26T19:30:00Z'),
     });
   });
@@ -73,6 +77,40 @@ describe('followerFromHelix', () => {
       user_login: 'viewer',
       user_name: 'Viewer',
       followed_at: new Date('2026-11-01T10:00:00Z'),
+    });
+  });
+});
+
+describe('videoFromHelix', () => {
+  it('maps a twitch video', () => {
+    const video = {
+      id: 'v1',
+      streamId: 'stream-1',
+      type: 'archive',
+      title: 'Abendstream',
+      description: '',
+      url: 'https://www.twitch.tv/videos/v1',
+      getThumbnailUrl: (width: number, height: number) => {
+        return `https://static-cdn.jtvnw.net/v1-${width}x${height}.jpg`;
+      },
+      durationInSeconds: 7265,
+      language: 'de',
+      creationDate: new Date('2026-10-26T18:00:00Z'),
+      publishDate: new Date('2026-10-26T18:00:00Z'),
+    } as unknown as HelixVideo;
+
+    expect(videoFromHelix(video)).toEqual({
+      video_id: 'v1',
+      stream_id: 'stream-1',
+      type: 'archive',
+      title: 'Abendstream',
+      description: '',
+      url: 'https://www.twitch.tv/videos/v1',
+      thumbnail_url: 'https://static-cdn.jtvnw.net/v1-1280x720.jpg',
+      duration_seconds: 7265,
+      language: 'de',
+      created_at: new Date('2026-10-26T18:00:00Z'),
+      published_at: new Date('2026-10-26T18:00:00Z'),
     });
   });
 });

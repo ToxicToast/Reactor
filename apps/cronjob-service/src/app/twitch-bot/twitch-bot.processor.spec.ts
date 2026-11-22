@@ -11,18 +11,25 @@ const CID = '01a16a00-0000-7000-8000-000000000001';
 
 describe('TwitchBotProcessor', () => {
   let syncChatters: jest.Mock;
-  let syncClips: jest.Mock;
+  let syncMedia: jest.Mock;
   let syncFollowers: jest.Mock;
   let processor: TwitchBotProcessor;
 
   beforeEach(() => {
     syncChatters = jest.fn().mockReturnValue(of({ joined: 2, left: 1 }));
-    syncClips = jest.fn().mockReturnValue(of({ created: 3 }));
+    syncMedia = jest.fn().mockReturnValue(
+      of({
+        imported_clips: 0,
+        imported_videos: 0,
+        created_clips: 3,
+        created_videos: 1,
+      }),
+    );
     syncFollowers = jest
       .fn()
       .mockReturnValue(of({ followed: 4, unfollowed: 2 }));
     const client = {
-      getService: () => ({ syncChatters, syncClips, syncFollowers }),
+      getService: () => ({ syncChatters, syncMedia, syncFollowers }),
     } as unknown as ClientGrpc;
     const ctx = { id: { generate: () => CID } } as unknown as DomainContext;
     processor = new TwitchBotProcessor(
@@ -39,10 +46,10 @@ describe('TwitchBotProcessor', () => {
     expect(result).toEqual({ joined: 2, left: 1 });
   });
 
-  it('syncs the clips', async () => {
+  it('syncs clips and videos', async () => {
     const result = await processor.process({ name: 'clips.sync' } as Job);
 
-    expect(result).toEqual({ created: 3 });
+    expect(result).toMatchObject({ created_clips: 3, created_videos: 1 });
   });
 
   it('syncs the followers', async () => {

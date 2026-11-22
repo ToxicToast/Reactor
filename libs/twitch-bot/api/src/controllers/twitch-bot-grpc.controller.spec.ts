@@ -17,6 +17,9 @@ import {
   SyncChattersUseCase,
   SyncClipsUseCase,
   SyncFollowersUseCase,
+  ImportMediaUseCase,
+  SyncMediaUseCase,
+  SyncVideosUseCase,
 } from '@toxictoast/twitch-bot-application';
 import {
   createTestContext,
@@ -31,6 +34,9 @@ import {
   InMemoryTwitchTokenStore,
   RecordingTwitchEventSubscriber,
   twitchChannelAnemic,
+  FakeTwitchVideoSource,
+  InMemoryMediaImportLog,
+  InMemoryPublishedLedger,
 } from '@toxictoast/twitch-bot-application/testing';
 import {
   ChatterDiffService,
@@ -55,6 +61,18 @@ describe('TwitchBotGrpcController', () => {
     const persistence = new DomainPersistence(outbox, uow);
     const factory = new TwitchChannelFactory(ctx);
     const auth = new FakeTwitchAuthClient();
+    const clipSource = new FakeTwitchClipSource();
+    const clipLedger = new InMemoryPublishedClipLedger();
+    const videoSource = new FakeTwitchVideoSource();
+    const videoLedger = new InMemoryPublishedLedger();
+    const syncClips = new SyncClipsUseCase(
+      channels,
+      clipSource,
+      clipLedger,
+      outbox,
+      uow,
+      ctx,
+    );
 
     await channels.save(twitchChannelAnemic(CHANNEL_ID, { twitch_id: '999' }));
 
@@ -86,14 +104,7 @@ describe('TwitchBotGrpcController', () => {
         uow,
         ctx,
       ),
-      new SyncClipsUseCase(
-        channels,
-        new FakeTwitchClipSource(),
-        new InMemoryPublishedClipLedger(),
-        outbox,
-        uow,
-        ctx,
-      ),
+      syncClips,
       new SyncFollowersUseCase(
         channels,
         new InMemoryFollowerRepository(),
@@ -101,6 +112,28 @@ describe('TwitchBotGrpcController', () => {
         outbox,
         uow,
         ctx,
+      ),
+      new SyncMediaUseCase(
+        new ImportMediaUseCase(
+          channels,
+          clipSource,
+          videoSource,
+          clipLedger,
+          videoLedger,
+          new InMemoryMediaImportLog(),
+          outbox,
+          uow,
+          ctx,
+        ),
+        syncClips,
+        new SyncVideosUseCase(
+          channels,
+          videoSource,
+          videoLedger,
+          outbox,
+          uow,
+          ctx,
+        ),
       ),
       actors,
     );
@@ -177,6 +210,12 @@ describe('TwitchBotGrpcController', () => {
     await expect(controller.syncFollowers()).resolves.toEqual({
       followed: 0,
       unfollowed: 0,
+    });
+    await expect(controller.syncMedia()).resolves.toEqual({
+      imported_clips: 0,
+      imported_videos: 0,
+      created_clips: 0,
+      created_videos: 0,
     });
   });
 });

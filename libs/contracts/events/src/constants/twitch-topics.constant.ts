@@ -7,5 +7,6 @@ export const TwitchTopics = {
   MODERATION: 'twitch.moderation',
   POLL: 'twitch.poll',
   CLIP: 'twitch.clip',
+  VIDEO: 'twitch.video',
   PRESENCE: 'twitch.presence',
 } as const;

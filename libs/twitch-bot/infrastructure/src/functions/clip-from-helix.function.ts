@@ -12,6 +12,7 @@ export const clipFromHelix = (clip: HelixClip): TwitchClip => {
     view_count: clip.views,
     thumbnail_url: clip.thumbnailUrl,
     vod_id: clip.videoId === '' ? null : clip.videoId,
+    vod_offset: clip.vodOffset,
     created_at: clip.creationDate,
   };
 };

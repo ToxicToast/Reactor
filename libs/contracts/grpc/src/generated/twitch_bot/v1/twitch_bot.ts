@@ -76,6 +76,16 @@ export interface SyncFollowersResponse {
   unfollowed: number;
 }
 
+export interface SyncMediaRequest {
+}
+
+export interface SyncMediaResponse {
+  imported_clips: number;
+  imported_videos: number;
+  created_clips: number;
+  created_videos: number;
+}
+
 export interface TwitchBotServiceClient {
   startAuthorization(request: StartAuthorizationRequest, metadata?: Metadata): Observable<StartAuthorizationResponse>;
 
@@ -93,6 +103,8 @@ export interface TwitchBotServiceClient {
   syncClips(request: SyncClipsRequest, metadata?: Metadata): Observable<SyncClipsResponse>;
 
   syncFollowers(request: SyncFollowersRequest, metadata?: Metadata): Observable<SyncFollowersResponse>;
+
+  syncMedia(request: SyncMediaRequest, metadata?: Metadata): Observable<SyncMediaResponse>;
 }
 
 export interface TwitchBotServiceController {
@@ -130,6 +142,11 @@ export interface TwitchBotServiceController {
     request: SyncFollowersRequest,
     metadata?: Metadata,
   ): Promise<SyncFollowersResponse> | Observable<SyncFollowersResponse> | SyncFollowersResponse;
+
+  syncMedia(
+    request: SyncMediaRequest,
+    metadata?: Metadata,
+  ): Promise<SyncMediaResponse> | Observable<SyncMediaResponse> | SyncMediaResponse;
 }
 
 export function TwitchBotServiceControllerMethods() {
@@ -142,6 +159,7 @@ export function TwitchBotServiceControllerMethods() {
       "syncChatters",
       "syncClips",
       "syncFollowers",
+      "syncMedia",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

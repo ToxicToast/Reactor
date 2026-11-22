@@ -4,6 +4,8 @@ export * from './twitch-token-row.interface.js';
 export * from './twitch-chatter-row.interface.js';
 export * from './twitch-follower-row.interface.js';
 export * from './twitch-published-clip-row.interface.js';
+export * from './twitch-published-video-row.interface.js';
+export * from './twitch-media-import-row.interface.js';
 export * from './active-subscription.interface.js';
 export * from './twitch-bot-metrics.interface.js';
 export * from './twitch-socket-state.interface.js';
