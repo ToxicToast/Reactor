@@ -16,13 +16,16 @@ import {
   StartAuthorizationUseCase,
   SyncChattersUseCase,
   SyncClipsUseCase,
+  SyncFollowersUseCase,
 } from '@toxictoast/twitch-bot-application';
 import {
   createTestContext,
   FakeTwitchAuthClient,
   FakeTwitchChatterSource,
   FakeTwitchClipSource,
+  FakeTwitchFollowerSource,
   InMemoryChatterRepository,
+  InMemoryFollowerRepository,
   InMemoryPublishedClipLedger,
   InMemoryTwitchChannelRepository,
   InMemoryTwitchTokenStore,
@@ -91,6 +94,14 @@ describe('TwitchBotGrpcController', () => {
         uow,
         ctx,
       ),
+      new SyncFollowersUseCase(
+        channels,
+        new InMemoryFollowerRepository(),
+        new FakeTwitchFollowerSource(),
+        outbox,
+        uow,
+        ctx,
+      ),
       actors,
     );
   });
@@ -152,6 +163,9 @@ describe('TwitchBotGrpcController', () => {
     await expect(grpcCode(controller.syncChatters())).resolves.toBe(
       status.PERMISSION_DENIED,
     );
+    await expect(grpcCode(controller.syncFollowers())).resolves.toBe(
+      status.PERMISSION_DENIED,
+    );
 
     actors.actor = testActor(['twitch-bot.sync']);
 
@@ -160,5 +174,9 @@ describe('TwitchBotGrpcController', () => {
       left: 0,
     });
     await expect(controller.syncClips()).resolves.toEqual({ created: 0 });
+    await expect(controller.syncFollowers()).resolves.toEqual({
+      followed: 0,
+      unfollowed: 0,
+    });
   });
 });

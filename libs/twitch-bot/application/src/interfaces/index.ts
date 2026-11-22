@@ -9,3 +9,5 @@ export * from './twitch-chatter-source.interface.js';
 export * from './twitch-clip-source.interface.js';
 export * from './published-clip-ledger.interface.js';
 export * from './twitch-event-subscriber.interface.js';
+export * from './follower-payload.interface.js';
+export * from './twitch-follower-source.interface.js';

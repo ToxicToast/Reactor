@@ -7,6 +7,7 @@ import {
   TwitchBotPermission,
   type SyncChattersResponse,
   type SyncClipsResponse,
+  type SyncFollowersResponse,
   type TwitchBotServiceClient,
 } from '@toxictoast/contracts-grpc';
 import type { DomainContext } from '@toxictoast/shared-kernel';
@@ -42,6 +43,8 @@ export class TwitchBotProcessor extends SystemJobProcessor {
         return this.syncChatters();
       case TwitchBotJobs.CLIPS_SYNC:
         return this.syncClips();
+      case TwitchBotJobs.FOLLOWERS_SYNC:
+        return this.syncFollowers();
       default:
         return this.unknownJob(job);
     }
@@ -71,6 +74,21 @@ export class TwitchBotProcessor extends SystemJobProcessor {
     );
     if (response.created > 0) {
       this.logger.log(`Clips synced: ${response.created} new`);
+    }
+    return response;
+  }
+
+  private async syncFollowers(): Promise<SyncFollowersResponse> {
+    const response = await firstValueFrom(
+      this.twitch.service.syncFollowers(
+        {},
+        this.metadataFor([TwitchBotPermission.SYNC]),
+      ),
+    );
+    if (response.followed > 0 || response.unfollowed > 0) {
+      this.logger.log(
+        `Followers synced: ${response.followed} found, ${response.unfollowed} unfollowed`,
+      );
     }
     return response;
   }

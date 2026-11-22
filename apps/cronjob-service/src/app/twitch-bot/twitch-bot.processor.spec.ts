@@ -12,13 +12,17 @@ const CID = '01a16a00-0000-7000-8000-000000000001';
 describe('TwitchBotProcessor', () => {
   let syncChatters: jest.Mock;
   let syncClips: jest.Mock;
+  let syncFollowers: jest.Mock;
   let processor: TwitchBotProcessor;
 
   beforeEach(() => {
     syncChatters = jest.fn().mockReturnValue(of({ joined: 2, left: 1 }));
     syncClips = jest.fn().mockReturnValue(of({ created: 3 }));
+    syncFollowers = jest
+      .fn()
+      .mockReturnValue(of({ followed: 4, unfollowed: 2 }));
     const client = {
-      getService: () => ({ syncChatters, syncClips }),
+      getService: () => ({ syncChatters, syncClips, syncFollowers }),
     } as unknown as ClientGrpc;
     const ctx = { id: { generate: () => CID } } as unknown as DomainContext;
     processor = new TwitchBotProcessor(
@@ -39,6 +43,12 @@ describe('TwitchBotProcessor', () => {
     const result = await processor.process({ name: 'clips.sync' } as Job);
 
     expect(result).toEqual({ created: 3 });
+  });
+
+  it('syncs the followers', async () => {
+    const result = await processor.process({ name: 'followers.sync' } as Job);
+
+    expect(result).toEqual({ followed: 4, unfollowed: 2 });
   });
 
   it('calls the bot as system actor with only the sync permission', async () => {

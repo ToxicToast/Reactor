@@ -9,3 +9,5 @@ export * from './fake-twitch-auth-client.js';
 export * from './fake-twitch-chatter-source.js';
 export * from './fake-twitch-clip-source.js';
 export * from './recording-twitch-event-subscriber.js';
+export * from './in-memory-follower.repository.js';
+export * from './fake-twitch-follower-source.js';

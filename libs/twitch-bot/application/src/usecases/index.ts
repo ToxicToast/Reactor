@@ -7,3 +7,4 @@ export * from './resume-subscriptions.usecase.js';
 export * from './publish-twitch-event.usecase.js';
 export * from './sync-chatters.usecase.js';
 export * from './sync-clips.usecase.js';
+export * from './sync-followers.usecase.js';

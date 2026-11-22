@@ -7,4 +7,8 @@ export const TWITCH_BOT_SCHEDULES = {
     PATTERN_ENV: 'TWITCH_CLIPS_SYNC_CRON',
     DEFAULT_PATTERN: '*/5 * * * *',
   },
+  FOLLOWERS_SYNC: {
+    PATTERN_ENV: 'TWITCH_FOLLOWERS_SYNC_CRON',
+    DEFAULT_PATTERN: '*/30 * * * *',
+  },
 } as const;
