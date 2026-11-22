@@ -2,6 +2,7 @@ import {
   LeaderboardMetric,
   TimelineInterval,
   TimelineMetric,
+  TwitchFollowState,
 } from '@toxictoast/contracts-grpc';
 
 export const LEADERBOARD_METRIC_QUERY = {
@@ -30,4 +31,11 @@ export const TIMELINE_INTERVAL_QUERY = {
   day: TimelineInterval.TIMELINE_INTERVAL_DAY,
   week: TimelineInterval.TIMELINE_INTERVAL_WEEK,
   month: TimelineInterval.TIMELINE_INTERVAL_MONTH,
+} as const;
+
+/** ohne Angabe liefert der twitch-service alle Einträge */
+export const FOLLOW_STATE_QUERY = {
+  all: TwitchFollowState.TWITCH_FOLLOW_STATE_UNSPECIFIED,
+  active: TwitchFollowState.TWITCH_FOLLOW_STATE_ACTIVE,
+  ended: TwitchFollowState.TWITCH_FOLLOW_STATE_ENDED,
 } as const;

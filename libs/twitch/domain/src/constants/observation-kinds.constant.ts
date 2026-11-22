@@ -1,6 +1,8 @@
 export const ObservationKinds = {
   MESSAGE: 'message',
   FOLLOW: 'follow',
+  FOLLOW_FOUND: 'follow_found',
+  UNFOLLOW: 'unfollow',
   SUBSCRIPTION: 'subscription',
   RESUBSCRIPTION: 'resubscription',
   GIFT: 'gift',

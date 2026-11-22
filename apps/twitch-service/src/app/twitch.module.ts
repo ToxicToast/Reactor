@@ -24,6 +24,7 @@ import {
   RecordTwitchEventUseCase,
   SessionTracker,
   PurgeExpiredChatMessagesUseCase,
+  ListFollowsUseCase,
 } from '@toxictoast/twitch-application';
 import { StreamSessionFactory } from '@toxictoast/twitch-domain';
 import {
@@ -40,6 +41,7 @@ import {
   TypeOrmStreamSessionRepository,
   TypeOrmTwitchEventLog,
   TypeOrmViewerStatsRepository,
+  TypeOrmFollowRepository,
 } from '@toxictoast/twitch-infrastructure';
 import { TWITCH_SERVICE_TOKENS } from './constants/index.js';
 import { TwitchFeedLifecycle } from './lifecycles/index.js';
@@ -57,6 +59,7 @@ const {
   CHANNEL_DIRECTORY_REPOSITORY,
   CHAT_MESSAGE_REPOSITORY,
   CHAT_CONFIG,
+  FOLLOW_REPOSITORY,
 } = TWITCH_SERVICE_TOKENS;
 
 const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
@@ -113,6 +116,7 @@ const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
       DATABASE_INJECT,
       CHAT_MESSAGE_REPOSITORY,
     ),
+    provideClass(TypeOrmFollowRepository, DATABASE_INJECT, FOLLOW_REPOSITORY),
     provideClass(
       TypeOrmChannelDirectoryRepository,
       DATABASE_INJECT,
@@ -173,6 +177,7 @@ const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
       RedisTwitchFeed,
       UNIT_OF_WORK,
     ]),
+    provideClass(ListFollowsUseCase, [FOLLOW_REPOSITORY]),
     provideClass(ListChatMessagesUseCase, [CHAT_MESSAGE_REPOSITORY]),
     provideClass(PurgeExpiredChatMessagesUseCase, [
       CHAT_MESSAGE_REPOSITORY,

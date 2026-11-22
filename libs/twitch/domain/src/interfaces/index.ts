@@ -16,3 +16,5 @@ export * from './presence-entry.interface.js';
 export * from './known-channel.interface.js';
 export * from './chat-message.interface.js';
 export * from './chat-message-filter.interface.js';
+export * from './follow.interface.js';
+export * from './follow-filter.interface.js';

@@ -11,6 +11,7 @@ import type {
 import {
   ObservationKinds,
   type ChannelDirectoryRepository,
+  type FollowRepository,
   type PollRepository,
   type StreamSessionFactory,
   type StreamSessionRepository,
@@ -46,6 +47,7 @@ export class RecordTwitchEventUseCase implements UseCase<
     private readonly sessions: StreamSessionRepository,
     private readonly persistence: DomainPersistence,
     private readonly polls: PollRepository,
+    private readonly follows: FollowRepository,
     private readonly sessionTracker: SessionTracker,
     private readonly presenceTracker: PresenceTracker,
     private readonly counters: CounterRecorder,
@@ -105,9 +107,38 @@ export class RecordTwitchEventUseCase implements UseCase<
           );
         }
         return;
+      case ObservationKinds.FOLLOW_FOUND:
+        return this.follow(observation);
+      case ObservationKinds.UNFOLLOW:
+        return this.unfollow(observation);
+      case ObservationKinds.FOLLOW:
+        await this.follow(observation);
+        return this.applyToLiveSession(observation);
       default:
         return this.applyToLiveSession(observation);
     }
+  }
+
+  private async follow(observation: TwitchObservation): Promise<void> {
+    if (!observation.user) {
+      return;
+    }
+    await this.follows.follow(
+      observation.channel.channel_id,
+      observation.user,
+      observation.followed_at ?? observation.occurred_at,
+    );
+  }
+
+  private async unfollow(observation: TwitchObservation): Promise<void> {
+    if (!observation.user) {
+      return;
+    }
+    await this.follows.unfollow(
+      observation.channel.channel_id,
+      observation.user.user_id,
+      observation.occurred_at,
+    );
   }
 
   private async applyToLiveSession(

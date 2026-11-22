@@ -24,6 +24,7 @@ import {
   SyncChattersUseCase,
   SyncClipsUseCase,
   type TwitchTokenStore,
+  SyncFollowersUseCase,
 } from '@toxictoast/twitch-bot-application';
 import {
   ChatterDiffService,
@@ -38,9 +39,11 @@ import {
   TwitchSocketTracker,
   TwurpleChatterSource,
   TwurpleClipSource,
+  TwurpleFollowerSource,
   TwurpleEventSubscriber,
   TwurpleTwitchAuthClient,
   TypeOrmChatterRepository,
+  TypeOrmFollowerRepository,
   TypeOrmPublishedClipLedger,
   TypeOrmTwitchChannelRepository,
   TypeOrmTwitchTokenStore,
@@ -53,14 +56,23 @@ import { TwitchSubscriptionLifecycle } from './lifecycles/index.js';
 import { PrometheusTwitchBotMetrics } from './metrics/index.js';
 import { TwitchReadinessProbe } from './probes/index.js';
 
-const { TWITCH_CONFIG, TOKEN_CIPHER } = TWITCH_BOT_TOKENS;
-const { TWITCH_CHANNEL_REPOSITORY, CHATTER_REPOSITORY } = TWITCH_BOT_TOKENS;
-const { TWITCH_TOKEN_STORE, PUBLISHED_CLIP_LEDGER } = TWITCH_BOT_TOKENS;
-const { TWITCH_AUTH_CLIENT, TWITCH_CHATTER_SOURCE } = TWITCH_BOT_TOKENS;
-const { TWITCH_CLIP_SOURCE, TWITCH_EVENT_SUBSCRIBER } = TWITCH_BOT_TOKENS;
-const { TWITCH_BOT_METRICS } = TWITCH_BOT_TOKENS;
-const { CLOCK, DOMAIN_CONTEXT, OUTBOX, UNIT_OF_WORK } = TOKENS;
-const { METRICS_REGISTRY } = TOKENS;
+const {
+  TWITCH_CONFIG,
+  TOKEN_CIPHER,
+  TWITCH_CHANNEL_REPOSITORY,
+  CHATTER_REPOSITORY,
+  TWITCH_TOKEN_STORE,
+  PUBLISHED_CLIP_LEDGER,
+  TWITCH_AUTH_CLIENT,
+  TWITCH_CHATTER_SOURCE,
+  TWITCH_CLIP_SOURCE,
+  TWITCH_EVENT_SUBSCRIBER,
+  TWITCH_BOT_METRICS,
+  FOLLOWER_REPOSITORY,
+  TWITCH_FOLLOWER_SOURCE,
+} = TWITCH_BOT_TOKENS;
+const { CLOCK, DOMAIN_CONTEXT, OUTBOX, UNIT_OF_WORK, METRICS_REGISTRY } =
+  TOKENS;
 const logger = new Logger('Twitch');
 const logError = (error: unknown, context: string): void => {
   logger.error(context, describeError(error));
@@ -95,6 +107,11 @@ const logError = (error: unknown, context: string): void => {
       TWITCH_CHANNEL_REPOSITORY,
     ),
     provideClass(TypeOrmChatterRepository, DATABASE_INJECT, CHATTER_REPOSITORY),
+    provideClass(
+      TypeOrmFollowerRepository,
+      DATABASE_INJECT,
+      FOLLOWER_REPOSITORY,
+    ),
     provideClass(
       TypeOrmTwitchTokenStore,
       [...DATABASE_INJECT, TOKEN_CIPHER, CLOCK],
@@ -148,6 +165,11 @@ const logError = (error: unknown, context: string): void => {
       TWITCH_CHATTER_SOURCE,
     ),
     provideClass(TwurpleClipSource, [TwitchConnection], TWITCH_CLIP_SOURCE),
+    provideClass(
+      TwurpleFollowerSource,
+      [TwitchConnection],
+      TWITCH_FOLLOWER_SOURCE,
+    ),
     {
       provide: TWITCH_EVENT_SUBSCRIBER,
       inject: [
@@ -224,6 +246,14 @@ const logError = (error: unknown, context: string): void => {
       TWITCH_CHANNEL_REPOSITORY,
       TWITCH_CLIP_SOURCE,
       PUBLISHED_CLIP_LEDGER,
+      OUTBOX,
+      UNIT_OF_WORK,
+      DOMAIN_CONTEXT,
+    ]),
+    provideClass(SyncFollowersUseCase, [
+      TWITCH_CHANNEL_REPOSITORY,
+      FOLLOWER_REPOSITORY,
+      TWITCH_FOLLOWER_SOURCE,
       OUTBOX,
       UNIT_OF_WORK,
       DOMAIN_CONTEXT,

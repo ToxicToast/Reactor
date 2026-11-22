@@ -1,4 +1,9 @@
-import type { HelixChatChatter, HelixClip } from '@twurple/api';
+import type {
+  HelixChannelFollower,
+  HelixChatChatter,
+  HelixClip,
+} from '@twurple/api';
+import { followerFromHelix } from './follower-from-helix.function.js';
 import { chatterFromHelix } from './chatter-from-helix.function.js';
 import { clipFromHelix } from './clip-from-helix.function.js';
 
@@ -51,5 +56,23 @@ describe('clipFromHelix', () => {
 
   it('maps a missing vod to null', () => {
     expect(clipFromHelix(clip('')).vod_id).toBeNull();
+  });
+});
+
+describe('followerFromHelix', () => {
+  it('maps a twitch follower', () => {
+    const follower = {
+      userId: '42',
+      userName: 'viewer',
+      userDisplayName: 'Viewer',
+      followDate: new Date('2026-11-01T10:00:00Z'),
+    } as unknown as HelixChannelFollower;
+
+    expect(followerFromHelix(follower)).toEqual({
+      user_id: '42',
+      user_login: 'viewer',
+      user_name: 'Viewer',
+      followed_at: new Date('2026-11-01T10:00:00Z'),
+    });
   });
 });

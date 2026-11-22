@@ -1,5 +1,6 @@
 import type { Optional } from '@toxictoast/shared-types';
 import type {
+  FollowState,
   LeaderboardMetric,
   StatsIntervalValue,
   StreamSessionId,
@@ -45,4 +46,9 @@ export interface ListChatMessagesInput extends RangeQuery, PageQuery {
   readonly session_id?: Optional<string>;
   readonly query?: Optional<string>;
   readonly include_deleted?: Optional<boolean>;
+}
+
+export interface ListFollowsInput extends ChannelQuery, PageQuery {
+  readonly user_id?: Optional<string>;
+  readonly state?: Optional<FollowState>;
 }

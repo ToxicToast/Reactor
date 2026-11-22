@@ -27,6 +27,7 @@ import { RecordTwitchEventUseCase } from '../usecases/index.js';
 import { InMemoryChannelDirectoryRepository } from './in-memory-channel-directory.repository.js';
 import { InMemoryChannelStatsRepository } from './in-memory-channel-stats.repository.js';
 import { InMemoryChatMessageRepository } from './in-memory-chat-message.repository.js';
+import { InMemoryFollowRepository } from './in-memory-follow.repository.js';
 import { InMemoryChatterActivityRepository } from './in-memory-chatter-activity.repository.js';
 import { InMemoryPollRepository } from './in-memory-poll.repository.js';
 import { InMemoryPresenceRepository } from './in-memory-presence.repository.js';
@@ -55,6 +56,7 @@ export class TwitchTestHarness {
   readonly rewards = new InMemoryRewardStatsRepository();
   readonly polls = new InMemoryPollRepository();
   readonly chatMessages = new InMemoryChatMessageRepository();
+  readonly follows = new InMemoryFollowRepository();
   readonly webhooks = new InMemoryWebhookRepository();
   readonly deliveries = new InMemoryWebhookDeliveryRepository();
   readonly outbox = new InMemoryOutbox();
@@ -83,6 +85,7 @@ export class TwitchTestHarness {
     this.sessions,
     this.persistence,
     this.polls,
+    this.follows,
     this.sessionTracker,
     new PresenceTracker(
       this.presence,

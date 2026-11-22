@@ -6,3 +6,8 @@ export interface SyncChattersOutput {
 export interface SyncClipsOutput {
   readonly created: number;
 }
+
+export interface SyncFollowersOutput {
+  readonly followed: number;
+  readonly unfollowed: number;
+}

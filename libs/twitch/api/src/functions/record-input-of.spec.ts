@@ -51,6 +51,7 @@ describe('recordInputOf', () => {
       reward: null,
       poll: null,
       stream_id: null,
+      followed_at: null,
     });
     expect(input.chat).toEqual({
       kind: ChatChangeKinds.POSTED,

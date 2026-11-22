@@ -13,6 +13,7 @@ import { TwitchSessionChatterSchema } from './twitch-session-chatter.schema.js';
 import { TwitchStreamSessionSchema } from './twitch-stream-session.schema.js';
 import { TwitchViewerDaySchema } from './twitch-viewer-day.schema.js';
 import { TwitchViewerSchema } from './twitch-viewer.schema.js';
+import { TwitchFollowSchema } from './twitch-follow.schema.js';
 
 export const twitchSchemas = [
   TwitchStreamSessionSchema,
@@ -28,6 +29,7 @@ export const twitchSchemas = [
   TwitchKnownChannelSchema,
   TwitchEventSchema,
   TwitchChatMessageSchema,
+  TwitchFollowSchema,
   OutboxSchema,
   ...webhookSchemas,
 ];

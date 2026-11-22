@@ -9,6 +9,7 @@ service TwitchBotService {
   rpc DisconnectChannel(DisconnectChannelRequest) returns (DisconnectChannelResponse);
   rpc SyncChatters(SyncChattersRequest) returns (SyncChattersResponse);
   rpc SyncClips(SyncClipsRequest) returns (SyncClipsResponse);
+  rpc SyncFollowers(SyncFollowersRequest) returns (SyncFollowersResponse);
 }
 
 message Channel {
@@ -65,4 +66,11 @@ message SyncClipsRequest {}
 
 message SyncClipsResponse {
   int32 created = 1;
+}
+
+message SyncFollowersRequest {}
+
+message SyncFollowersResponse {
+  int32 followed = 1;
+  int32 unfollowed = 2;
 }

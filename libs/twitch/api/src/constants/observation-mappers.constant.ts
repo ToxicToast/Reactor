@@ -12,13 +12,19 @@ import {
   ObservationKinds,
   type ObservationKindValue,
 } from '@toxictoast/twitch-domain';
-import { optionalViewerOf } from '../functions/optional-viewer-of.function.js';
-import { pollOf } from '../functions/poll-of.function.js';
-import { viewerOf } from '../functions/viewer-of.function.js';
+import { optionalViewerOf, pollOf, viewerOf } from '../functions/index.js';
 import type { ObservationMapper } from '../types/index.js';
 
 const withViewer = (kind: ObservationKindValue): ObservationMapper => {
   return (payload) => ({ kind, user: viewerOf(payload) });
+};
+
+const withFollower = (kind: ObservationKindValue): ObservationMapper => {
+  return (payload) => ({
+    kind,
+    user: viewerOf(payload),
+    followed_at: payload.date('followed_at'),
+  });
 };
 
 const poll: ObservationMapper = (payload) => {
@@ -42,7 +48,11 @@ export const OBSERVATION_MAPPERS: Readonly<Record<string, ObservationMapper>> =
       return { kind: ObservationKinds.STREAM_OFFLINE };
     },
     [eventKey(TwitchTopics.COMMUNITY, TwitchCommunityEvents.FOLLOW)]:
-      withViewer(ObservationKinds.FOLLOW),
+      withFollower(ObservationKinds.FOLLOW),
+    [eventKey(TwitchTopics.COMMUNITY, TwitchCommunityEvents.FOLLOW_FOUND)]:
+      withFollower(ObservationKinds.FOLLOW_FOUND),
+    [eventKey(TwitchTopics.COMMUNITY, TwitchCommunityEvents.UNFOLLOW)]:
+      withFollower(ObservationKinds.UNFOLLOW),
     [eventKey(TwitchTopics.COMMUNITY, TwitchCommunityEvents.SUBSCRIBE)]: (
       payload,
     ) => {

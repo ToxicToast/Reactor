@@ -11,6 +11,7 @@ service TwitchService {
   rpc ListRewards(ListRewardsRequest) returns (ListRewardsResponse);
   rpc ListPolls(ListPollsRequest) returns (ListPollsResponse);
   rpc ListChatMessages(ListChatMessagesRequest) returns (ListChatMessagesResponse);
+  rpc ListFollows(ListFollowsRequest) returns (ListFollowsResponse);
   rpc WatchLive(WatchLiveRequest) returns (stream WatchLiveResponse);
   rpc WatchEvents(WatchEventsRequest) returns (stream WatchEventsResponse);
   rpc CreateTwitchWebhook(CreateTwitchWebhookRequest) returns (CreateTwitchWebhookResponse);
@@ -363,4 +364,32 @@ message PurgeExpiredChatMessagesRequest {}
 
 message PurgeExpiredChatMessagesResponse {
   int32 removed = 1;
+}
+
+
+enum TwitchFollowState {
+  TWITCH_FOLLOW_STATE_UNSPECIFIED = 0;
+  TWITCH_FOLLOW_STATE_ACTIVE = 1;
+  TWITCH_FOLLOW_STATE_ENDED = 2;
+}
+
+message TwitchFollow {
+  string channel_id = 1;
+  string user_id = 2;
+  string user_login = 3;
+  string user_name = 4;
+  string followed_at = 5;
+  optional string unfollowed_at = 6;
+}
+
+message ListFollowsRequest {
+  string channel_id = 1;
+  optional string user_id = 2;
+  TwitchFollowState state = 3;
+  optional int32 limit = 4;
+  optional int32 offset = 5;
+}
+
+message ListFollowsResponse {
+  repeated TwitchFollow follows = 1;
 }

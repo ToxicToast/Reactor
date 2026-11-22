@@ -10,3 +10,4 @@ export * from './stats-interval-value.type.js';
 export * from './leaderboard-metric.type.js';
 export * from './timeline-metric.type.js';
 export * from './chat-deletion-reason.type.js';
+export * from './follow-state.type.js';

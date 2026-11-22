@@ -4,13 +4,13 @@ import type {
   UseCase,
 } from '@toxictoast/shared-application';
 import { Result, type DomainContext } from '@toxictoast/shared-kernel';
-import type {
-  Chatter,
-  ChatterDiff,
-  ChatterDiffService,
-  ChatterRepository,
-  TwitchChannelAnemic,
-  TwitchChannelRepository,
+import {
+  uniqueByUserId,
+  type ChatterDiff,
+  type ChatterDiffService,
+  type ChatterRepository,
+  type TwitchChannelAnemic,
+  type TwitchChannelRepository,
 } from '@toxictoast/twitch-bot-domain';
 import type { SyncChattersOutput } from '../data/index.js';
 import { observe } from '../functions/index.js';
@@ -41,7 +41,7 @@ export class SyncChattersUseCase implements UseCase<void, SyncChattersOutput> {
   }
 
   private async sync(channel: TwitchChannelAnemic): Promise<ChatterDiff> {
-    const current = this.unique(await this.source.listChatters(channel));
+    const current = uniqueByUserId(await this.source.listChatters(channel));
     const previous = await this.chatters.findByChannel(channel.id);
     const diff = this.differ.diff(previous, current);
     if (diff.joined.length === 0 && diff.left.length === 0) {
@@ -62,13 +62,5 @@ export class SyncChattersUseCase implements UseCase<void, SyncChattersOutput> {
       await this.outbox.add(events);
     });
     return diff;
-  }
-
-  private unique(chatters: ReadonlyArray<Chatter>): Array<Chatter> {
-    return [
-      ...new Map(
-        chatters.map((chatter) => [chatter.user_id, chatter]),
-      ).values(),
-    ];
   }
 }

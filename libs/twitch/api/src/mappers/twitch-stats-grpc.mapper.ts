@@ -5,6 +5,7 @@ import {
   StreamSession as ProtoStreamSession,
   TwitchEvent as ProtoTwitchEvent,
   TwitchPoll as ProtoTwitchPoll,
+  TwitchFollow as ProtoTwitchFollow,
   TwitchChatDeletionReason as ProtoTwitchChatDeletionReason,
 } from '@toxictoast/contracts-grpc';
 import { toIso } from '@toxictoast/shared-grpc';
@@ -18,6 +19,7 @@ import {
   type ChatMessage,
   type StoredPoll,
   type StreamSessionAnemic,
+  type Follow,
 } from '@toxictoast/twitch-domain';
 import { pickCounters } from '../functions/pick-counters.function.js';
 import { CHAT_DELETION_REASON_TO_PROTO } from '../constants/index.js';
@@ -82,6 +84,17 @@ export class TwitchStatsGrpcMapper {
         message.deleted_reason === null
           ? ProtoTwitchChatDeletionReason.TWITCH_CHAT_DELETION_REASON_UNSPECIFIED
           : CHAT_DELETION_REASON_TO_PROTO[message.deleted_reason],
+    };
+  }
+
+  toFollow(follow: Follow): ProtoTwitchFollow {
+    return {
+      channel_id: follow.channel_id,
+      user_id: follow.user_id,
+      user_login: follow.user_login,
+      user_name: follow.user_name,
+      followed_at: follow.followed_at.toISOString(),
+      unfollowed_at: toIso(follow.unfollowed_at),
     };
   }
 

@@ -32,6 +32,8 @@ import {
   type WatchLiveResponse,
   ListChatMessagesRequest,
   ListChatMessagesResponse,
+  ListFollowsRequest,
+  ListFollowsResponse,
   type PurgeExpiredChatMessagesResponse,
 } from '@toxictoast/contracts-grpc';
 import {
@@ -65,6 +67,7 @@ import {
   PurgeExpiredChatMessagesUseCase,
   type LiveChannel,
   type TwitchFeedSource,
+  ListFollowsUseCase,
 } from '@toxictoast/twitch-application';
 import { Observable } from 'rxjs';
 import {
@@ -73,6 +76,7 @@ import {
   TIMELINE_METRIC_MAP,
   TWITCH_API_TOKENS,
   WEBHOOK_DELIVERY_STATUS_FROM_PROTO,
+  FOLLOW_STATE_MAP,
 } from '../constants/index.js';
 import {
   eventFilterOf,
@@ -100,6 +104,7 @@ export class TwitchGrpcController implements TwitchServiceController {
     private readonly listRewardsUseCase: ListRewardsUseCase,
     private readonly listPollsUseCase: ListPollsUseCase,
     private readonly listChatMessagesUseCase: ListChatMessagesUseCase,
+    private readonly listFollowsUseCase: ListFollowsUseCase,
     private readonly purgeExpiredChatMessagesUseCase: PurgeExpiredChatMessagesUseCase,
     private readonly createWebhookUseCase: CreateWebhookUseCase,
     private readonly listWebhooksUseCase: ListWebhooksUseCase,
@@ -210,6 +215,22 @@ export class TwitchGrpcController implements TwitchServiceController {
     return {
       messages: messages.map((message) => this.stats.toChatMessage(message)),
     };
+  }
+
+  async listFollows(request: ListFollowsRequest): Promise<ListFollowsResponse> {
+    requirePermission(this.actors.current(), TwitchPermission.STATS_READ);
+    const follows = unwrap(
+      await this.listFollowsUseCase.execute({
+        channel_id: parseChannelId(request.channel_id),
+        user_id: request.user_id
+          ? parseChannelId(request.user_id, 'user_id')
+          : undefined,
+        state: mapEnum(FOLLOW_STATE_MAP, request.state, 'state'),
+        limit: request.limit,
+        offset: request.offset,
+      }),
+    );
+    return { follows: follows.map((follow) => this.stats.toFollow(follow)) };
   }
 
   async purgeExpiredChatMessages(): Promise<PurgeExpiredChatMessagesResponse> {

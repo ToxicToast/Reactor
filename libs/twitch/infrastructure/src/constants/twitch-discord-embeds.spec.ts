@@ -84,4 +84,20 @@ describe('TWITCH_DISCORD_EMBEDS', () => {
       'Minecraft',
     ]);
   });
+
+  it('reports an unfollow with the original follow date', () => {
+    expect(
+      render('twitch.community.unfollow', {
+        user_id: '42',
+        user_login: 'viewer',
+        user_name: 'Viewer',
+        followed_at: '2025-03-01T10:00:00.000Z',
+      }),
+    ).toEqual({
+      color: TWITCH_DISCORD.COLOR,
+      title: '💔 Viewer folgt nicht mehr',
+      url: 'https://www.twitch.tv/viewer',
+      fields: [{ name: 'Gefolgt seit', value: '1. März 2025', inline: true }],
+    });
+  });
 });
