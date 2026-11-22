@@ -3,4 +3,8 @@ export const BLOG_SCHEDULES = {
     PATTERN_ENV: 'BLOG_MEDIA_CLEANUP_CRON',
     DEFAULT_PATTERN: '0 3 * * *',
   },
+  MEDIA_PUBLIC_SYNC: {
+    PATTERN_ENV: 'BLOG_MEDIA_PUBLIC_SYNC_CRON',
+    DEFAULT_PATTERN: '30 3 * * *',
+  },
 } as const;
