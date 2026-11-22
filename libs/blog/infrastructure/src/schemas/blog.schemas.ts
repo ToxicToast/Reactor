@@ -6,6 +6,7 @@ import { PostCategorySchema } from './post-category.schema.js';
 import { PostTagSchema } from './post-tag.schema.js';
 import { PostSchema } from './post.schema.js';
 import { TagSchema } from './tag.schema.js';
+import { PublicMediaSchema } from './public-media.schema.js';
 
 export const blogSchemas = [
   TagSchema,
@@ -15,5 +16,6 @@ export const blogSchemas = [
   PostCategorySchema,
   PostTagSchema,
   CommentSchema,
+  PublicMediaSchema,
   OutboxSchema,
 ];

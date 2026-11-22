@@ -40,6 +40,9 @@ message Post {
   string created_at = 15;
   optional string updated_at = 16;
   optional string deleted_at = 17;
+  /** nur bei veröffentlichten Posts; feste URL ohne Ablauf */
+  optional string blog_image_url = 18;
+  optional string hero_image_url = 19;
 }
 
 message CreatePostRequest {

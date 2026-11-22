@@ -1,9 +1,11 @@
 import type { Nullable, Optional } from '@toxictoast/shared-types';
-import type {
-  PostAnemic,
-  PostFilter,
-  PostId,
-  PostRepository,
+import {
+  PostStatus,
+  type MediaId,
+  type PostAnemic,
+  type PostFilter,
+  type PostId,
+  type PostRepository,
 } from '@toxictoast/blog-domain';
 
 export class InMemoryPostRepository implements PostRepository {
@@ -63,6 +65,14 @@ export class InMemoryPostRepository implements PostRepository {
       limit,
       offset,
     );
+  }
+
+  async findPublishedImageIds(): Promise<Array<MediaId>> {
+    const ids = this.active()
+      .filter((post) => post.status === PostStatus.PUBLISHED)
+      .flatMap((post) => [post.blog_image_id, post.hero_image_id])
+      .filter((id): id is MediaId => id !== null);
+    return [...new Set(ids)];
   }
 
   private active(): Array<PostAnemic> {

@@ -4,6 +4,7 @@ import {
   Result,
 } from '@toxictoast/shared-kernel';
 import type { FileStorage, UseCase } from '@toxictoast/shared-application';
+import { TIME_S } from '@toxictoast/shared-types';
 import { MediaStatus, type MediaRepository } from '@toxictoast/blog-domain';
 import type { MediaIdInput, MediaUrlOutput } from '../../data/index.js';
 
@@ -14,7 +15,7 @@ export class GetMediaUrlUseCase implements UseCase<
   constructor(
     private readonly repository: MediaRepository,
     private readonly storage: FileStorage,
-    private readonly downloadUrlTtl = 60 * 60,
+    private readonly downloadUrlTtl: number = TIME_S.HOUR,
   ) {}
 
   async execute(input: MediaIdInput): Promise<Result<MediaUrlOutput>> {

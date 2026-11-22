@@ -19,6 +19,7 @@ import { TOKENS } from '../constants/index.js';
           createS3Client(s3ConfigFromEnv(S3_ENV.ENDPOINT)),
           createS3Client(s3ConfigFromEnv(S3_ENV.PUBLIC_ENDPOINT)),
           requiredEnv(S3_ENV.BUCKET),
+          requiredEnv(S3_ENV.PUBLIC_ENDPOINT),
         );
       },
     },
