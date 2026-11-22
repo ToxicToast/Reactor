@@ -4,24 +4,21 @@ import type {
   UseCase,
 } from '@toxictoast/shared-application';
 import { Result, type DomainContext } from '@toxictoast/shared-kernel';
+import { TIME_MS } from '@toxictoast/shared-types';
 import type {
   TwitchChannelAnemic,
   TwitchChannelRepository,
 } from '@toxictoast/twitch-bot-domain';
-import { CLIP_LOOKBACK_HOURS } from '../constants/index.js';
+import { CLIP_LOOKBACK_HOURS, MEDIA_EVENTS } from '../constants/index.js';
 import type { SyncClipsOutput } from '../data/index.js';
-import { observe } from '../functions/index.js';
-import type {
-  PublishedClipLedger,
-  TwitchClipSource,
-} from '../interfaces/index.js';
-import { TIME_MS } from '@toxictoast/shared-types';
+import { observe, oldestFirst } from '../functions/index.js';
+import type { PublishedLedger, TwitchClipSource } from '../interfaces/index.js';
 
 export class SyncClipsUseCase implements UseCase<void, SyncClipsOutput> {
   constructor(
     private readonly channels: TwitchChannelRepository,
     private readonly source: TwitchClipSource,
-    private readonly ledger: PublishedClipLedger,
+    private readonly ledger: PublishedLedger,
     private readonly outbox: Outbox,
     private readonly uow: UnitOfWork,
     private readonly ctx: DomainContext,
@@ -52,12 +49,17 @@ export class SyncClipsUseCase implements UseCase<void, SyncClipsOutput> {
           clips.map((clip) => clip.clip_id),
         ),
       );
-      const events = clips
-        .filter((clip) => fresh.has(clip.clip_id))
-        .sort((a, b) => a.created_at.getTime() - b.created_at.getTime())
-        .map((clip) =>
-          observe(this.ctx, channel, 'twitch.clip', 'created', clip),
+      const events = oldestFirst(
+        clips.filter((clip) => fresh.has(clip.clip_id)),
+      ).map((clip) => {
+        return observe(
+          this.ctx,
+          channel,
+          MEDIA_EVENTS.CLIP_TOPIC,
+          MEDIA_EVENTS.CREATED,
+          clip,
         );
+      });
 
       if (events.length > 0) {
         await this.outbox.add(events);

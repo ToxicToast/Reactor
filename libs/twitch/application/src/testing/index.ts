@@ -15,3 +15,5 @@ export * from './in-memory-twitch-event-log.js';
 export * from './recording-twitch-feed.js';
 export * from './twitch-test-harness.js';
 export * from './in-memory-follow.repository.js';
+export * from './in-memory-clip.repository.js';
+export * from './in-memory-video.repository.js';

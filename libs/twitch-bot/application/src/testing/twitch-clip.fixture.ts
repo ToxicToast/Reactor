@@ -14,6 +14,7 @@ export const twitchClip = (
     view_count: 1,
     thumbnail_url: `https://clips-media.twitch.tv/${id}.jpg`,
     vod_id: null,
+    vod_offset: null,
     created_at: new Date('2026-10-26T19:30:00Z'),
     ...overrides,
   };

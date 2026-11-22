@@ -30,3 +30,5 @@ export * from './blog-comment-events.constant.js';
 export * from './webhook-topics.constant.js';
 export * from './webhook-events.constant.js';
 export * from './webhook-topic-retention.constant.js';
+export * from './twitch-video-events.constant.js';
+export * from './twitch-video-types.constant.js';

@@ -13,5 +13,6 @@ export interface TwitchClipPayloadV1 {
   readonly view_count: number;
   readonly thumbnail_url: string;
   readonly vod_id: Nullable<string>;
+  readonly vod_offset: Nullable<number>;
   readonly created_at: string;
 }

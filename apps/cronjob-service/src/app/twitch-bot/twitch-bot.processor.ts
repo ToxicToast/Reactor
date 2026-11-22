@@ -6,7 +6,7 @@ import {
   TWITCH_BOT_SERVICE_NAME,
   TwitchBotPermission,
   type SyncChattersResponse,
-  type SyncClipsResponse,
+  type SyncMediaResponse,
   type SyncFollowersResponse,
   type TwitchBotServiceClient,
 } from '@toxictoast/contracts-grpc';
@@ -42,7 +42,7 @@ export class TwitchBotProcessor extends SystemJobProcessor {
       case TwitchBotJobs.CHATTERS_SYNC:
         return this.syncChatters();
       case TwitchBotJobs.CLIPS_SYNC:
-        return this.syncClips();
+        return this.syncMedia();
       case TwitchBotJobs.FOLLOWERS_SYNC:
         return this.syncFollowers();
       default:
@@ -65,15 +65,22 @@ export class TwitchBotProcessor extends SystemJobProcessor {
     return response;
   }
 
-  private async syncClips(): Promise<SyncClipsResponse> {
+  private async syncMedia(): Promise<SyncMediaResponse> {
     const response = await firstValueFrom(
-      this.twitch.service.syncClips(
+      this.twitch.service.syncMedia(
         {},
         this.metadataFor([TwitchBotPermission.SYNC]),
       ),
     );
-    if (response.created > 0) {
-      this.logger.log(`Clips synced: ${response.created} new`);
+    if (response.imported_clips > 0 || response.imported_videos > 0) {
+      this.logger.log(
+        `Media imported: ${response.imported_clips} clips, ${response.imported_videos} videos`,
+      );
+    }
+    if (response.created_clips > 0 || response.created_videos > 0) {
+      this.logger.log(
+        `Media synced: ${response.created_clips} new clips, ${response.created_videos} new videos`,
+      );
     }
     return response;
   }

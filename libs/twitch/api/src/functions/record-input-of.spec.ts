@@ -1,5 +1,8 @@
 import { InvalidPayloadError, PayloadReader } from '@toxictoast/shared-kernel';
-import { ChatChangeKinds } from '@toxictoast/twitch-application';
+import {
+  ChatChangeKinds,
+  MediaChangeKinds,
+} from '@toxictoast/twitch-application';
 import {
   ChatDeletionReasons,
   ObservationKinds,
@@ -193,11 +196,48 @@ describe('recordInputOf', () => {
 
   it('records events without stats effect without an observation', () => {
     const input = inputOf(
-      incomingTwitchEvent('twitch.clip', 'created', { clip_id: 'clip-1' }),
+      incomingTwitchEvent('twitch.moderation', 'unban', TEST_VIEWER),
     );
 
     expect(input.observation).toBeNull();
+    expect(input.media).toBeNull();
     expect(input.event.channel_id).toBe('123456');
+  });
+
+  it('maps a clip to a media change', () => {
+    const input = inputOf(
+      incomingTwitchEvent('twitch.clip', 'found', {
+        clip_id: 'clip-1',
+        url: 'https://clips.twitch.tv/clip-1',
+        title: 'Epic',
+        creator_id: '7',
+        creator_name: 'Clipper',
+        duration_seconds: 29.9,
+        view_count: 12,
+        thumbnail_url: 'https://clips-media.twitch.tv/clip-1.jpg',
+        vod_id: 'vod-1',
+        vod_offset: 754,
+        created_at: '2026-10-26T19:30:00.000Z',
+      }),
+    );
+
+    expect(input.observation).toBeNull();
+    expect(input.media).toEqual({
+      kind: MediaChangeKinds.CLIP,
+      clip: {
+        clip_id: 'clip-1',
+        channel_id: '123456',
+        url: 'https://clips.twitch.tv/clip-1',
+        title: 'Epic',
+        creator_id: '7',
+        creator_name: 'Clipper',
+        duration_seconds: 29.9,
+        thumbnail_url: 'https://clips-media.twitch.tv/clip-1.jpg',
+        vod_id: 'vod-1',
+        vod_offset: 754,
+        created_at: new Date('2026-10-26T19:30:00.000Z'),
+      },
+    });
   });
 
   it('takes the twitch id of bot events as channel', () => {

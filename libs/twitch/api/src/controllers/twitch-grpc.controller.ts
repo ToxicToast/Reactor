@@ -35,6 +35,10 @@ import {
   ListFollowsRequest,
   ListFollowsResponse,
   type PurgeExpiredChatMessagesResponse,
+  type ListClipsRequest,
+  type ListClipsResponse,
+  type ListVideosRequest,
+  type ListVideosResponse,
 } from '@toxictoast/contracts-grpc';
 import {
   mapEnum,
@@ -68,6 +72,8 @@ import {
   type LiveChannel,
   type TwitchFeedSource,
   ListFollowsUseCase,
+  ListClipsUseCase,
+  ListVideosUseCase,
 } from '@toxictoast/twitch-application';
 import { Observable } from 'rxjs';
 import {
@@ -77,6 +83,7 @@ import {
   TWITCH_API_TOKENS,
   WEBHOOK_DELIVERY_STATUS_FROM_PROTO,
   FOLLOW_STATE_MAP,
+  VIDEO_TYPE_FROM_PROTO,
 } from '../constants/index.js';
 import {
   eventFilterOf,
@@ -86,6 +93,7 @@ import {
 import {
   TwitchStatsGrpcMapper,
   TwitchWebhookGrpcMapper,
+  TwitchMediaGrpcMapper,
 } from '../mappers/index.js';
 
 @Controller()
@@ -93,6 +101,7 @@ import {
 export class TwitchGrpcController implements TwitchServiceController {
   private readonly stats = new TwitchStatsGrpcMapper();
   private readonly webhooks = new TwitchWebhookGrpcMapper();
+  private readonly media = new TwitchMediaGrpcMapper();
 
   constructor(
     private readonly listStatsChannelsUseCase: ListStatsChannelsUseCase,
@@ -105,6 +114,8 @@ export class TwitchGrpcController implements TwitchServiceController {
     private readonly listPollsUseCase: ListPollsUseCase,
     private readonly listChatMessagesUseCase: ListChatMessagesUseCase,
     private readonly listFollowsUseCase: ListFollowsUseCase,
+    private readonly listClipsUseCase: ListClipsUseCase,
+    private readonly listVideosUseCase: ListVideosUseCase,
     private readonly purgeExpiredChatMessagesUseCase: PurgeExpiredChatMessagesUseCase,
     private readonly createWebhookUseCase: CreateWebhookUseCase,
     private readonly listWebhooksUseCase: ListWebhooksUseCase,
@@ -231,6 +242,33 @@ export class TwitchGrpcController implements TwitchServiceController {
       }),
     );
     return { follows: follows.map((follow) => this.stats.toFollow(follow)) };
+  }
+
+  async listClips(request: ListClipsRequest): Promise<ListClipsResponse> {
+    const clips = unwrap(
+      await this.listClipsUseCase.execute({
+        channel_id: parseChannelId(request.channel_id),
+        vod_id: request.vod_id,
+        limit: request.limit,
+        offset: request.offset,
+      }),
+    );
+    return { clips: clips.map((clip) => this.media.toClip(clip)) };
+  }
+
+  async listVideos(request: ListVideosRequest): Promise<ListVideosResponse> {
+    const videos = unwrap(
+      await this.listVideosUseCase.execute({
+        channel_id: parseChannelId(request.channel_id),
+        type: mapOptionalEnum(VIDEO_TYPE_FROM_PROTO, request.type, 'type'),
+        session_id: request.session_id
+          ? parseId<'StreamSession'>(request.session_id, 'session_id')
+          : undefined,
+        limit: request.limit,
+        offset: request.offset,
+      }),
+    );
+    return { videos: videos.map((video) => this.media.toVideo(video)) };
   }
 
   async purgeExpiredChatMessages(): Promise<PurgeExpiredChatMessagesResponse> {

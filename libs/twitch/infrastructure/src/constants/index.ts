@@ -5,3 +5,4 @@ export * from './twitch-discord-embeds.constant.js';
 export * from './twitch-env.constant.js';
 export * from './chat-search.constant.js';
 export * from './discord-date.constant.js';
+export * from './video-type-labels.constant.js';

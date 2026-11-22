@@ -12,6 +12,7 @@ import {
 import type { Nullable } from '@toxictoast/shared-types';
 import type {
   PublishTwitchEventUseCase,
+  RefreshArchiveUseCase,
   TwitchEventSubscriber,
 } from '@toxictoast/twitch-bot-application';
 import type {
@@ -39,6 +40,7 @@ export class TwurpleEventSubscriber implements TwitchEventSubscriber {
   constructor(
     private readonly connection: TwitchConnection,
     private readonly publisher: PublishTwitchEventUseCase,
+    private readonly archives: RefreshArchiveUseCase,
     private readonly sockets: TwitchSocketTracker,
     private readonly metrics: TwitchBotMetrics = NOOP_TWITCH_BOT_METRICS,
     private readonly onError: (error: unknown, context: string) => void = () =>
@@ -168,6 +170,12 @@ export class TwurpleEventSubscriber implements TwitchEventSubscriber {
       }),
       listener.onStreamOffline(id, () => {
         emit(STREAM, TwitchStreamEvents.OFFLINE, mapper.streamOffline());
+        this.archives.execute({ channel }).catch((error: unknown) => {
+          this.onError(
+            error,
+            `Refreshing the archive of ${channel.login} failed`,
+          );
+        });
       }),
       listener.onChannelFollow(id, id, (event) => {
         emit(COMMUNITY, TwitchCommunityEvents.FOLLOW, mapper.follow(event));

@@ -7,6 +7,7 @@ import {
   TwitchStatsTopics,
   TwitchStreamEvents,
   TwitchTopics,
+  TwitchVideoEvents,
 } from '@toxictoast/contracts-events';
 import { eventKey } from '@toxictoast/shared-kernel';
 import {
@@ -23,6 +24,7 @@ import {
   twitchEmbed,
   viewerName,
 } from '../functions/index.js';
+import { VIDEO_TYPE_LABELS } from './video-type-labels.constant.js';
 
 const SESSION_COUNTS = [
   ['Peak-Chatter', 'peak_chatters'],
@@ -189,6 +191,26 @@ export const TWITCH_DISCORD_EMBEDS: DiscordEmbedRenderers = {
           {
             name: 'Länge',
             value: `${Math.round(payload.number('duration_seconds'))} s`,
+            inline: true,
+          },
+        ],
+      };
+    },
+  ),
+
+  // ── VODs ──────────────────────────────────────
+  [eventKey(TwitchTopics.VIDEO, TwitchVideoEvents.PUBLISHED)]: twitchEmbed(
+    (payload) => {
+      const type = payload.string('type');
+      return {
+        title: `📼 Neues ${VIDEO_TYPE_LABELS[type] ?? type}: ${payload.string('title')}`,
+        url: payload.string('url'),
+        description: optionalText(payload.string('description')),
+        image: { url: payload.string('thumbnail_url') },
+        fields: [
+          {
+            name: 'Länge',
+            value: formatDuration(payload.number('duration_seconds')),
             inline: true,
           },
         ],

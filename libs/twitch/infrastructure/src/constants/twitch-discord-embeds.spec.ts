@@ -100,4 +100,27 @@ describe('TWITCH_DISCORD_EMBEDS', () => {
       fields: [{ name: 'Gefolgt seit', value: '1. März 2025', inline: true }],
     });
   });
+
+  it('announces a new highlight with its length', () => {
+    const embed = render('twitch.video.published', {
+      video_id: 'v1',
+      stream_id: null,
+      type: 'highlight',
+      title: 'Der Boss-Kill',
+      description: '',
+      url: 'https://www.twitch.tv/videos/v1',
+      thumbnail_url: 'https://static-cdn.jtvnw.net/v1.jpg',
+      duration_seconds: 9300,
+      language: 'de',
+      created_at: '2026-10-26T19:30:00.000Z',
+      published_at: '2026-10-26T19:30:00.000Z',
+    });
+
+    expect(embed).toMatchObject({
+      title: '📼 Neues Highlight: Der Boss-Kill',
+      url: 'https://www.twitch.tv/videos/v1',
+      image: { url: 'https://static-cdn.jtvnw.net/v1.jpg' },
+      fields: [{ name: 'Länge', value: '2 h 35 min', inline: true }],
+    });
+  });
 });

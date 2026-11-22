@@ -25,6 +25,10 @@ import {
   SyncClipsUseCase,
   type TwitchTokenStore,
   SyncFollowersUseCase,
+  ImportMediaUseCase,
+  RefreshArchiveUseCase,
+  SyncMediaUseCase,
+  SyncVideosUseCase,
 } from '@toxictoast/twitch-bot-application';
 import {
   ChatterDiffService,
@@ -50,6 +54,9 @@ import {
   type TwitchBotMetrics,
   type TwitchConfig,
   TwitchTokenSchema,
+  TwurpleVideoSource,
+  TypeOrmMediaImportLog,
+  TypeOrmPublishedVideoLedger,
 } from '@toxictoast/twitch-bot-infrastructure';
 import { TWITCH_BOT_ENV, TWITCH_BOT_TOKENS } from './constants/index.js';
 import { TwitchSubscriptionLifecycle } from './lifecycles/index.js';
@@ -70,6 +77,9 @@ const {
   TWITCH_BOT_METRICS,
   FOLLOWER_REPOSITORY,
   TWITCH_FOLLOWER_SOURCE,
+  PUBLISHED_VIDEO_LEDGER,
+  MEDIA_IMPORT_LOG,
+  TWITCH_VIDEO_SOURCE,
 } = TWITCH_BOT_TOKENS;
 const { CLOCK, DOMAIN_CONTEXT, OUTBOX, UNIT_OF_WORK, METRICS_REGISTRY } =
   TOKENS;
@@ -122,6 +132,12 @@ const logError = (error: unknown, context: string): void => {
       [...DATABASE_INJECT, CLOCK],
       PUBLISHED_CLIP_LEDGER,
     ),
+    provideClass(
+      TypeOrmPublishedVideoLedger,
+      [...DATABASE_INJECT, CLOCK],
+      PUBLISHED_VIDEO_LEDGER,
+    ),
+    provideClass(TypeOrmMediaImportLog, DATABASE_INJECT, MEDIA_IMPORT_LOG),
     provideClass(TwitchSocketTracker, [CLOCK]),
     provideClass(
       PrometheusTwitchBotMetrics,
@@ -165,6 +181,7 @@ const logError = (error: unknown, context: string): void => {
       TWITCH_CHATTER_SOURCE,
     ),
     provideClass(TwurpleClipSource, [TwitchConnection], TWITCH_CLIP_SOURCE),
+    provideClass(TwurpleVideoSource, [TwitchConnection], TWITCH_VIDEO_SOURCE),
     provideClass(
       TwurpleFollowerSource,
       [TwitchConnection],
@@ -175,18 +192,21 @@ const logError = (error: unknown, context: string): void => {
       inject: [
         TwitchConnection,
         PublishTwitchEventUseCase,
+        RefreshArchiveUseCase,
         TwitchSocketTracker,
         TWITCH_BOT_METRICS,
       ],
       useFactory: (
         connection: TwitchConnection,
         publisher: PublishTwitchEventUseCase,
+        archives: RefreshArchiveUseCase,
         sockets: TwitchSocketTracker,
         metrics: TwitchBotMetrics,
       ) => {
         return new TwurpleEventSubscriber(
           connection,
           publisher,
+          archives,
           sockets,
           metrics,
           logError,
@@ -246,6 +266,37 @@ const logError = (error: unknown, context: string): void => {
       TWITCH_CHANNEL_REPOSITORY,
       TWITCH_CLIP_SOURCE,
       PUBLISHED_CLIP_LEDGER,
+      OUTBOX,
+      UNIT_OF_WORK,
+      DOMAIN_CONTEXT,
+    ]),
+    provideClass(SyncVideosUseCase, [
+      TWITCH_CHANNEL_REPOSITORY,
+      TWITCH_VIDEO_SOURCE,
+      PUBLISHED_VIDEO_LEDGER,
+      OUTBOX,
+      UNIT_OF_WORK,
+      DOMAIN_CONTEXT,
+    ]),
+    provideClass(ImportMediaUseCase, [
+      TWITCH_CHANNEL_REPOSITORY,
+      TWITCH_CLIP_SOURCE,
+      TWITCH_VIDEO_SOURCE,
+      PUBLISHED_CLIP_LEDGER,
+      PUBLISHED_VIDEO_LEDGER,
+      MEDIA_IMPORT_LOG,
+      OUTBOX,
+      UNIT_OF_WORK,
+      DOMAIN_CONTEXT,
+    ]),
+    provideClass(SyncMediaUseCase, [
+      ImportMediaUseCase,
+      SyncClipsUseCase,
+      SyncVideosUseCase,
+    ]),
+    provideClass(RefreshArchiveUseCase, [
+      TWITCH_VIDEO_SOURCE,
+      PUBLISHED_VIDEO_LEDGER,
       OUTBOX,
       UNIT_OF_WORK,
       DOMAIN_CONTEXT,

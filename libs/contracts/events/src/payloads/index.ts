@@ -28,3 +28,4 @@ export * from './twitch-presence.payload.js';
 export * from './twitch-session.payload.js';
 export * from './webhook.payload.js';
 export * from './twitch-unfollow.payload.js';
+export * from './twitch-video.payload.js';

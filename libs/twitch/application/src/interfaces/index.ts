@@ -9,3 +9,5 @@ export * from './chat-message-posted.interface.js';
 export * from './chat-message-deleted.interface.js';
 export * from './chat-user-cleared.interface.js';
 export * from './twitch-chat-config.interface.js';
+export * from './clip-change.interface.js';
+export * from './video-change.interface.js';

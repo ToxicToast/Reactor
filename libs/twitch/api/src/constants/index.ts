@@ -8,3 +8,5 @@ export * from './timeline-interval-map.constant.js';
 export * from './webhook-delivery-status-maps.constant.js';
 export * from './chat-deletion-reason-map.constant.js';
 export * from './follow-state-map.constant.js';
+export * from './media-change-mappers.constant.js';
+export * from './video-type-maps.constant.js';

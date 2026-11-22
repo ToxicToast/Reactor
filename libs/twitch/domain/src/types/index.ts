@@ -11,3 +11,4 @@ export * from './leaderboard-metric.type.js';
 export * from './timeline-metric.type.js';
 export * from './chat-deletion-reason.type.js';
 export * from './follow-state.type.js';
+export * from './video-type.type.js';

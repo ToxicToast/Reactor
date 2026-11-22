@@ -34,6 +34,7 @@ import type {
   LiveStatusReader,
   PresenceTracker,
   SessionTracker,
+  MediaRecorder,
 } from '../services/index.js';
 
 export class RecordTwitchEventUseCase implements UseCase<
@@ -52,6 +53,7 @@ export class RecordTwitchEventUseCase implements UseCase<
     private readonly presenceTracker: PresenceTracker,
     private readonly counters: CounterRecorder,
     private readonly chatLog: ChatLogRecorder,
+    private readonly media: MediaRecorder,
     private readonly webhooks: DispatchWebhookEventUseCase,
     private readonly liveStatus: LiveStatusReader,
     private readonly feed: TwitchFeed,
@@ -86,6 +88,9 @@ export class RecordTwitchEventUseCase implements UseCase<
     }
     if (input.chat) {
       await this.chatLog.record(input.chat);
+    }
+    if (input.media) {
+      await this.media.record(input.media);
     }
     expectSuccess(await this.webhooks.execute(this.webhookEvent(input.event)));
     return true;

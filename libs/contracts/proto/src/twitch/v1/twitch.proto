@@ -12,6 +12,8 @@ service TwitchService {
   rpc ListPolls(ListPollsRequest) returns (ListPollsResponse);
   rpc ListChatMessages(ListChatMessagesRequest) returns (ListChatMessagesResponse);
   rpc ListFollows(ListFollowsRequest) returns (ListFollowsResponse);
+  rpc ListClips(ListClipsRequest) returns (ListClipsResponse);
+  rpc ListVideos(ListVideosRequest) returns (ListVideosResponse);
   rpc WatchLive(WatchLiveRequest) returns (stream WatchLiveResponse);
   rpc WatchEvents(WatchEventsRequest) returns (stream WatchEventsResponse);
   rpc CreateTwitchWebhook(CreateTwitchWebhookRequest) returns (CreateTwitchWebhookResponse);
@@ -392,4 +394,64 @@ message ListFollowsRequest {
 
 message ListFollowsResponse {
   repeated TwitchFollow follows = 1;
+}
+
+
+enum TwitchVideoType {
+  TWITCH_VIDEO_TYPE_UNSPECIFIED = 0;
+  TWITCH_VIDEO_TYPE_ARCHIVE = 1;
+  TWITCH_VIDEO_TYPE_HIGHLIGHT = 2;
+  TWITCH_VIDEO_TYPE_UPLOAD = 3;
+}
+
+message TwitchClip {
+  string clip_id = 1;
+  string channel_id = 2;
+  string url = 3;
+  string title = 4;
+  string creator_id = 5;
+  string creator_name = 6;
+  double duration_seconds = 7;
+  string thumbnail_url = 8;
+  optional string vod_id = 9;
+  optional int32 vod_offset = 10;
+  string created_at = 11;
+}
+
+message TwitchVideo {
+  string video_id = 1;
+  string channel_id = 2;
+  optional string stream_id = 3;
+  TwitchVideoType type = 4;
+  string title = 5;
+  string description = 6;
+  string url = 7;
+  string thumbnail_url = 8;
+  int32 duration_seconds = 9;
+  string language = 10;
+  string created_at = 11;
+  string published_at = 12;
+}
+
+message ListClipsRequest {
+  string channel_id = 1;
+  optional string vod_id = 2;
+  optional int32 limit = 3;
+  optional int32 offset = 4;
+}
+
+message ListClipsResponse {
+  repeated TwitchClip clips = 1;
+}
+
+message ListVideosRequest {
+  string channel_id = 1;
+  optional TwitchVideoType type = 2;
+  optional string session_id = 3;
+  optional int32 limit = 4;
+  optional int32 offset = 5;
+}
+
+message ListVideosResponse {
+  repeated TwitchVideo videos = 1;
 }

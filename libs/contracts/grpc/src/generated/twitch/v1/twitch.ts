@@ -60,6 +60,13 @@ export enum TwitchFollowState {
   TWITCH_FOLLOW_STATE_ENDED = "TWITCH_FOLLOW_STATE_ENDED",
 }
 
+export enum TwitchVideoType {
+  TWITCH_VIDEO_TYPE_UNSPECIFIED = "TWITCH_VIDEO_TYPE_UNSPECIFIED",
+  TWITCH_VIDEO_TYPE_ARCHIVE = "TWITCH_VIDEO_TYPE_ARCHIVE",
+  TWITCH_VIDEO_TYPE_HIGHLIGHT = "TWITCH_VIDEO_TYPE_HIGHLIGHT",
+  TWITCH_VIDEO_TYPE_UPLOAD = "TWITCH_VIDEO_TYPE_UPLOAD",
+}
+
 export interface StatsChannel {
   channel_id: string;
   login: string;
@@ -382,6 +389,58 @@ export interface ListFollowsResponse {
   follows: TwitchFollow[];
 }
 
+export interface TwitchClip {
+  clip_id: string;
+  channel_id: string;
+  url: string;
+  title: string;
+  creator_id: string;
+  creator_name: string;
+  duration_seconds: number;
+  thumbnail_url: string;
+  vod_id?: string | undefined;
+  vod_offset?: number | undefined;
+  created_at: string;
+}
+
+export interface TwitchVideo {
+  video_id: string;
+  channel_id: string;
+  stream_id?: string | undefined;
+  type: TwitchVideoType;
+  title: string;
+  description: string;
+  url: string;
+  thumbnail_url: string;
+  duration_seconds: number;
+  language: string;
+  created_at: string;
+  published_at: string;
+}
+
+export interface ListClipsRequest {
+  channel_id: string;
+  vod_id?: string | undefined;
+  limit?: number | undefined;
+  offset?: number | undefined;
+}
+
+export interface ListClipsResponse {
+  clips: TwitchClip[];
+}
+
+export interface ListVideosRequest {
+  channel_id: string;
+  type?: TwitchVideoType | undefined;
+  session_id?: string | undefined;
+  limit?: number | undefined;
+  offset?: number | undefined;
+}
+
+export interface ListVideosResponse {
+  videos: TwitchVideo[];
+}
+
 export interface TwitchServiceClient {
   listStatsChannels(request: ListStatsChannelsRequest, metadata?: Metadata): Observable<ListStatsChannelsResponse>;
 
@@ -400,6 +459,10 @@ export interface TwitchServiceClient {
   listChatMessages(request: ListChatMessagesRequest, metadata?: Metadata): Observable<ListChatMessagesResponse>;
 
   listFollows(request: ListFollowsRequest, metadata?: Metadata): Observable<ListFollowsResponse>;
+
+  listClips(request: ListClipsRequest, metadata?: Metadata): Observable<ListClipsResponse>;
+
+  listVideos(request: ListVideosRequest, metadata?: Metadata): Observable<ListVideosResponse>;
 
   watchLive(request: WatchLiveRequest, metadata?: Metadata): Observable<WatchLiveResponse>;
 
@@ -484,6 +547,16 @@ export interface TwitchServiceController {
     metadata?: Metadata,
   ): Promise<ListFollowsResponse> | Observable<ListFollowsResponse> | ListFollowsResponse;
 
+  listClips(
+    request: ListClipsRequest,
+    metadata?: Metadata,
+  ): Promise<ListClipsResponse> | Observable<ListClipsResponse> | ListClipsResponse;
+
+  listVideos(
+    request: ListVideosRequest,
+    metadata?: Metadata,
+  ): Promise<ListVideosResponse> | Observable<ListVideosResponse> | ListVideosResponse;
+
   watchLive(request: WatchLiveRequest, metadata?: Metadata): Observable<WatchLiveResponse>;
 
   watchEvents(request: WatchEventsRequest, metadata?: Metadata): Observable<WatchEventsResponse>;
@@ -545,6 +618,8 @@ export function TwitchServiceControllerMethods() {
       "listPolls",
       "listChatMessages",
       "listFollows",
+      "listClips",
+      "listVideos",
       "watchLive",
       "watchEvents",
       "createTwitchWebhook",

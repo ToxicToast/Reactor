@@ -10,6 +10,7 @@ service TwitchBotService {
   rpc SyncChatters(SyncChattersRequest) returns (SyncChattersResponse);
   rpc SyncClips(SyncClipsRequest) returns (SyncClipsResponse);
   rpc SyncFollowers(SyncFollowersRequest) returns (SyncFollowersResponse);
+  rpc SyncMedia(SyncMediaRequest) returns (SyncMediaResponse);
 }
 
 message Channel {
@@ -73,4 +74,14 @@ message SyncFollowersRequest {}
 message SyncFollowersResponse {
   int32 followed = 1;
   int32 unfollowed = 2;
+}
+
+
+message SyncMediaRequest {}
+
+message SyncMediaResponse {
+  int32 imported_clips = 1;
+  int32 imported_videos = 2;
+  int32 created_clips = 3;
+  int32 created_videos = 4;
 }

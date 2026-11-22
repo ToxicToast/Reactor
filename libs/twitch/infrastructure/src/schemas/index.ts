@@ -14,3 +14,5 @@ export * from './twitch-event.schema.js';
 export * from './twitch-chat-message.schema.js';
 export * from './twitch.schemas.js';
 export * from './twitch-follow.schema.js';
+export * from './twitch-clip.schema.js';
+export * from './twitch-video.schema.js';

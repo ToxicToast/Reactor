@@ -12,3 +12,6 @@ export * from './observation-of.function.js';
 export * from './chat-change-of.function.js';
 export * from './recorded-event-of.function.js';
 export * from './record-input-of.function.js';
+export * from './clip-of.function.js';
+export * from './video-of.function.js';
+export * from './media-change-of.function.js';
