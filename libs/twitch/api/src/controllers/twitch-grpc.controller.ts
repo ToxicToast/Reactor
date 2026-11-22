@@ -261,7 +261,9 @@ export class TwitchGrpcController implements TwitchServiceController {
       await this.listVideosUseCase.execute({
         channel_id: parseChannelId(request.channel_id),
         type: mapOptionalEnum(VIDEO_TYPE_FROM_PROTO, request.type, 'type'),
-        session_id: parseOptionalUuid(request.session_id, 'session_id'),
+        session_id: request.session_id
+          ? parseId<'StreamSession'>(request.session_id, 'session_id')
+          : undefined,
         limit: request.limit,
         offset: request.offset,
       }),
