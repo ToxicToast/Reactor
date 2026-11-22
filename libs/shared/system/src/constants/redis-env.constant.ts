@@ -10,6 +10,4 @@ export const REDIS_DEFAULTS = {
   PORT: 6379,
   DB: 0,
   MAX_RETRIES_PER_REQUEST: 3,
-  /** RESP2 wie bis ioredis 5; ioredis 6 nutzt sonst RESP3 */
-  PROTOCOL: 2,
 } as const;

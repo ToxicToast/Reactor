@@ -115,8 +115,6 @@
     "@twurple/eventsub-ws": "^8.2.0",
     "axios": "^1.6.0",
     "bullmq": "^5.81.5",
-    "http-proxy-middleware": "^4.2.2",
-    "ioredis": "^6.0.0",
     "jose": "^5.10.0",
     "nestjs-zod": "^5.5.0",
     "pg": "^8.23.1",

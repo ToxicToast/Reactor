@@ -9,6 +9,5 @@ export const createRedisClient = (connection: RedisConnection): Redis => {
     password: connection.password,
     db: connection.db,
     maxRetriesPerRequest: REDIS_DEFAULTS.MAX_RETRIES_PER_REQUEST,
-    protocol: REDIS_DEFAULTS.PROTOCOL,
   });
 };
