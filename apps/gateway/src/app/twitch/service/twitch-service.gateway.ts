@@ -28,6 +28,8 @@ import {
   type WatchEventsRequest,
   type WatchEventsResponse,
   type WatchLiveResponse,
+  type ListFollowsRequest,
+  type ListFollowsResponse,
 } from '@toxictoast/contracts-grpc';
 import type { Observable } from 'rxjs';
 import { GrpcGateway } from '../../grpc/abstracts/index.js';
@@ -74,6 +76,10 @@ export class TwitchServiceGateway extends GrpcGateway<TwitchServiceClient> {
     request: ListChatMessagesRequest,
   ): Observable<ListChatMessagesResponse> {
     return this.service.listChatMessages(request, this.metadata());
+  }
+
+  listFollows(request: ListFollowsRequest): Observable<ListFollowsResponse> {
+    return this.service.listFollows(request, this.metadata());
   }
 
   // ── Streams ───────────────────────────────────

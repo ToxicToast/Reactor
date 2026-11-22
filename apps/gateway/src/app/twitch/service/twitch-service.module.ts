@@ -14,6 +14,7 @@ import { RequestMetadata } from '../../grpc/services/index.js';
 import {
   TwitchChatController,
   TwitchEventsController,
+  TwitchFollowsController,
   TwitchStatsController,
   TwitchWebhooksController,
 } from './controllers/index.js';
@@ -33,6 +34,7 @@ import { TwitchServiceGateway } from './twitch-service.gateway.js';
   controllers: [
     TwitchStatsController,
     TwitchChatController,
+    TwitchFollowsController,
     TwitchWebhooksController,
     TwitchEventsController,
   ],

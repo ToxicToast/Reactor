@@ -30,3 +30,6 @@ export * from './events-stream-query.dto.js';
 export * from './create-twitch-webhook.dto.js';
 export * from './update-twitch-webhook.dto.js';
 export * from './webhook-deliveries-query.dto.js';
+export * from './twitch-follow.schema.js';
+export * from './follow-list-response.dto.js';
+export * from './follow-query.dto.js';

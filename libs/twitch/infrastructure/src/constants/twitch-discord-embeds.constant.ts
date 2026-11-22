@@ -13,13 +13,16 @@ import {
   DISCORD,
   type DiscordEmbedRenderers,
 } from '@toxictoast/shared-webhooks-infrastructure';
-import { countField } from '../functions/count-field.function.js';
-import { formatDuration } from '../functions/format-duration.function.js';
-import { optionalText } from '../functions/optional-text.function.js';
-import { subTierName } from '../functions/sub-tier-name.function.js';
-import { twitchChannelUrl } from '../functions/twitch-channel-url.function.js';
-import { twitchEmbed } from '../functions/twitch-embed.function.js';
-import { viewerName } from '../functions/viewer-name.function.js';
+import {
+  countField,
+  formatDuration,
+  formatDate,
+  optionalText,
+  subTierName,
+  twitchChannelUrl,
+  twitchEmbed,
+  viewerName,
+} from '../functions/index.js';
 
 const SESSION_COUNTS = [
   ['Peak-Chatter', 'peak_chatters'],
@@ -74,6 +77,20 @@ export const TWITCH_DISCORD_EMBEDS: DiscordEmbedRenderers = {
       return { title: `💜 ${payload.string('user_name')} folgt jetzt` };
     },
   ),
+  [eventKey(TwitchTopics.COMMUNITY, TwitchCommunityEvents.UNFOLLOW)]:
+    twitchEmbed((payload) => {
+      return {
+        title: `💔 ${payload.string('user_name')} folgt nicht mehr`,
+        url: twitchChannelUrl(payload.string('user_login')),
+        fields: [
+          {
+            name: 'Gefolgt seit',
+            value: formatDate(payload.date('followed_at')),
+            inline: true,
+          },
+        ],
+      };
+    }),
   [eventKey(TwitchTopics.COMMUNITY, TwitchCommunityEvents.SUBSCRIBE)]:
     twitchEmbed((payload) => {
       const gifted = payload.boolean('is_gift') ? ' (geschenkt)' : '';
