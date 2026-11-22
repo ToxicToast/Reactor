@@ -1,10 +1,14 @@
-import type { PostAnemic } from '@toxictoast/blog-domain';
+import type { PublicMediaUrls } from '@toxictoast/blog-application';
+import { PostStatus, type PostAnemic } from '@toxictoast/blog-domain';
 import type { Post } from '@toxictoast/contracts-grpc';
 import { toIso } from '@toxictoast/shared-grpc';
 import { POST_STATUS_TO_GRPC } from '../constants/index.js';
 
 export class PostGrpcMapper {
+  constructor(private readonly urls: PublicMediaUrls) {}
+
   toProto(anemic: PostAnemic): Post {
+    const published = anemic.status === PostStatus.PUBLISHED;
     return {
       id: anemic.id,
       author_id: anemic.author_id,
@@ -19,6 +23,12 @@ export class PostGrpcMapper {
       tag_ids: [...anemic.tag_ids],
       blog_image_id: anemic.blog_image_id ?? undefined,
       hero_image_id: anemic.hero_image_id ?? undefined,
+      blog_image_url: published
+        ? this.urls.urlOf(anemic.blog_image_id)
+        : undefined,
+      hero_image_url: published
+        ? this.urls.urlOf(anemic.hero_image_id)
+        : undefined,
       published_at: toIso(anemic.published_at),
       created_at: anemic.created_at.toISOString(),
       updated_at: toIso(anemic.updated_at),

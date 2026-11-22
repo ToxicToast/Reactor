@@ -9,3 +9,4 @@ export * from './comment-status-from-grpc-map.constant.js';
 export * from './comment-moderator-to-grpc-map.constant.js';
 export * from './moderation-status-from-grpc-map.constant.js';
 export * from './moderation-decision-from-event-map.constant.js';
+export * from './post-image-fields.constant.js';

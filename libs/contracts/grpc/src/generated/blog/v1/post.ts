@@ -33,7 +33,12 @@ export interface Post {
   published_at?: string | undefined;
   created_at: string;
   updated_at?: string | undefined;
-  deleted_at?: string | undefined;
+  deleted_at?:
+    | string
+    | undefined;
+  /** nur bei veröffentlichten Posts; feste URL ohne Ablauf */
+  blog_image_url?: string | undefined;
+  hero_image_url?: string | undefined;
 }
 
 export interface CreatePostRequest {

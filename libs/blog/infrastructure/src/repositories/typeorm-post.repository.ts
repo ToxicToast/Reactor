@@ -1,8 +1,10 @@
-import type {
-  PostAnemic,
-  PostFilter,
-  PostId,
-  PostRepository,
+import {
+  PostStatus,
+  type MediaId,
+  type PostAnemic,
+  type PostFilter,
+  type PostId,
+  type PostRepository,
 } from '@toxictoast/blog-domain';
 import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type { TransactionContext } from '@toxictoast/shared-persistence';
@@ -76,6 +78,17 @@ export class TypeOrmPostRepository implements PostRepository {
       );
     }
     return this.many(this.page(query, limit, offset));
+  }
+
+  async findPublishedImageIds(): Promise<Array<MediaId>> {
+    const rows = await this.query()
+      .select(['e.blog_image_id', 'e.hero_image_id'])
+      .andWhere('e.status = :status', { status: PostStatus.PUBLISHED })
+      .getMany();
+    const ids = rows
+      .flatMap((row) => [row.blog_image_id, row.hero_image_id])
+      .filter((id): id is string => id !== null);
+    return [...new Set(ids)] as Array<MediaId>;
   }
 
   private async write(

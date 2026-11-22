@@ -8,3 +8,4 @@ export * from './in-memory-post.repository.js';
 export * from './post-anemic.fixture.js';
 export * from './in-memory-comment.repository.js';
 export * from './comment-anemic.fixture.js';
+export * from './in-memory-public-media.repository.js';

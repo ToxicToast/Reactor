@@ -6,3 +6,4 @@ export * from './post-category-row.interface.js';
 export * from './post-tag-row.interface.js';
 export * from './post-record.interface.js';
 export * from './comment-row.interface.js';
+export * from './public-media-row.interface.js';

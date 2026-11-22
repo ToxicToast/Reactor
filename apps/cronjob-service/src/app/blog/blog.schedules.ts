@@ -18,6 +18,11 @@ export class BlogSchedules extends JobSchedules {
         patternEnv: BLOG_SCHEDULES.MEDIA_CLEANUP.PATTERN_ENV,
         defaultPattern: BLOG_SCHEDULES.MEDIA_CLEANUP.DEFAULT_PATTERN,
       },
+      {
+        name: BlogJobs.MEDIA_PUBLIC_SYNC,
+        patternEnv: BLOG_SCHEDULES.MEDIA_PUBLIC_SYNC.PATTERN_ENV,
+        defaultPattern: BLOG_SCHEDULES.MEDIA_PUBLIC_SYNC.DEFAULT_PATTERN,
+      },
     ];
   }
 }

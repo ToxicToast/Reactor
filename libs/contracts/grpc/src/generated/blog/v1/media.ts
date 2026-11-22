@@ -109,6 +109,14 @@ export interface CleanupPendingMediaResponse {
   removed: number;
 }
 
+export interface SyncPublicMediaRequest {
+}
+
+export interface SyncPublicMediaResponse {
+  published: number;
+  removed: number;
+}
+
 export interface MediaServiceClient {
   requestMediaUpload(request: RequestMediaUploadRequest, metadata?: Metadata): Observable<RequestMediaUploadResponse>;
 
@@ -130,6 +138,8 @@ export interface MediaServiceClient {
     request: CleanupPendingMediaRequest,
     metadata?: Metadata,
   ): Observable<CleanupPendingMediaResponse>;
+
+  syncPublicMedia(request: SyncPublicMediaRequest, metadata?: Metadata): Observable<SyncPublicMediaResponse>;
 }
 
 export interface MediaServiceController {
@@ -177,6 +187,11 @@ export interface MediaServiceController {
     request: CleanupPendingMediaRequest,
     metadata?: Metadata,
   ): Promise<CleanupPendingMediaResponse> | Observable<CleanupPendingMediaResponse> | CleanupPendingMediaResponse;
+
+  syncPublicMedia(
+    request: SyncPublicMediaRequest,
+    metadata?: Metadata,
+  ): Promise<SyncPublicMediaResponse> | Observable<SyncPublicMediaResponse> | SyncPublicMediaResponse;
 }
 
 export function MediaServiceControllerMethods() {
@@ -191,6 +206,7 @@ export function MediaServiceControllerMethods() {
       "getMediaUrl",
       "listMedia",
       "cleanupPendingMedia",
+      "syncPublicMedia",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

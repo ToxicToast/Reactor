@@ -11,6 +11,7 @@ import {
   RestorePostUseCase,
   UnarchivePostUseCase,
   UpdatePostUseCase,
+  PublicMediaUrls,
 } from '@toxictoast/blog-application';
 import {
   PostServiceControllerMethods,
@@ -52,7 +53,7 @@ import { POST_STATUS_FROM_GRPC } from '../constants/index.js';
 @Controller()
 @PostServiceControllerMethods()
 export class PostGrpcController implements PostServiceController {
-  private readonly mapper = new PostGrpcMapper();
+  private readonly mapper: PostGrpcMapper;
   private readonly updateMapper = new PostUpdateGrpcMapper();
 
   constructor(
@@ -66,8 +67,11 @@ export class PostGrpcController implements PostServiceController {
     private readonly getPostUseCase: GetPostUseCase,
     private readonly getPublishedPostUseCase: GetPublishedPostUseCase,
     private readonly listPostsUseCase: ListPostsUseCase,
+    publicMediaUrls: PublicMediaUrls,
     private readonly actors: ActorProvider,
-  ) {}
+  ) {
+    this.mapper = new PostGrpcMapper(publicMediaUrls);
+  }
 
   async createPost(request: CreatePostRequest): Promise<CreatePostResponse> {
     const post = unwrap(

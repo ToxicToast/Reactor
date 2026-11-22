@@ -38,6 +38,8 @@ export class BlogProcessor extends SystemJobProcessor {
     switch (job.name) {
       case BlogJobs.MEDIA_CLEANUP:
         return this.cleanupPendingMedia();
+      case BlogJobs.MEDIA_PUBLIC_SYNC:
+        return this.syncPublicMedia();
       default:
         return this.unknownJob(job);
     }
@@ -52,5 +54,21 @@ export class BlogProcessor extends SystemJobProcessor {
     );
     this.logger.log(`Removed ${response.removed} pending media`);
     return { removed: response.removed };
+  }
+
+  private async syncPublicMedia(): Promise<{
+    published: number;
+    removed: number;
+  }> {
+    const response = await firstValueFrom(
+      this.media.service.syncPublicMedia(
+        {},
+        this.metadataFor([BlogPermission.MEDIA_DELETE]),
+      ),
+    );
+    this.logger.log(
+      `Public media synced: ${response.published} published, ${response.removed} removed`,
+    );
+    return { published: response.published, removed: response.removed };
   }
 }

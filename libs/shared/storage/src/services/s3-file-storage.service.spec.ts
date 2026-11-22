@@ -4,6 +4,7 @@ import {
   NotFound,
   S3ServiceException,
   type S3Client,
+  CopyObjectCommand,
 } from '@aws-sdk/client-s3';
 import { createS3Client } from '../factories/index.js';
 import { S3FileStorage } from './s3-file-storage.service.js';
@@ -25,6 +26,7 @@ describe('S3FileStorage', () => {
       { send } as unknown as S3Client,
       signer,
       'blog',
+      'https://storage.toxictoast.de',
     );
   });
 
@@ -89,5 +91,25 @@ describe('S3FileStorage', () => {
     await storage.delete('media/1.png');
 
     expect(send.mock.calls[0][0]).toBeInstanceOf(DeleteObjectCommand);
+  });
+
+  it('copies a file inside the bucket', async () => {
+    send.mockResolvedValue({});
+
+    await storage.copy('media/1.png', 'public/1');
+
+    const command = send.mock.calls[0][0] as CopyObjectCommand;
+    expect(command).toBeInstanceOf(CopyObjectCommand);
+    expect(command.input).toEqual({
+      Bucket: 'blog',
+      Key: 'public/1',
+      CopySource: 'blog/media%2F1.png',
+    });
+  });
+
+  it('builds a fixed public url', () => {
+    expect(storage.publicUrl('public/1')).toBe(
+      'https://storage.toxictoast.de/blog/public/1',
+    );
   });
 });

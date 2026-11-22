@@ -6,6 +6,7 @@ import {
   ModerationDecidedHandler,
   PostGrpcController,
   TagGrpcController,
+  PostMediaHandler,
 } from '@toxictoast/blog-api';
 import {
   ApplyModerationDecisionUseCase,
@@ -49,6 +50,8 @@ import {
   UpdateMediaAltTextUseCase,
   UpdatePostUseCase,
   UpdateTagUseCase,
+  PublicMediaUrls,
+  SyncPublicMediaUseCase,
 } from '@toxictoast/blog-application';
 import {
   CategoryFactory,
@@ -65,16 +68,24 @@ import {
   TypeOrmMediaRepository,
   TypeOrmPostRepository,
   TypeOrmTagRepository,
+  TypeOrmPublicMediaRepository,
 } from '@toxictoast/blog-infrastructure';
 import { DomainPersistence } from '@toxictoast/shared-application';
 import { DATABASE_INJECT, provideClass, TOKENS } from '@toxictoast/shared-nest';
 import { BLOG_DEFAULTS, BLOG_ENV, BLOG_TOKENS } from './constants/index.js';
 import { numberEnv } from '@toxictoast/shared-system';
 
-const { TAG_REPOSITORY, CATEGORY_REPOSITORY, MEDIA_REPOSITORY } = BLOG_TOKENS;
-const { POST_REPOSITORY, COMMENT_REPOSITORY } = BLOG_TOKENS;
-const { PENDING_MEDIA_MAX_AGE_HOURS } = BLOG_TOKENS;
+const {
+  TAG_REPOSITORY,
+  CATEGORY_REPOSITORY,
+  MEDIA_REPOSITORY,
+  POST_REPOSITORY,
+  COMMENT_REPOSITORY,
+  PENDING_MEDIA_MAX_AGE_HOURS,
+  PUBLIC_MEDIA_REPOSITORY,
+} = BLOG_TOKENS;
 const { CLOCK, DOMAIN_CONTEXT, FILE_STORAGE } = TOKENS;
+
 @Module({
   controllers: [
     TagGrpcController,
@@ -109,6 +120,12 @@ const { CLOCK, DOMAIN_CONTEXT, FILE_STORAGE } = TOKENS;
     ),
     provideClass(TypeOrmMediaRepository, DATABASE_INJECT, MEDIA_REPOSITORY),
     provideClass(TypeOrmPostRepository, DATABASE_INJECT, POST_REPOSITORY),
+    provideClass(
+      TypeOrmPublicMediaRepository,
+      DATABASE_INJECT,
+      PUBLIC_MEDIA_REPOSITORY,
+    ),
+    provideClass(PublicMediaUrls, [FILE_STORAGE]),
     provideClass(TypeOrmCommentRepository, DATABASE_INJECT, COMMENT_REPOSITORY),
 
     // ── Services ────────────────────────────────
@@ -216,6 +233,13 @@ const { CLOCK, DOMAIN_CONTEXT, FILE_STORAGE } = TOKENS;
       CLOCK,
       PENDING_MEDIA_MAX_AGE_HOURS,
     ]),
+    provideClass(SyncPublicMediaUseCase, [
+      POST_REPOSITORY,
+      MEDIA_REPOSITORY,
+      PUBLIC_MEDIA_REPOSITORY,
+      FILE_STORAGE,
+      DOMAIN_CONTEXT,
+    ]),
 
     // ── Post ────────────────────────────────────
     provideClass(CreatePostUseCase, [
@@ -300,7 +324,8 @@ const { CLOCK, DOMAIN_CONTEXT, FILE_STORAGE } = TOKENS;
 
     // ── Consumers ───────────────────────────────
     ModerationDecidedHandler,
+    PostMediaHandler,
   ],
-  exports: [ModerationDecidedHandler],
+  exports: [ModerationDecidedHandler, PostMediaHandler],
 })
 export class BlogModule {}

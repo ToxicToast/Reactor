@@ -11,12 +11,17 @@ const CID = '01a16a00-0000-7000-8000-000000000001';
 
 describe('BlogProcessor', () => {
   let cleanup: jest.Mock;
+  let syncPublic: jest.Mock;
   let processor: BlogProcessor;
 
   beforeEach(() => {
     cleanup = jest.fn().mockReturnValue(of({ removed: 2 }));
+    syncPublic = jest.fn().mockReturnValue(of({ published: 3, removed: 1 }));
     const client = {
-      getService: () => ({ cleanupPendingMedia: cleanup }),
+      getService: () => ({
+        cleanupPendingMedia: cleanup,
+        syncPublicMedia: syncPublic,
+      }),
     } as unknown as ClientGrpc;
     const ctx = { id: { generate: () => CID } } as unknown as DomainContext;
     processor = new BlogProcessor(
@@ -31,6 +36,16 @@ describe('BlogProcessor', () => {
     const result = await processor.process({ name: 'media.cleanup' } as Job);
 
     expect(result).toEqual({ removed: 2 });
+  });
+
+  it('syncs public media and returns the counts', async () => {
+    const result = await processor.process({
+      name: 'media.public_sync',
+    } as Job);
+
+    expect(result).toEqual({ published: 3, removed: 1 });
+    const metadata = syncPublic.mock.calls[0][1] as Metadata;
+    expect(metadata.get('x-actor-permissions')).toEqual(['blog.media.delete']);
   });
 
   it('calls the blog as system actor with only the delete permission', async () => {

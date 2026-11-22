@@ -1,4 +1,5 @@
 import {
+  CopyObjectCommand,
   DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
@@ -16,6 +17,7 @@ export class S3FileStorage implements FileStorage {
     private readonly client: S3Client,
     private readonly signer: S3Client,
     private readonly bucket: string,
+    private readonly publicEndpoint: string,
   ) {}
 
   createUploadUrl(
@@ -60,6 +62,23 @@ export class S3FileStorage implements FileStorage {
     await this.client.send(
       new DeleteObjectCommand({ Bucket: this.bucket, Key: key }),
     );
+  }
+
+  async copy(fromKey: string, toKey: string): Promise<void> {
+    await this.client.send(
+      new CopyObjectCommand({
+        Bucket: this.bucket,
+        Key: toKey,
+        CopySource: `${this.bucket}/${encodeURIComponent(fromKey)}`,
+      }),
+    );
+  }
+
+  publicUrl(key: string): string {
+    const base = this.publicEndpoint.endsWith('/')
+      ? this.publicEndpoint
+      : `${this.publicEndpoint}/`;
+    return new URL(`${this.bucket}/${key}`, base).toString();
   }
 
   private isNotFound(error: unknown): boolean {

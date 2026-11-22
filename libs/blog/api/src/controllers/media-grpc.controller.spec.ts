@@ -8,9 +8,14 @@ import {
   ListMediaUseCase,
   RequestMediaUploadUseCase,
   RestoreMediaUseCase,
+  SyncPublicMediaUseCase,
   UpdateMediaAltTextUseCase,
 } from '@toxictoast/blog-application';
-import { InMemoryMediaRepository } from '@toxictoast/blog-application/testing';
+import {
+  InMemoryMediaRepository,
+  InMemoryPostRepository,
+  InMemoryPublicMediaRepository,
+} from '@toxictoast/blog-application/testing';
 import { MediaFactory } from '@toxictoast/blog-domain';
 import {
   BlogPermission,
@@ -66,6 +71,13 @@ describe('MediaGrpcController', () => {
         persistence,
         ctx.date,
         24,
+      ),
+      new SyncPublicMediaUseCase(
+        new InMemoryPostRepository(),
+        media,
+        new InMemoryPublicMediaRepository(),
+        storage,
+        ctx,
       ),
       actors,
     );

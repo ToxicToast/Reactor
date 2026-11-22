@@ -7,3 +7,4 @@ export * from './get-media.usecase.js';
 export * from './get-media-url.usecase.js';
 export * from './list-media.usecase.js';
 export * from './cleanup-pending-media.usecase.js';
+export * from './sync-public-media.usecase.js';

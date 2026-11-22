@@ -7,6 +7,7 @@ import {
   GetPostUseCase,
   GetPublishedPostUseCase,
   ListPostsUseCase,
+  PublicMediaUrls,
   PublishPostUseCase,
   RestorePostUseCase,
   UnarchivePostUseCase,
@@ -30,6 +31,7 @@ import {
 import { DomainPersistence } from '@toxictoast/shared-application';
 import {
   ImmediateUnitOfWork,
+  InMemoryFileStorage,
   InMemoryOutbox,
 } from '@toxictoast/shared-application/testing';
 import {
@@ -107,6 +109,7 @@ describe('PostGrpcController', () => {
       new GetPostUseCase(posts),
       new GetPublishedPostUseCase(posts),
       new ListPostsUseCase(posts),
+      new PublicMediaUrls(new InMemoryFileStorage()),
       actors,
     );
 
