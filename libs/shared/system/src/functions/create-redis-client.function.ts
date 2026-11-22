@@ -1,4 +1,5 @@
 import { Redis } from 'ioredis';
+import { REDIS_DEFAULTS } from '../constants/index.js';
 import type { RedisConnection } from '../interfaces/index.js';
 
 export const createRedisClient = (connection: RedisConnection): Redis => {
@@ -7,6 +8,7 @@ export const createRedisClient = (connection: RedisConnection): Redis => {
     port: connection.port,
     password: connection.password,
     db: connection.db,
-    maxRetriesPerRequest: 3,
+    maxRetriesPerRequest: REDIS_DEFAULTS.MAX_RETRIES_PER_REQUEST,
+    protocol: REDIS_DEFAULTS.PROTOCOL,
   });
 };
