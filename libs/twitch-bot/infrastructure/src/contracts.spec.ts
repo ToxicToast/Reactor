@@ -80,6 +80,7 @@ describe('Event contracts', () => {
       CLIP_TOPIC: TwitchTopics.CLIP,
       VIDEO_TOPIC: TwitchTopics.VIDEO,
       CREATED: TwitchClipEvents.CREATED,
+      PUBLISHED: TwitchVideoEvents.PUBLISHED,
       FOUND: TwitchClipEvents.FOUND,
       UPDATED: TwitchVideoEvents.UPDATED,
     });

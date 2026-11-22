@@ -111,7 +111,7 @@ describe('Media sync', () => {
     const result = await syncMedia.execute();
 
     expect(result.value).toMatchObject({ created_clips: 1, created_videos: 1 });
-    expect(keys()).toEqual(['twitch.clip:created', 'twitch.video:created']);
+    expect(keys()).toEqual(['twitch.clip:created', 'twitch.video:published']);
   });
 
   it('refreshes the latest archive after the stream ended', async () => {

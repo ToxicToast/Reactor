@@ -1,5 +1,6 @@
 export * from './twitch-stats.controller.js';
 export * from './twitch-chat.controller.js';
 export * from './twitch-follows.controller.js';
+export * from './twitch-media.controller.js';
 export * from './twitch-webhooks.controller.js';
 export * from './twitch-events.controller.js';

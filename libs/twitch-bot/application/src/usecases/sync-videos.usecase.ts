@@ -8,11 +8,16 @@ import type {
   TwitchChannelAnemic,
   TwitchChannelRepository,
 } from '@toxictoast/twitch-bot-domain';
-import { MEDIA_EVENTS, MEDIA_IMPORT } from '../constants/index.js';
+import {
+  MEDIA_EVENTS,
+  MEDIA_IMPORT,
+  TwitchVideoTypes,
+} from '../constants/index.js';
 import type { SyncVideosOutput } from '../data/index.js';
 import { observe, oldestFirst } from '../functions/index.js';
 import type {
   PublishedLedger,
+  TwitchVideo,
   TwitchVideoSource,
 } from '../interfaces/index.js';
 
@@ -57,7 +62,7 @@ export class SyncVideosUseCase implements UseCase<void, SyncVideosOutput> {
           this.ctx,
           channel,
           MEDIA_EVENTS.VIDEO_TOPIC,
-          MEDIA_EVENTS.CREATED,
+          this.eventName(video),
           video,
         );
       });
@@ -67,5 +72,13 @@ export class SyncVideosUseCase implements UseCase<void, SyncVideosOutput> {
       }
       return events.length;
     });
+  }
+
+  /** Archive entstehen schon beim Streamstart; angekündigt werden nur Highlights und Uploads. */
+  private eventName(video: TwitchVideo): string {
+    if (video.type === TwitchVideoTypes.ARCHIVE) {
+      return MEDIA_EVENTS.CREATED;
+    }
+    return MEDIA_EVENTS.PUBLISHED;
   }
 }

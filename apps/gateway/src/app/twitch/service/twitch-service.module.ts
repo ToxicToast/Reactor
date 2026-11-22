@@ -17,6 +17,7 @@ import {
   TwitchFollowsController,
   TwitchStatsController,
   TwitchWebhooksController,
+  TwitchMediaController,
 } from './controllers/index.js';
 import { TwitchServiceGateway } from './twitch-service.gateway.js';
 
@@ -35,6 +36,7 @@ import { TwitchServiceGateway } from './twitch-service.gateway.js';
     TwitchStatsController,
     TwitchChatController,
     TwitchFollowsController,
+    TwitchMediaController,
     TwitchWebhooksController,
     TwitchEventsController,
   ],
