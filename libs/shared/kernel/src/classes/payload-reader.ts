@@ -92,6 +92,10 @@ export class PayloadReader {
     return this.read(key, isInteger, 'an integer');
   }
 
+  nullableNumber(key: string): Nullable<number> {
+    return this.has(key) ? this.number(key) : null;
+  }
+
   boolean(key: string): boolean {
     return this.read(key, isBoolean, 'a boolean');
   }

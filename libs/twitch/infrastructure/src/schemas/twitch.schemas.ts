@@ -14,6 +14,8 @@ import { TwitchStreamSessionSchema } from './twitch-stream-session.schema.js';
 import { TwitchViewerDaySchema } from './twitch-viewer-day.schema.js';
 import { TwitchViewerSchema } from './twitch-viewer.schema.js';
 import { TwitchFollowSchema } from './twitch-follow.schema.js';
+import { TwitchClipSchema } from './twitch-clip.schema.js';
+import { TwitchVideoSchema } from './twitch-video.schema.js';
 
 export const twitchSchemas = [
   TwitchStreamSessionSchema,
@@ -30,6 +32,8 @@ export const twitchSchemas = [
   TwitchEventSchema,
   TwitchChatMessageSchema,
   TwitchFollowSchema,
+  TwitchClipSchema,
+  TwitchVideoSchema,
   OutboxSchema,
   ...webhookSchemas,
 ];

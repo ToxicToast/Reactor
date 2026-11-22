@@ -9,3 +9,5 @@ export * from './typeorm-channel-directory.repository.js';
 export * from './typeorm-chat-message.repository.js';
 export * from './typeorm-twitch-event-log.js';
 export * from './typeorm-follow.repository.js';
+export * from './typeorm-clip.repository.js';
+export * from './typeorm-video.repository.js';

@@ -21,6 +21,7 @@ import {
   LiveStatusReader,
   PresenceTracker,
   SessionTracker,
+  MediaRecorder,
 } from '../services/index.js';
 import type { ChatChange } from '../types/index.js';
 import { RecordTwitchEventUseCase } from '../usecases/index.js';
@@ -42,6 +43,8 @@ import {
   TWITCH_TEST_CONFIG,
   TWITCH_TEST_NOW,
 } from './test-context.js';
+import { InMemoryClipRepository } from './in-memory-clip.repository.js';
+import { InMemoryVideoRepository } from './in-memory-video.repository.js';
 
 export class TwitchTestHarness {
   readonly ctx = createTwitchTestContext();
@@ -57,6 +60,8 @@ export class TwitchTestHarness {
   readonly polls = new InMemoryPollRepository();
   readonly chatMessages = new InMemoryChatMessageRepository();
   readonly follows = new InMemoryFollowRepository();
+  readonly clips = new InMemoryClipRepository();
+  readonly videos = new InMemoryVideoRepository();
   readonly webhooks = new InMemoryWebhookRepository();
   readonly deliveries = new InMemoryWebhookDeliveryRepository();
   readonly outbox = new InMemoryOutbox();
@@ -102,6 +107,7 @@ export class TwitchTestHarness {
       this.config,
     ),
     new ChatLogRecorder(this.chatMessages, this.sessions),
+    new MediaRecorder(this.clips, this.videos),
     new DispatchWebhookEventUseCase(
       new WebhookDeliveryFactory(this.ctx),
       this.webhooks,

@@ -5,6 +5,7 @@ import type {
   StatsIntervalValue,
   StreamSessionId,
   TimelineMetric,
+  VideoType,
 } from '@toxictoast/twitch-domain';
 
 export interface ChannelQuery {
@@ -51,4 +52,13 @@ export interface ListChatMessagesInput extends RangeQuery, PageQuery {
 export interface ListFollowsInput extends ChannelQuery, PageQuery {
   readonly user_id?: Optional<string>;
   readonly state?: Optional<FollowState>;
+}
+
+export interface ListClipsInput extends ChannelQuery, PageQuery {
+  readonly vod_id?: Optional<string>;
+}
+
+export interface ListVideosInput extends ChannelQuery, PageQuery {
+  readonly type?: Optional<VideoType>;
+  readonly session_id?: Optional<StreamSessionId>;
 }

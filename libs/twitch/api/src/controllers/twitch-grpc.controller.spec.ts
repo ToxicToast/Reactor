@@ -30,10 +30,12 @@ import {
   GetSessionUseCase,
   GetTimelineUseCase,
   ListChatMessagesUseCase,
+  ListClipsUseCase,
   ListFollowsUseCase,
   ListPollsUseCase,
   ListRewardsUseCase,
   ListSessionsUseCase,
+  ListVideosUseCase,
   ListStatsChannelsUseCase,
   PurgeExpiredChatMessagesUseCase,
 } from '@toxictoast/twitch-application';
@@ -97,6 +99,8 @@ describe('TwitchGrpcController', () => {
       new ListPollsUseCase(harness.polls),
       new ListChatMessagesUseCase(harness.chatMessages),
       new ListFollowsUseCase(harness.follows),
+      new ListClipsUseCase(harness.clips),
+      new ListVideosUseCase(harness.videos, harness.sessions),
       new PurgeExpiredChatMessagesUseCase(
         harness.chatMessages,
         RETENTION_DAYS,

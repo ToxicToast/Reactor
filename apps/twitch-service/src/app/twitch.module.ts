@@ -25,6 +25,9 @@ import {
   SessionTracker,
   PurgeExpiredChatMessagesUseCase,
   ListFollowsUseCase,
+  ListClipsUseCase,
+  ListVideosUseCase,
+  MediaRecorder,
 } from '@toxictoast/twitch-application';
 import { StreamSessionFactory } from '@toxictoast/twitch-domain';
 import {
@@ -42,6 +45,8 @@ import {
   TypeOrmTwitchEventLog,
   TypeOrmViewerStatsRepository,
   TypeOrmFollowRepository,
+  TypeOrmClipRepository,
+  TypeOrmVideoRepository,
 } from '@toxictoast/twitch-infrastructure';
 import { TWITCH_SERVICE_TOKENS } from './constants/index.js';
 import { TwitchFeedLifecycle } from './lifecycles/index.js';
@@ -60,6 +65,8 @@ const {
   CHAT_MESSAGE_REPOSITORY,
   CHAT_CONFIG,
   FOLLOW_REPOSITORY,
+  CLIP_REPOSITORY,
+  VIDEO_REPOSITORY,
 } = TWITCH_SERVICE_TOKENS;
 
 const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
@@ -117,6 +124,8 @@ const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
       CHAT_MESSAGE_REPOSITORY,
     ),
     provideClass(TypeOrmFollowRepository, DATABASE_INJECT, FOLLOW_REPOSITORY),
+    provideClass(TypeOrmClipRepository, DATABASE_INJECT, CLIP_REPOSITORY),
+    provideClass(TypeOrmVideoRepository, DATABASE_INJECT, VIDEO_REPOSITORY),
     provideClass(
       TypeOrmChannelDirectoryRepository,
       DATABASE_INJECT,
@@ -159,6 +168,7 @@ const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
       CHAT_MESSAGE_REPOSITORY,
       STREAM_SESSION_REPOSITORY,
     ]),
+    provideClass(MediaRecorder, [CLIP_REPOSITORY, VIDEO_REPOSITORY]),
 
     // ── Use Cases ───────────────────────────────
     provideClass(RecordTwitchEventUseCase, [
@@ -172,12 +182,18 @@ const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
       PresenceTracker,
       CounterRecorder,
       ChatLogRecorder,
+      MediaRecorder,
       DispatchWebhookEventUseCase,
       LiveStatusReader,
       RedisTwitchFeed,
       UNIT_OF_WORK,
     ]),
     provideClass(ListFollowsUseCase, [FOLLOW_REPOSITORY]),
+    provideClass(ListClipsUseCase, [CLIP_REPOSITORY]),
+    provideClass(ListVideosUseCase, [
+      VIDEO_REPOSITORY,
+      STREAM_SESSION_REPOSITORY,
+    ]),
     provideClass(ListChatMessagesUseCase, [CHAT_MESSAGE_REPOSITORY]),
     provideClass(PurgeExpiredChatMessagesUseCase, [
       CHAT_MESSAGE_REPOSITORY,

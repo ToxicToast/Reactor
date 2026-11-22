@@ -10,3 +10,5 @@ export * from './list-polls.usecase.js';
 export * from './list-chat-messages.usecase.js';
 export * from './purge-expired-chat-messages.usecase.js';
 export * from './list-follows.usecase.js';
+export * from './list-clips.usecase.js';
+export * from './list-videos.usecase.js';
