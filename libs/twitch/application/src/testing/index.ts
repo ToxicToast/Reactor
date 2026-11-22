@@ -14,3 +14,4 @@ export * from './in-memory-chat-message.repository.js';
 export * from './in-memory-twitch-event-log.js';
 export * from './recording-twitch-feed.js';
 export * from './twitch-test-harness.js';
+export * from './in-memory-follow.repository.js';

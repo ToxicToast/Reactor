@@ -26,6 +26,7 @@ export const observationOf = (
     reward: null,
     poll: null,
     stream_id: null,
+    followed_at: null,
     ...mapper(payload),
   };
 };

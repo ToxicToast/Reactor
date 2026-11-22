@@ -22,6 +22,7 @@ const observation = (
     reward: null,
     poll: null,
     stream_id: null,
+    followed_at: null,
     ...overrides,
   };
 };

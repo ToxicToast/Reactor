@@ -13,3 +13,4 @@ export * from './twitch-known-channel.schema.js';
 export * from './twitch-event.schema.js';
 export * from './twitch-chat-message.schema.js';
 export * from './twitch.schemas.js';
+export * from './twitch-follow.schema.js';

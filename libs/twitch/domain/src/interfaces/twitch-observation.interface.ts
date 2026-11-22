@@ -16,4 +16,6 @@ export interface TwitchObservation {
   readonly reward: Nullable<RewardRef>;
   readonly poll: Nullable<PollSnapshot>;
   readonly stream_id: Nullable<string>;
+  /** echtes Follow-Datum laut Twitch; beim Abgleich kann es weit vor occurred_at liegen */
+  readonly followed_at: Nullable<Date>;
 }

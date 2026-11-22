@@ -8,3 +8,4 @@ export * from './typeorm-poll.repository.js';
 export * from './typeorm-channel-directory.repository.js';
 export * from './typeorm-chat-message.repository.js';
 export * from './typeorm-twitch-event-log.js';
+export * from './typeorm-follow.repository.js';

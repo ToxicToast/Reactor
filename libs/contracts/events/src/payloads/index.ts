@@ -27,3 +27,4 @@ export * from './twitch-clip.payload.js';
 export * from './twitch-presence.payload.js';
 export * from './twitch-session.payload.js';
 export * from './webhook.payload.js';
+export * from './twitch-unfollow.payload.js';

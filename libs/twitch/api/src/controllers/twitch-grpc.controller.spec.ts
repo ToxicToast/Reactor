@@ -30,6 +30,7 @@ import {
   GetSessionUseCase,
   GetTimelineUseCase,
   ListChatMessagesUseCase,
+  ListFollowsUseCase,
   ListPollsUseCase,
   ListRewardsUseCase,
   ListSessionsUseCase,
@@ -95,6 +96,7 @@ describe('TwitchGrpcController', () => {
       new ListRewardsUseCase(harness.rewards, harness.config),
       new ListPollsUseCase(harness.polls),
       new ListChatMessagesUseCase(harness.chatMessages),
+      new ListFollowsUseCase(harness.follows),
       new PurgeExpiredChatMessagesUseCase(
         harness.chatMessages,
         RETENTION_DAYS,
