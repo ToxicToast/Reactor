@@ -5,3 +5,5 @@ export * from './clip-from-helix.function.js';
 export * from './video-from-helix.function.js';
 export * from './is-rejected-refresh.function.js';
 export * from './user-from-helix.function.js';
+export * from './chunks-of.function.js';
+export * from './stream-from-helix.function.js';

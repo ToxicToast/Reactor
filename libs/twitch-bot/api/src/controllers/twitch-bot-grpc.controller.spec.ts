@@ -25,6 +25,8 @@ import {
   SyncMediaUseCase,
   SyncVideosUseCase,
   TrackedChannels,
+  RefreshArchiveUseCase,
+  SyncStreamsUseCase,
 } from '@toxictoast/twitch-bot-application';
 import {
   createTestContext,
@@ -45,6 +47,8 @@ import {
   InMemoryMediaImportLog,
   InMemoryPublishedLedger,
   TEST_NOW,
+  FakeTwitchStreamSource,
+  InMemoryLiveStreamLedger,
 } from '@toxictoast/twitch-bot-application/testing';
 import {
   ChatterDiffService,
@@ -167,6 +171,15 @@ describe('TwitchBotGrpcController', () => {
         users,
       ),
       new RemoveFriendUseCase(friendFactory, friends, persistence),
+      new SyncStreamsUseCase(
+        tracked,
+        new FakeTwitchStreamSource(),
+        new InMemoryLiveStreamLedger(),
+        new RefreshArchiveUseCase(videoSource, videoLedger, outbox, uow, ctx),
+        outbox,
+        uow,
+        ctx,
+      ),
       actors,
     );
   });
@@ -249,6 +262,9 @@ describe('TwitchBotGrpcController', () => {
       created_clips: 0,
       created_videos: 0,
     });
+    await expect(grpcCode(controller.syncStreams())).resolves.toBe(
+      status.PERMISSION_DENIED,
+    );
   });
 
   it('adds, lists and removes a friend', async () => {

@@ -12,6 +12,10 @@ import {
   TwitchVideoTypes as ContractVideoTypes,
   TwitchBotFriendEvents,
   type TwitchBotFriendPayloadV1,
+  TwitchStreamOfflinePayloadV1,
+  TwitchStreamStatusPayloadV1,
+  TwitchStreamOnlinePayloadV1,
+  TwitchStreamEvents,
 } from '@toxictoast/contracts-events';
 import {
   contractNamesOf,
@@ -28,6 +32,9 @@ import {
   type TwitchClip,
   type TwitchVideo,
   TwitchVideoTypes,
+  StreamOnlinePayload,
+  StreamStatusPayload,
+  STREAM_EVENTS,
 } from '@toxictoast/twitch-bot-application';
 import {
   TwitchChannelEvents,
@@ -63,9 +70,21 @@ describe('Event contracts', () => {
         Jsonified<TwitchFriendEventPayload>,
         TwitchBotFriendPayloadV1
       >,
+      true as Compatible<
+        Jsonified<ChannelReference & StreamOnlinePayload>,
+        TwitchStreamOnlinePayloadV1
+      >,
+      true as Compatible<
+        Jsonified<ChannelReference>,
+        TwitchStreamOfflinePayloadV1
+      >,
+      true as Compatible<
+        Jsonified<ChannelReference & StreamStatusPayload>,
+        TwitchStreamStatusPayloadV1
+      >,
     ];
 
-    expect(checks).toHaveLength(6);
+    expect(checks).toHaveLength(9);
   });
 
   it('publish the channel events under the contract topic and names', () => {
@@ -102,5 +121,14 @@ describe('Event contracts', () => {
     expect(TwitchVideoEvents.CREATED).toBe(MEDIA_EVENTS.CREATED);
     expect(TwitchVideoEvents.FOUND).toBe(MEDIA_EVENTS.FOUND);
     expect(TwitchVideoTypes).toEqual(ContractVideoTypes);
+  });
+
+  it('publish the stream polling under the stream contract', () => {
+    expect(STREAM_EVENTS).toEqual({
+      TOPIC: TwitchTopics.STREAM,
+      ONLINE: TwitchStreamEvents.ONLINE,
+      OFFLINE: TwitchStreamEvents.OFFLINE,
+      STATUS: TwitchStreamEvents.STATUS,
+    });
   });
 });

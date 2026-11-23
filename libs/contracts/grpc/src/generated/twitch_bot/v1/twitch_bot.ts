@@ -118,6 +118,15 @@ export interface RemoveFriendResponse {
   friend: Friend | undefined;
 }
 
+export interface SyncStreamsRequest {
+}
+
+export interface SyncStreamsResponse {
+  live: number;
+  online: number;
+  offline: number;
+}
+
 export interface TwitchBotServiceClient {
   startAuthorization(request: StartAuthorizationRequest, metadata?: Metadata): Observable<StartAuthorizationResponse>;
 
@@ -143,6 +152,8 @@ export interface TwitchBotServiceClient {
   addFriend(request: AddFriendRequest, metadata?: Metadata): Observable<AddFriendResponse>;
 
   removeFriend(request: RemoveFriendRequest, metadata?: Metadata): Observable<RemoveFriendResponse>;
+
+  syncStreams(request: SyncStreamsRequest, metadata?: Metadata): Observable<SyncStreamsResponse>;
 }
 
 export interface TwitchBotServiceController {
@@ -200,6 +211,11 @@ export interface TwitchBotServiceController {
     request: RemoveFriendRequest,
     metadata?: Metadata,
   ): Promise<RemoveFriendResponse> | Observable<RemoveFriendResponse> | RemoveFriendResponse;
+
+  syncStreams(
+    request: SyncStreamsRequest,
+    metadata?: Metadata,
+  ): Promise<SyncStreamsResponse> | Observable<SyncStreamsResponse> | SyncStreamsResponse;
 }
 
 export function TwitchBotServiceControllerMethods() {
@@ -216,6 +232,7 @@ export function TwitchBotServiceControllerMethods() {
       "listFriends",
       "addFriend",
       "removeFriend",
+      "syncStreams",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

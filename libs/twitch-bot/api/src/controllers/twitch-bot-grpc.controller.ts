@@ -19,6 +19,7 @@ import {
   type SyncFollowersResponse,
   type TwitchBotServiceController,
   type SyncMediaResponse,
+  type SyncStreamsResponse,
 } from '@toxictoast/contracts-grpc';
 import { parseId, requirePermission, unwrap } from '@toxictoast/shared-grpc';
 import { ActorProvider } from '@toxictoast/shared-kernel';
@@ -34,6 +35,7 @@ import {
   SyncClipsUseCase,
   SyncFollowersUseCase,
   SyncMediaUseCase,
+  SyncStreamsUseCase,
 } from '@toxictoast/twitch-bot-application';
 import {
   TwitchChannelGrpcMapper,
@@ -58,6 +60,7 @@ export class TwitchBotGrpcController implements TwitchBotServiceController {
     private readonly listFriendsUseCase: ListFriendsUseCase,
     private readonly addFriendUseCase: AddFriendUseCase,
     private readonly removeFriendUseCase: RemoveFriendUseCase,
+    private readonly syncStreamsUseCase: SyncStreamsUseCase,
     private readonly actors: ActorProvider,
   ) {}
 
@@ -136,6 +139,11 @@ export class TwitchBotGrpcController implements TwitchBotServiceController {
   async syncMedia(): Promise<SyncMediaResponse> {
     requirePermission(this.actors.current(), TwitchBotPermission.SYNC);
     return unwrap(await this.syncMediaUseCase.execute());
+  }
+
+  async syncStreams(): Promise<SyncStreamsResponse> {
+    requirePermission(this.actors.current(), TwitchBotPermission.SYNC);
+    return unwrap(await this.syncStreamsUseCase.execute());
   }
 
   async listFriends(): Promise<ListFriendsResponse> {

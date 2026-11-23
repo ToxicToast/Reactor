@@ -13,6 +13,7 @@ describe('TwitchBotProcessor', () => {
   let syncChatters: jest.Mock;
   let syncMedia: jest.Mock;
   let syncFollowers: jest.Mock;
+  let syncStreams: jest.Mock;
   let processor: TwitchBotProcessor;
 
   beforeEach(() => {
@@ -28,8 +29,16 @@ describe('TwitchBotProcessor', () => {
     syncFollowers = jest
       .fn()
       .mockReturnValue(of({ followed: 4, unfollowed: 2 }));
+    syncStreams = jest
+      .fn()
+      .mockReturnValue(of({ live: 2, online: 1, offline: 0 }));
     const client = {
-      getService: () => ({ syncChatters, syncMedia, syncFollowers }),
+      getService: () => ({
+        syncChatters,
+        syncMedia,
+        syncFollowers,
+        syncStreams,
+      }),
     } as unknown as ClientGrpc;
     const ctx = { id: { generate: () => CID } } as unknown as DomainContext;
     processor = new TwitchBotProcessor(
@@ -56,6 +65,12 @@ describe('TwitchBotProcessor', () => {
     const result = await processor.process({ name: 'followers.sync' } as Job);
 
     expect(result).toEqual({ followed: 4, unfollowed: 2 });
+  });
+
+  it('syncs the streams', async () => {
+    const result = await processor.process({ name: 'streams.sync' } as Job);
+
+    expect(result).toEqual({ live: 2, online: 1, offline: 0 });
   });
 
   it('calls the bot as system actor with only the sync permission', async () => {

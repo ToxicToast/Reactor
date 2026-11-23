@@ -33,6 +33,7 @@ import {
   SyncMediaUseCase,
   SyncVideosUseCase,
   TrackedChannels,
+  SyncStreamsUseCase,
 } from '@toxictoast/twitch-bot-application';
 import {
   ChatterDiffService,
@@ -64,6 +65,8 @@ import {
   TwurpleVideoSource,
   TypeOrmMediaImportLog,
   TypeOrmPublishedVideoLedger,
+  TwurpleStreamSource,
+  TypeOrmLiveStreamLedger,
 } from '@toxictoast/twitch-bot-infrastructure';
 import { TWITCH_BOT_ENV, TWITCH_BOT_TOKENS } from './constants/index.js';
 import { TwitchSubscriptionLifecycle } from './lifecycles/index.js';
@@ -89,6 +92,8 @@ const {
   PUBLISHED_VIDEO_LEDGER,
   MEDIA_IMPORT_LOG,
   TWITCH_VIDEO_SOURCE,
+  LIVE_STREAM_LEDGER,
+  TWITCH_STREAM_SOURCE,
 } = TWITCH_BOT_TOKENS;
 const { CLOCK, DOMAIN_CONTEXT, OUTBOX, UNIT_OF_WORK, METRICS_REGISTRY } =
   TOKENS;
@@ -153,6 +158,7 @@ const logError = (error: unknown, context: string): void => {
       PUBLISHED_VIDEO_LEDGER,
     ),
     provideClass(TypeOrmMediaImportLog, DATABASE_INJECT, MEDIA_IMPORT_LOG),
+    provideClass(TypeOrmLiveStreamLedger, DATABASE_INJECT, LIVE_STREAM_LEDGER),
     provideClass(TwitchSocketTracker, [CLOCK]),
     provideClass(
       PrometheusTwitchBotMetrics,
@@ -198,6 +204,7 @@ const logError = (error: unknown, context: string): void => {
     ),
     provideClass(TwurpleClipSource, [TwitchConnection], TWITCH_CLIP_SOURCE),
     provideClass(TwurpleVideoSource, [TwitchConnection], TWITCH_VIDEO_SOURCE),
+    provideClass(TwurpleStreamSource, [TwitchConnection], TWITCH_STREAM_SOURCE),
     provideClass(
       TwurpleFollowerSource,
       [TwitchConnection],
@@ -319,6 +326,15 @@ const logError = (error: unknown, context: string): void => {
     provideClass(RefreshArchiveUseCase, [
       TWITCH_VIDEO_SOURCE,
       PUBLISHED_VIDEO_LEDGER,
+      OUTBOX,
+      UNIT_OF_WORK,
+      DOMAIN_CONTEXT,
+    ]),
+    provideClass(SyncStreamsUseCase, [
+      TrackedChannels,
+      TWITCH_STREAM_SOURCE,
+      LIVE_STREAM_LEDGER,
+      RefreshArchiveUseCase,
       OUTBOX,
       UNIT_OF_WORK,
       DOMAIN_CONTEXT,

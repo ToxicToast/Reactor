@@ -14,6 +14,7 @@ service TwitchBotService {
   rpc ListFriends(ListFriendsRequest) returns (ListFriendsResponse);
   rpc AddFriend(AddFriendRequest) returns (AddFriendResponse);
   rpc RemoveFriend(RemoveFriendRequest) returns (RemoveFriendResponse);
+  rpc SyncStreams(SyncStreamsRequest) returns (SyncStreamsResponse);
 }
 
 message Channel {
@@ -119,4 +120,12 @@ message RemoveFriendRequest {
 
 message RemoveFriendResponse {
   Friend friend = 1;
+}
+
+message SyncStreamsRequest {}
+
+message SyncStreamsResponse {
+  int32 live = 1;
+  int32 online = 2;
+  int32 offline = 3;
 }

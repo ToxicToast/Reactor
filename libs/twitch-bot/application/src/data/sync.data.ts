@@ -33,3 +33,10 @@ export interface SyncMediaOutput {
 export interface RefreshArchiveInput {
   readonly channel: TrackedChannel;
 }
+
+export interface SyncStreamsOutput {
+  /** Channels, die gerade live sind (eigene und Freunde) */
+  readonly live: number;
+  readonly online: number;
+  readonly offline: number;
+}

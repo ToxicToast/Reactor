@@ -18,3 +18,6 @@ export * from './fake-twitch-follower-source.js';
 export * from './in-memory-twitch-friend.repository.js';
 export * from './twitch-friend-anemic.fixture.js';
 export * from './fake-twitch-user-lookup.js';
+export * from './fake-twitch-stream-source.js';
+export * from './in-memory-live-stream-ledger.js';
+export * from './twitch-live-stream.fixture.js';
