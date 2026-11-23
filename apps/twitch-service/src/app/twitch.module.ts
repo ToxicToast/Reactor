@@ -178,6 +178,7 @@ const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
       STREAM_SESSION_REPOSITORY,
       DomainPersistence,
       POLL_REPOSITORY,
+      FOLLOW_REPOSITORY,
       SessionTracker,
       PresenceTracker,
       CounterRecorder,
