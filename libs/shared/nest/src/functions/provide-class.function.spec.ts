@@ -12,6 +12,20 @@ class Car {
   ) {}
 }
 
+class Needs {
+  constructor(
+    readonly a: unknown,
+    readonly b: unknown,
+  ) {}
+}
+
+class WithDefault {
+  constructor(
+    readonly a: unknown,
+    readonly ttl = 60,
+  ) {}
+}
+
 const SEATS = Symbol('SEATS');
 const VEHICLE = Symbol('VEHICLE');
 
@@ -37,5 +51,15 @@ describe('provideClass', () => {
     }).compile();
 
     expect(moduleRef.get(VEHICLE)).toBeInstanceOf(Engine);
+  });
+
+  it('rejects fewer injects than required parameters', () => {
+    expect(() => provideClass(Needs, ['A'])).toThrow(
+      'Needs expects 2 dependencies but got 1',
+    );
+  });
+
+  it('allows leaving out parameters with defaults', () => {
+    expect(() => provideClass(WithDefault, ['A'])).not.toThrow();
   });
 });
