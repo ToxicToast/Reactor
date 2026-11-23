@@ -244,6 +244,9 @@ describe('TwitchBotGrpcController', () => {
     await expect(grpcCode(controller.syncFollowers())).resolves.toBe(
       status.PERMISSION_DENIED,
     );
+    await expect(grpcCode(controller.syncStreams())).resolves.toBe(
+      status.PERMISSION_DENIED,
+    );
 
     actors.actor = testActor(['twitch-bot.sync']);
 
@@ -262,9 +265,11 @@ describe('TwitchBotGrpcController', () => {
       created_clips: 0,
       created_videos: 0,
     });
-    await expect(grpcCode(controller.syncStreams())).resolves.toBe(
-      status.PERMISSION_DENIED,
-    );
+    await expect(controller.syncStreams()).resolves.toEqual({
+      live: 0,
+      online: 0,
+      offline: 0,
+    });
   });
 
   it('adds, lists and removes a friend', async () => {
