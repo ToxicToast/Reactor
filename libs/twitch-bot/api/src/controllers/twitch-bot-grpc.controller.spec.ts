@@ -4,15 +4,19 @@ import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
 } from '@toxictoast/shared-application/testing';
+import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
 import {
   grpcCode,
   TestActorProvider,
   testActor,
 } from '@toxictoast/shared-grpc/testing';
 import {
+  AddFriendUseCase,
   CompleteAuthorizationUseCase,
   DisconnectChannelUseCase,
   ListChannelsUseCase,
+  ListFriendsUseCase,
+  RemoveFriendUseCase,
   StartAuthorizationUseCase,
   SyncChattersUseCase,
   SyncClipsUseCase,
@@ -20,6 +24,7 @@ import {
   ImportMediaUseCase,
   SyncMediaUseCase,
   SyncVideosUseCase,
+  TrackedChannels,
 } from '@toxictoast/twitch-bot-application';
 import {
   createTestContext,
@@ -27,24 +32,29 @@ import {
   FakeTwitchChatterSource,
   FakeTwitchClipSource,
   FakeTwitchFollowerSource,
+  FakeTwitchUserLookup,
   InMemoryChatterRepository,
   InMemoryFollowerRepository,
   InMemoryPublishedClipLedger,
   InMemoryTwitchChannelRepository,
+  InMemoryTwitchFriendRepository,
   InMemoryTwitchTokenStore,
   RecordingTwitchEventSubscriber,
   twitchChannelAnemic,
   FakeTwitchVideoSource,
   InMemoryMediaImportLog,
   InMemoryPublishedLedger,
+  TEST_NOW,
 } from '@toxictoast/twitch-bot-application/testing';
 import {
   ChatterDiffService,
   TwitchChannelFactory,
+  TwitchFriendFactory,
 } from '@toxictoast/twitch-bot-domain';
 import { TwitchBotGrpcController } from './twitch-bot-grpc.controller.js';
 
 const CHANNEL_ID = '0192f3a0-0000-7000-8000-000000000c01';
+const FRIEND_ID = '0192f3a0-0000-7000-8000-000000000f01';
 const REDIRECT = 'http://localhost:4000/admin/twitch/callback';
 
 describe('TwitchBotGrpcController', () => {
@@ -54,19 +64,25 @@ describe('TwitchBotGrpcController', () => {
   beforeEach(async () => {
     const ctx = createTestContext();
     const channels = new InMemoryTwitchChannelRepository();
+    const friends = new InMemoryTwitchFriendRepository();
+    const tracked = new TrackedChannels(channels, friends);
     const tokens = new InMemoryTwitchTokenStore();
     const subscriber = new RecordingTwitchEventSubscriber();
     const outbox = new InMemoryOutbox();
     const uow = new ImmediateUnitOfWork();
     const persistence = new DomainPersistence(outbox, uow);
     const factory = new TwitchChannelFactory(ctx);
+    const friendFactory = new TwitchFriendFactory(
+      createFixedTestContext(FRIEND_ID, () => TEST_NOW),
+    );
     const auth = new FakeTwitchAuthClient();
+    const users = new FakeTwitchUserLookup();
     const clipSource = new FakeTwitchClipSource();
     const clipLedger = new InMemoryPublishedClipLedger();
     const videoSource = new FakeTwitchVideoSource();
     const videoLedger = new InMemoryPublishedLedger();
     const syncClips = new SyncClipsUseCase(
-      channels,
+      tracked,
       clipSource,
       clipLedger,
       outbox,
@@ -74,6 +90,13 @@ describe('TwitchBotGrpcController', () => {
       ctx,
     );
 
+    users.users = [
+      {
+        twitch_id: '987654',
+        login: 'maybeitsvero',
+        display_name: 'Maybeitsvero',
+      },
+    ];
     await channels.save(twitchChannelAnemic(CHANNEL_ID, { twitch_id: '999' }));
 
     actors = new TestActorProvider(testActor(['twitch-bot.channel.manage']));
@@ -115,7 +138,7 @@ describe('TwitchBotGrpcController', () => {
       ),
       new SyncMediaUseCase(
         new ImportMediaUseCase(
-          channels,
+          tracked,
           clipSource,
           videoSource,
           clipLedger,
@@ -127,7 +150,7 @@ describe('TwitchBotGrpcController', () => {
         ),
         syncClips,
         new SyncVideosUseCase(
-          channels,
+          tracked,
           videoSource,
           videoLedger,
           outbox,
@@ -135,6 +158,15 @@ describe('TwitchBotGrpcController', () => {
           ctx,
         ),
       ),
+      new ListFriendsUseCase(friends),
+      new AddFriendUseCase(
+        friendFactory,
+        friends,
+        channels,
+        persistence,
+        users,
+      ),
+      new RemoveFriendUseCase(friendFactory, friends, persistence),
       actors,
     );
   });
@@ -217,5 +249,28 @@ describe('TwitchBotGrpcController', () => {
       created_clips: 0,
       created_videos: 0,
     });
+  });
+
+  it('adds, lists and removes a friend', async () => {
+    const added = await controller.addFriend({ login: 'MaybeItsVero' });
+
+    expect(added.friend).toMatchObject({
+      id: FRIEND_ID,
+      twitch_id: '987654',
+      login: 'maybeitsvero',
+    });
+    expect((await controller.listFriends()).friends).toHaveLength(1);
+
+    await controller.removeFriend({ id: FRIEND_ID });
+
+    expect((await controller.listFriends()).friends).toHaveLength(0);
+  });
+
+  it('requires the manage permission for friends', async () => {
+    actors.actor = testActor(['twitch-bot.sync']);
+
+    await expect(
+      grpcCode(controller.addFriend({ login: 'maybeitsvero' })),
+    ).resolves.toBe(status.PERMISSION_DENIED);
   });
 });

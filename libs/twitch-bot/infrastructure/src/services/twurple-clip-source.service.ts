@@ -3,7 +3,7 @@ import type {
   TwitchClip,
   TwitchClipSource,
 } from '@toxictoast/twitch-bot-application';
-import type { TwitchChannelAnemic } from '@toxictoast/twitch-bot-domain';
+import type { TrackedChannel } from '@toxictoast/twitch-bot-domain';
 import { clipFromHelix } from '../functions/index.js';
 import type { TwitchConnection } from './twitch-connection.service.js';
 
@@ -11,11 +11,11 @@ export class TwurpleClipSource implements TwitchClipSource {
   constructor(private readonly connection: TwitchConnection) {}
 
   async listClips(
-    channel: TwitchChannelAnemic,
+    channel: TrackedChannel,
     since: Date,
     until?: Optional<Date>,
   ): Promise<Array<TwitchClip>> {
-    const api = await this.connection.use(channel);
+    const api = await this.connection.appApi();
     const clips = await api.clips
       .getClipsForBroadcasterPaginated(channel.twitch_id, {
         startDate: since.toISOString(),

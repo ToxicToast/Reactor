@@ -6,3 +6,4 @@ export * from './typeorm-published.ledger.js';
 export * from './typeorm-published-clip.ledger.js';
 export * from './typeorm-published-video.ledger.js';
 export * from './typeorm-media-import.log.js';
+export * from './typeorm-twitch-friend.repository.js';

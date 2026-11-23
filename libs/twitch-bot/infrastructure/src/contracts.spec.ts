@@ -10,6 +10,8 @@ import {
   type TwitchUnfollowPayloadV1,
   type TwitchVideoPayloadV1,
   TwitchVideoTypes as ContractVideoTypes,
+  TwitchBotFriendEvents,
+  type TwitchBotFriendPayloadV1,
 } from '@toxictoast/contracts-events';
 import {
   contractNamesOf,
@@ -30,6 +32,8 @@ import {
 import {
   TwitchChannelEvents,
   type TwitchChannelEventPayload,
+  TwitchFriendEvents,
+  type TwitchFriendEventPayload,
 } from '@toxictoast/twitch-bot-domain';
 
 describe('Event contracts', () => {
@@ -55,15 +59,26 @@ describe('Event contracts', () => {
         Jsonified<ChannelReference & TwitchVideo>,
         TwitchVideoPayloadV1
       >,
+      true as Compatible<
+        Jsonified<TwitchFriendEventPayload>,
+        TwitchBotFriendPayloadV1
+      >,
     ];
 
-    expect(checks).toHaveLength(5);
+    expect(checks).toHaveLength(6);
   });
 
   it('publish the channel events under the contract topic and names', () => {
     expect(eventNamespacesOf(TwitchChannelEvents)).toEqual([TwitchTopics.BOT]);
     expect(eventNamesOf(TwitchChannelEvents)).toEqual(
       contractNamesOf(TwitchBotEvents),
+    );
+  });
+
+  it('publish the friend events under the bot topic', () => {
+    expect(eventNamespacesOf(TwitchFriendEvents)).toEqual([TwitchTopics.BOT]);
+    expect(eventNamesOf(TwitchFriendEvents)).toEqual(
+      contractNamesOf(TwitchBotFriendEvents),
     );
   });
 

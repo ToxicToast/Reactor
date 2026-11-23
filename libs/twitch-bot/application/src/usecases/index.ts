@@ -12,3 +12,6 @@ export * from './import-media.usecase.js';
 export * from './sync-media.usecase.js';
 export * from './refresh-archive.usecase.js';
 export * from './sync-followers.usecase.js';
+export * from './add-friend.usecase.js';
+export * from './remove-friend.usecase.js';
+export * from './list-friends.usecase.js';

@@ -14,10 +14,13 @@ import {
 } from '@toxictoast/shared-system';
 import { TwitchBotGrpcController } from '@toxictoast/twitch-bot-api';
 import {
+  AddFriendUseCase,
   CompleteAuthorizationUseCase,
   DisconnectChannelUseCase,
   ListChannelsUseCase,
+  ListFriendsUseCase,
   PublishTwitchEventUseCase,
+  RemoveFriendUseCase,
   ResumeSubscriptionsUseCase,
   RevokeChannelUseCase,
   StartAuthorizationUseCase,
@@ -29,10 +32,12 @@ import {
   RefreshArchiveUseCase,
   SyncMediaUseCase,
   SyncVideosUseCase,
+  TrackedChannels,
 } from '@toxictoast/twitch-bot-application';
 import {
   ChatterDiffService,
   TwitchChannelFactory,
+  TwitchFriendFactory,
   type TwitchChannelRepository,
 } from '@toxictoast/twitch-bot-domain';
 import {
@@ -46,10 +51,12 @@ import {
   TwurpleFollowerSource,
   TwurpleEventSubscriber,
   TwurpleTwitchAuthClient,
+  TwurpleUserLookup,
   TypeOrmChatterRepository,
   TypeOrmFollowerRepository,
   TypeOrmPublishedClipLedger,
   TypeOrmTwitchChannelRepository,
+  TypeOrmTwitchFriendRepository,
   TypeOrmTwitchTokenStore,
   type TwitchBotMetrics,
   type TwitchConfig,
@@ -67,10 +74,12 @@ const {
   TWITCH_CONFIG,
   TOKEN_CIPHER,
   TWITCH_CHANNEL_REPOSITORY,
+  TWITCH_FRIEND_REPOSITORY,
   CHATTER_REPOSITORY,
   TWITCH_TOKEN_STORE,
   PUBLISHED_CLIP_LEDGER,
   TWITCH_AUTH_CLIENT,
+  TWITCH_USER_LOOKUP,
   TWITCH_CHATTER_SOURCE,
   TWITCH_CLIP_SOURCE,
   TWITCH_EVENT_SUBSCRIBER,
@@ -108,6 +117,7 @@ const logError = (error: unknown, context: string): void => {
 
     // ── Domain ──────────────────────────────────
     provideClass(TwitchChannelFactory, [DOMAIN_CONTEXT]),
+    provideClass(TwitchFriendFactory, [DOMAIN_CONTEXT]),
     provideClass(ChatterDiffService),
 
     // ── Infrastructure ──────────────────────────
@@ -115,6 +125,11 @@ const logError = (error: unknown, context: string): void => {
       TypeOrmTwitchChannelRepository,
       DATABASE_INJECT,
       TWITCH_CHANNEL_REPOSITORY,
+    ),
+    provideClass(
+      TypeOrmTwitchFriendRepository,
+      DATABASE_INJECT,
+      TWITCH_FRIEND_REPOSITORY,
     ),
     provideClass(TypeOrmChatterRepository, DATABASE_INJECT, CHATTER_REPOSITORY),
     provideClass(
@@ -175,6 +190,7 @@ const logError = (error: unknown, context: string): void => {
       },
     },
     provideClass(TwurpleTwitchAuthClient, [TWITCH_CONFIG], TWITCH_AUTH_CLIENT),
+    provideClass(TwurpleUserLookup, [TwitchConnection], TWITCH_USER_LOOKUP),
     provideClass(
       TwurpleChatterSource,
       [TwitchConnection],
@@ -217,6 +233,12 @@ const logError = (error: unknown, context: string): void => {
       TwitchCredentialsCheck,
       TwitchSocketTracker,
       CLOCK,
+    ]),
+
+    // ── Application Services ────────────────────
+    provideClass(TrackedChannels, [
+      TWITCH_CHANNEL_REPOSITORY,
+      TWITCH_FRIEND_REPOSITORY,
     ]),
 
     // ── Use Cases ───────────────────────────────
@@ -263,7 +285,7 @@ const logError = (error: unknown, context: string): void => {
       DOMAIN_CONTEXT,
     ]),
     provideClass(SyncClipsUseCase, [
-      TWITCH_CHANNEL_REPOSITORY,
+      TrackedChannels,
       TWITCH_CLIP_SOURCE,
       PUBLISHED_CLIP_LEDGER,
       OUTBOX,
@@ -271,7 +293,7 @@ const logError = (error: unknown, context: string): void => {
       DOMAIN_CONTEXT,
     ]),
     provideClass(SyncVideosUseCase, [
-      TWITCH_CHANNEL_REPOSITORY,
+      TrackedChannels,
       TWITCH_VIDEO_SOURCE,
       PUBLISHED_VIDEO_LEDGER,
       OUTBOX,
@@ -279,7 +301,7 @@ const logError = (error: unknown, context: string): void => {
       DOMAIN_CONTEXT,
     ]),
     provideClass(ImportMediaUseCase, [
-      TWITCH_CHANNEL_REPOSITORY,
+      TrackedChannels,
       TWITCH_CLIP_SOURCE,
       TWITCH_VIDEO_SOURCE,
       PUBLISHED_CLIP_LEDGER,
@@ -308,6 +330,19 @@ const logError = (error: unknown, context: string): void => {
       OUTBOX,
       UNIT_OF_WORK,
       DOMAIN_CONTEXT,
+    ]),
+    provideClass(ListFriendsUseCase, [TWITCH_FRIEND_REPOSITORY]),
+    provideClass(AddFriendUseCase, [
+      TwitchFriendFactory,
+      TWITCH_FRIEND_REPOSITORY,
+      TWITCH_CHANNEL_REPOSITORY,
+      DomainPersistence,
+      TWITCH_USER_LOOKUP,
+    ]),
+    provideClass(RemoveFriendUseCase, [
+      TwitchFriendFactory,
+      TWITCH_FRIEND_REPOSITORY,
+      DomainPersistence,
     ]),
 
     // ── Lifecycles ──────────────────────────────

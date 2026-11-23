@@ -6,3 +6,4 @@ export * from './twitch-published-clip.schema.js';
 export * from './twitch-published-video.schema.js';
 export * from './twitch-media-import.schema.js';
 export * from './twitch-bot.schemas.js';
+export * from './twitch-friend.schema.js';

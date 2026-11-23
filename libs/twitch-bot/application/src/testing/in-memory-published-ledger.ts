@@ -1,11 +1,11 @@
-import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
+import type { TrackedChannelId } from '@toxictoast/twitch-bot-domain';
 import type { PublishedLedger } from '../interfaces/index.js';
 
 export class InMemoryPublishedLedger implements PublishedLedger {
-  readonly items = new Map<TwitchChannelId, Set<string>>();
+  readonly items = new Map<TrackedChannelId, Set<string>>();
 
   async markPublished(
-    channelId: TwitchChannelId,
+    channelId: TrackedChannelId,
     ids: ReadonlyArray<string>,
   ): Promise<Array<string>> {
     const known = this.items.get(channelId) ?? new Set<string>();

@@ -16,3 +16,4 @@ export * from './time-window.interface.js';
 export * from './twitch-event-subscriber.interface.js';
 export * from './follower-payload.interface.js';
 export * from './twitch-follower-source.interface.js';
+export * from './twitch-user-lookup.interface.js';

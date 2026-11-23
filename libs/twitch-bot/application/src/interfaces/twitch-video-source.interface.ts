@@ -1,11 +1,11 @@
-import type { TwitchChannelAnemic } from '@toxictoast/twitch-bot-domain';
+import type { TrackedChannel } from '@toxictoast/twitch-bot-domain';
 import type { TwitchVideo } from './twitch-video.interface.js';
 
 export interface TwitchVideoSource {
   /** neueste VODs aller Typen, neueste zuerst */
   listRecent(
-    channel: TwitchChannelAnemic,
+    channel: TrackedChannel,
     limit: number,
   ): Promise<Array<TwitchVideo>>;
-  listAll(channel: TwitchChannelAnemic): Promise<Array<TwitchVideo>>;
+  listAll(channel: TrackedChannel): Promise<Array<TwitchVideo>>;
 }

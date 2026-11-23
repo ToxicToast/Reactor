@@ -1,10 +1,13 @@
 import type { ClientGrpc } from '@nestjs/microservices';
 import {
   TWITCH_BOT_SERVICE_NAME,
+  type AddFriendResponse,
   type CompleteAuthorizationRequest,
   type CompleteAuthorizationResponse,
   type DisconnectChannelResponse,
   type ListChannelsResponse,
+  type ListFriendsResponse,
+  type RemoveFriendResponse,
   type StartAuthorizationRequest,
   type StartAuthorizationResponse,
   type TwitchBotServiceClient,
@@ -36,5 +39,17 @@ export class TwitchGateway extends GrpcGateway<TwitchBotServiceClient> {
 
   disconnectChannel(id: string): Observable<DisconnectChannelResponse> {
     return this.service.disconnectChannel({ id }, this.metadata());
+  }
+
+  listFriends(): Observable<ListFriendsResponse> {
+    return this.service.listFriends({}, this.metadata());
+  }
+
+  addFriend(login: string): Observable<AddFriendResponse> {
+    return this.service.addFriend({ login }, this.metadata());
+  }
+
+  removeFriend(id: string): Observable<RemoveFriendResponse> {
+    return this.service.removeFriend({ id }, this.metadata());
   }
 }

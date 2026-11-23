@@ -1,5 +1,6 @@
 import type {
   AccessToken,
+  AppTokenAuthProvider,
   RefreshingAuthProvider,
   StaticAuthProvider,
 } from '@twurple/auth';
@@ -13,6 +14,14 @@ export const createTwitchAuthProvider = async (
     clientId: config.clientId,
     clientSecret: config.clientSecret,
   });
+};
+
+/** für öffentliche Daten fremder Channels: Clips, VODs, Streams, User */
+export const createAppTokenAuthProvider = async (
+  config: TwitchConfig,
+): Promise<AppTokenAuthProvider> => {
+  const auth = await import('@twurple/auth');
+  return new auth.AppTokenAuthProvider(config.clientId, config.clientSecret);
 };
 
 export const createStaticAuthProvider = async (
