@@ -20,6 +20,12 @@ export interface TwitchSessionPayloadV1 {
   readonly raids: number;
   readonly raid_viewers: number;
   readonly redemptions: number;
+  readonly title: Nullable<string>;
+  readonly game_id: Nullable<string>;
+  readonly game_name: Nullable<string>;
+  readonly viewer_count: number;
+  readonly peak_viewers: number;
+  readonly average_viewers: number;
   readonly created_at: string;
   readonly updated_at: Nullable<string>;
   readonly deleted_at: Nullable<string>;

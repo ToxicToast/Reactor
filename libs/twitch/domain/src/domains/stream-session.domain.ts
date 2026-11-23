@@ -5,7 +5,12 @@ import {
   StreamSessionEvents,
   type StreamSessionEventPayload,
 } from '../events/index.js';
-import { addCounters, secondsBetween } from '../functions/index.js';
+import {
+  addCounters,
+  averageViewers,
+  secondsBetween,
+} from '../functions/index.js';
+import type { StreamStatus } from '../interfaces/index.js';
 import type { SessionCounters } from '../types/index.js';
 
 export class StreamSessionDomain extends BaseDomain<
@@ -36,6 +41,24 @@ export class StreamSessionDomain extends BaseDomain<
       return;
     }
     this.state.peak_chatters = count;
+    this.touch();
+  }
+
+  /** eine Messung pro Minute: Titel und Spiel überschreiben, Zuschauer aufsummieren */
+  observeStatus(status: StreamStatus): void {
+    if (!this.isLive) {
+      return;
+    }
+    this.state.title = status.title;
+    this.state.game_id = status.game_id;
+    this.state.game_name = status.game_name;
+    this.state.viewer_count = status.viewer_count;
+    this.state.peak_viewers = Math.max(
+      this.state.peak_viewers,
+      status.viewer_count,
+    );
+    this.state.viewer_samples = this.state.viewer_samples + 1;
+    this.state.viewer_sum = this.state.viewer_sum + status.viewer_count;
     this.touch();
   }
 
@@ -83,6 +106,12 @@ export class StreamSessionDomain extends BaseDomain<
       raids: this.state.raids,
       raid_viewers: this.state.raid_viewers,
       redemptions: this.state.redemptions,
+      title: this.state.title,
+      game_id: this.state.game_id,
+      game_name: this.state.game_name,
+      viewer_count: this.state.viewer_count,
+      peak_viewers: this.state.peak_viewers,
+      average_viewers: averageViewers(this.state),
       created_at: this.state.created_at,
       updated_at: this.state.updated_at,
       deleted_at: this.state.deleted_at,

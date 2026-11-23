@@ -5,6 +5,7 @@ import { chatChangeOf } from './chat-change-of.function.js';
 import { mediaChangeOf } from './media-change-of.function.js';
 import { observationOf } from './observation-of.function.js';
 import { recordedEventOf } from './recorded-event-of.function.js';
+import { streamStatusChangeOf } from './stream-status-change-of.function.js';
 
 export const recordInputOf = (
   event: IncomingTwitchEvent,
@@ -16,5 +17,6 @@ export const recordInputOf = (
     observation: observationOf(event, payload, occurredAt),
     chat: chatChangeOf(event, payload, occurredAt),
     media: mediaChangeOf(event, payload),
+    status: streamStatusChangeOf(event, payload),
   };
 };

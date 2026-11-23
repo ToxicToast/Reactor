@@ -23,6 +23,9 @@ const LIVE: Array<LiveChannel> = [
     session_id: 'session-1',
     started_at: new Date('2026-10-28T19:00:00Z'),
     chatters: 3,
+    title: 'Hordentlich verpeilt',
+    game_name: 'World of Warcraft',
+    viewer_count: 7,
   },
 ];
 

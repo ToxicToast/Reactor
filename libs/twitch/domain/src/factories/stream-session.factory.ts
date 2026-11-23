@@ -5,7 +5,10 @@ import {
   type Factory,
 } from '@toxictoast/shared-kernel';
 import type { StreamSessionAnemic } from '../anemics/index.js';
-import { SESSION_COUNTER_KEYS } from '../constants/index.js';
+import {
+  EMPTY_SESSION_STATUS,
+  SESSION_COUNTER_KEYS,
+} from '../constants/index.js';
 import type { StreamSessionData } from '../data/index.js';
 import { StreamSessionDomain } from '../domains/index.js';
 import { zeroCounters } from '../functions/index.js';
@@ -41,6 +44,7 @@ export class StreamSessionFactory implements Factory<
         ...zeroCounters(SESSION_COUNTER_KEYS),
         peak_chatters: 0,
         unique_chatters: 0,
+        ...EMPTY_SESSION_STATUS,
         created_at: this.ctx.date.now(),
         updated_at: null,
         deleted_at: null,

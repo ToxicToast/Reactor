@@ -96,6 +96,12 @@ export interface StreamSession {
   raids: number;
   raid_viewers: number;
   redemptions: number;
+  title?: string | undefined;
+  game_id?: string | undefined;
+  game_name?: string | undefined;
+  viewer_count: number;
+  peak_viewers: number;
+  average_viewers: number;
 }
 
 export interface LeaderboardEntry {
@@ -143,6 +149,9 @@ export interface LiveChannel {
   session_id?: string | undefined;
   started_at?: string | undefined;
   chatters: number;
+  title?: string | undefined;
+  game_name?: string | undefined;
+  viewer_count?: number | undefined;
 }
 
 export interface TwitchEvent {

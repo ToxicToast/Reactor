@@ -22,3 +22,5 @@ export * from './clip.interface.js';
 export * from './video.interface.js';
 export * from './clip-filter.interface.js';
 export * from './video-filter.interface.js';
+export * from './stream-status.interface.js';
+export * from './session-status.interface.js';

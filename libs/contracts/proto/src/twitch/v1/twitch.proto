@@ -99,6 +99,12 @@ message StreamSession {
   int32 raids = 17;
   int32 raid_viewers = 18;
   int32 redemptions = 19;
+  optional string title = 20;
+  optional string game_id = 21;
+  optional string game_name = 22;
+  int32 viewer_count = 23;
+  int32 peak_viewers = 24;
+  int32 average_viewers = 25;
 }
 
 message LeaderboardEntry {
@@ -146,6 +152,9 @@ message LiveChannel {
   optional string session_id = 5;
   optional string started_at = 6;
   int32 chatters = 7;
+  optional string title = 8;
+  optional string game_name = 9;
+  optional int32 viewer_count = 10;
 }
 
 message TwitchEvent {

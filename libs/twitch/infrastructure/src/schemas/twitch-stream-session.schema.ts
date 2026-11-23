@@ -15,10 +15,17 @@ export const TwitchStreamSessionSchema = new EntitySchema<StreamSessionRow>({
     started_at: { type: 'timestamptz' },
     ended_at: { type: 'timestamptz', nullable: true },
     duration_seconds: { type: 'int', nullable: true },
+    title: { type: 'varchar', length: 140, nullable: true },
+    game_id: { type: 'varchar', length: 32, nullable: true },
+    game_name: { type: 'varchar', length: 256, nullable: true },
     ...counterColumns([
       ...SESSION_COUNTER_KEYS,
       'peak_chatters',
       'unique_chatters',
+      'viewer_count',
+      'peak_viewers',
+      'viewer_samples',
+      'viewer_sum',
     ]),
   },
   uniques: [

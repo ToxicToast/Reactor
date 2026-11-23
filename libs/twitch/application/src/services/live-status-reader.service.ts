@@ -25,6 +25,9 @@ export class LiveStatusReader {
           session_id: live?.id ?? null,
           started_at: live?.started_at ?? null,
           chatters: await this.presence.count(channel.channel_id),
+          title: live?.title ?? null,
+          game_name: live?.game_name ?? null,
+          viewer_count: live ? live.viewer_count : null,
         };
       }),
     );
