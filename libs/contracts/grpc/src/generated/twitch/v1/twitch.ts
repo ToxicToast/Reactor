@@ -31,6 +31,7 @@ export enum TimelineMetric {
   TIMELINE_METRIC_BITS = "TIMELINE_METRIC_BITS",
   TIMELINE_METRIC_RAIDS = "TIMELINE_METRIC_RAIDS",
   TIMELINE_METRIC_REDEMPTIONS = "TIMELINE_METRIC_REDEMPTIONS",
+  TIMELINE_METRIC_FOLLOWER_TOTAL = "TIMELINE_METRIC_FOLLOWER_TOTAL",
 }
 
 export enum TimelineInterval {
@@ -74,6 +75,8 @@ export interface StatsChannel {
   live: boolean;
   current_session_id?: string | undefined;
   last_session_at?: string | undefined;
+  followers?: number | undefined;
+  followers_day?: string | undefined;
 }
 
 export interface StreamSession {

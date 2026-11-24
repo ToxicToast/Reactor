@@ -2,11 +2,14 @@ import {
   TypeOrmTableRepository,
   type TransactionContext,
 } from '@toxictoast/shared-persistence';
+import type { Nullable } from '@toxictoast/shared-types';
 import {
+  GAUGE_METRICS,
   PEAK_CHATTERS_METRIC,
   type ChannelDayCounters,
   type ChannelStatsRepository,
   type ClosedDayRange,
+  type FollowerTotal,
   type StatsIntervalValue,
   type TimelineMetric,
   type TimelinePoint,
@@ -50,6 +53,33 @@ export class TypeOrmChannelStatsRepository
     );
   }
 
+  /** upsert nur auf follower_total; die Zähler des Tages bleiben unangetastet */
+  async recordFollowerTotal(
+    channelId: string,
+    day: string,
+    total: number,
+  ): Promise<void> {
+    await this.repository().upsert(
+      { channel_id: channelId, day, follower_total: total },
+      ['channel_id', 'day'],
+    );
+  }
+
+  async latestFollowerTotal(
+    channelId: string,
+  ): Promise<Nullable<FollowerTotal>> {
+    const row = await this.repository()
+      .createQueryBuilder('d')
+      .where('d.channel_id = :channelId', { channelId })
+      .andWhere('d.follower_total IS NOT NULL')
+      .orderBy('d.day', 'DESC')
+      .getOne();
+    if (!row || row.follower_total === null) {
+      return null;
+    }
+    return { day: row.day, total: row.follower_total };
+  }
+
   async timeline(
     channelId: string,
     metric: TimelineMetric,
@@ -58,8 +88,9 @@ export class TypeOrmChannelStatsRepository
   ): Promise<Array<TimelinePoint>> {
     const repository = this.repository();
     const column = `d.${columnOf(repository, metric)}`;
-    const aggregate =
-      metric === PEAK_CHATTERS_METRIC ? `MAX(${column})` : `SUM(${column})`;
+    const aggregate = GAUGE_METRICS.has(metric)
+      ? `MAX(${column})`
+      : `SUM(${column})`;
 
     const query = repository
       .createQueryBuilder('d')

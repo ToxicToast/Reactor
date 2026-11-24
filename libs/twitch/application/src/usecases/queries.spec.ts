@@ -104,6 +104,7 @@ describe('twitch stats queries', () => {
     const result = await new ListStatsChannelsUseCase(
       harness.directory,
       harness.sessions,
+      harness.channelStats,
     ).execute();
 
     expect(result.value).toEqual([

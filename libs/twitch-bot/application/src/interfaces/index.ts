@@ -23,3 +23,4 @@ export * from './live-stream-entry.interface.js';
 export * from './live-stream-ledger.interface.js';
 export * from './stream-online-payload.interface.js';
 export * from './stream-status-payload.interface.js';
+export * from './follower-count-payload.interface.js';

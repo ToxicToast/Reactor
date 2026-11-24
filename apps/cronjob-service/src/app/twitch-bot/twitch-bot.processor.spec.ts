@@ -14,6 +14,7 @@ describe('TwitchBotProcessor', () => {
   let syncMedia: jest.Mock;
   let syncFollowers: jest.Mock;
   let syncStreams: jest.Mock;
+  let syncFollowerCounts: jest.Mock;
   let processor: TwitchBotProcessor;
 
   beforeEach(() => {
@@ -32,12 +33,14 @@ describe('TwitchBotProcessor', () => {
     syncStreams = jest
       .fn()
       .mockReturnValue(of({ live: 2, online: 1, offline: 0 }));
+    syncFollowerCounts = jest.fn().mockReturnValue(of({ counted: 3 }));
     const client = {
       getService: () => ({
         syncChatters,
         syncMedia,
         syncFollowers,
         syncStreams,
+        syncFollowerCounts,
       }),
     } as unknown as ClientGrpc;
     const ctx = { id: { generate: () => CID } } as unknown as DomainContext;
@@ -64,7 +67,7 @@ describe('TwitchBotProcessor', () => {
   it('syncs the followers', async () => {
     const result = await processor.process({ name: 'followers.sync' } as Job);
 
-    expect(result).toEqual({ followed: 4, unfollowed: 2 });
+    expect(result).toEqual({ followed: 4, unfollowed: 2, counted: 3 });
   });
 
   it('syncs the streams', async () => {

@@ -11,3 +11,4 @@ export * from './follow-state-map.constant.js';
 export * from './media-change-mappers.constant.js';
 export * from './video-type-maps.constant.js';
 export * from './stream-status-key.constant.js';
+export * from './follower-count-key.constant.js';

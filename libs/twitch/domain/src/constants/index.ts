@@ -8,3 +8,5 @@ export * from './chat-deletion-reasons.constant.js';
 export * from './follow-states.constant.js';
 export * from './video-types.constant.js';
 export * from './empty-session-status.constant.js';
+export * from './follower-total-metric.constant.js';
+export * from './gauge-metrics.constant.js';

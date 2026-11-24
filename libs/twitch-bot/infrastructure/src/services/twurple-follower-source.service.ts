@@ -1,6 +1,7 @@
 import type { TwitchFollowerSource } from '@toxictoast/twitch-bot-application';
 import type {
   Follower,
+  TrackedChannel,
   TwitchChannelAnemic,
 } from '@toxictoast/twitch-bot-domain';
 import { followerFromHelix } from '../functions/index.js';
@@ -17,5 +18,15 @@ export class TwurpleFollowerSource implements TwitchFollowerSource {
         .getAll();
     });
     return followers.map(followerFromHelix);
+  }
+
+  async countFollowers(
+    channel: TrackedChannel,
+    via: TwitchChannelAnemic,
+  ): Promise<number> {
+    const api = await this.connection.use(via);
+    return api.asUser(via.twitch_id, (ctx) => {
+      return ctx.channels.getChannelFollowerCount(channel.twitch_id);
+    });
   }
 }

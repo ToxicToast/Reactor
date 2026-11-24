@@ -34,6 +34,7 @@ import {
   SyncVideosUseCase,
   TrackedChannels,
   SyncStreamsUseCase,
+  SyncFollowerCountsUseCase,
 } from '@toxictoast/twitch-bot-application';
 import {
   ChatterDiffService,
@@ -342,6 +343,14 @@ const logError = (error: unknown, context: string): void => {
     provideClass(SyncFollowersUseCase, [
       TWITCH_CHANNEL_REPOSITORY,
       FOLLOWER_REPOSITORY,
+      TWITCH_FOLLOWER_SOURCE,
+      OUTBOX,
+      UNIT_OF_WORK,
+      DOMAIN_CONTEXT,
+    ]),
+    provideClass(SyncFollowerCountsUseCase, [
+      TWITCH_CHANNEL_REPOSITORY,
+      TrackedChannels,
       TWITCH_FOLLOWER_SOURCE,
       OUTBOX,
       UNIT_OF_WORK,

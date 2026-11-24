@@ -34,6 +34,8 @@ export class TwitchStatsGrpcMapper {
       live: channel.live,
       current_session_id: channel.current_session_id ?? undefined,
       last_session_at: toIso(channel.last_session_at),
+      followers: channel.followers ?? undefined,
+      followers_day: channel.followers_day ?? undefined,
     };
   }
 

@@ -1,6 +1,7 @@
 import { TimelineMetric as ProtoTimelineMetric } from '@toxictoast/contracts-grpc';
 import type { Nullable } from '@toxictoast/shared-types';
 import {
+  FOLLOWER_TOTAL_METRIC,
   PEAK_CHATTERS_METRIC,
   type TimelineMetric,
 } from '@toxictoast/twitch-domain';
@@ -20,4 +21,5 @@ export const TIMELINE_METRIC_MAP: Readonly<
   [ProtoTimelineMetric.TIMELINE_METRIC_BITS]: 'bits',
   [ProtoTimelineMetric.TIMELINE_METRIC_RAIDS]: 'raids',
   [ProtoTimelineMetric.TIMELINE_METRIC_REDEMPTIONS]: 'redemptions',
+  [ProtoTimelineMetric.TIMELINE_METRIC_FOLLOWER_TOTAL]: FOLLOWER_TOTAL_METRIC,
 };

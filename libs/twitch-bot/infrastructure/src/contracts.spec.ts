@@ -16,6 +16,7 @@ import {
   TwitchStreamStatusPayloadV1,
   TwitchStreamOnlinePayloadV1,
   TwitchStreamEvents,
+  TwitchFollowerCountPayloadV1,
 } from '@toxictoast/contracts-events';
 import {
   contractNamesOf,
@@ -35,6 +36,7 @@ import {
   StreamOnlinePayload,
   StreamStatusPayload,
   STREAM_EVENTS,
+  FollowerCountPayload,
 } from '@toxictoast/twitch-bot-application';
 import {
   TwitchChannelEvents,
@@ -82,9 +84,13 @@ describe('Event contracts', () => {
         Jsonified<ChannelReference & StreamStatusPayload>,
         TwitchStreamStatusPayloadV1
       >,
+      true as Compatible<
+        Jsonified<ChannelReference & FollowerCountPayload>,
+        TwitchFollowerCountPayloadV1
+      >,
     ];
 
-    expect(checks).toHaveLength(9);
+    expect(checks).toHaveLength(10);
   });
 
   it('publish the channel events under the contract topic and names', () => {
@@ -106,6 +112,7 @@ describe('Event contracts', () => {
       TOPIC: TwitchTopics.COMMUNITY,
       FOUND: TwitchCommunityEvents.FOLLOW_FOUND,
       UNFOLLOW: TwitchCommunityEvents.UNFOLLOW,
+      COUNT: TwitchCommunityEvents.FOLLOWER_COUNT,
     });
   });
 

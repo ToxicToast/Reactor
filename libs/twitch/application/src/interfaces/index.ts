@@ -12,3 +12,4 @@ export * from './twitch-chat-config.interface.js';
 export * from './clip-change.interface.js';
 export * from './video-change.interface.js';
 export * from './stream-status-change.interface.js';
+export * from './follower-total-change.interface.js';

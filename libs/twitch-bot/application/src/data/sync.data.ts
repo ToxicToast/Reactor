@@ -40,3 +40,7 @@ export interface SyncStreamsOutput {
   readonly online: number;
   readonly offline: number;
 }
+
+export interface SyncFollowerCountsOutput {
+  readonly counted: number;
+}

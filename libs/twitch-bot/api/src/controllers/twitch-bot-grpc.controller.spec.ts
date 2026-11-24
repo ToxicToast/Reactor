@@ -27,6 +27,7 @@ import {
   TrackedChannels,
   RefreshArchiveUseCase,
   SyncStreamsUseCase,
+  SyncFollowerCountsUseCase,
 } from '@toxictoast/twitch-bot-application';
 import {
   createTestContext,
@@ -93,6 +94,7 @@ describe('TwitchBotGrpcController', () => {
       uow,
       ctx,
     );
+    const followerSource = new FakeTwitchFollowerSource();
 
     users.users = [
       {
@@ -180,6 +182,14 @@ describe('TwitchBotGrpcController', () => {
         uow,
         ctx,
       ),
+      new SyncFollowerCountsUseCase(
+        channels,
+        tracked,
+        followerSource,
+        outbox,
+        uow,
+        ctx,
+      ),
       actors,
     );
   });
@@ -247,6 +257,9 @@ describe('TwitchBotGrpcController', () => {
     await expect(grpcCode(controller.syncStreams())).resolves.toBe(
       status.PERMISSION_DENIED,
     );
+    await expect(grpcCode(controller.syncFollowerCounts())).resolves.toBe(
+      status.PERMISSION_DENIED,
+    );
 
     actors.actor = testActor(['twitch-bot.sync']);
 
@@ -269,6 +282,9 @@ describe('TwitchBotGrpcController', () => {
       live: 0,
       online: 0,
       offline: 0,
+    });
+    await expect(controller.syncFollowerCounts()).resolves.toEqual({
+      counted: 1,
     });
   });
 

@@ -25,6 +25,7 @@ export const TIMELINE_METRIC_QUERY = {
   bits: TimelineMetric.TIMELINE_METRIC_BITS,
   raids: TimelineMetric.TIMELINE_METRIC_RAIDS,
   redemptions: TimelineMetric.TIMELINE_METRIC_REDEMPTIONS,
+  follower_total: TimelineMetric.TIMELINE_METRIC_FOLLOWER_TOTAL,
 } as const;
 
 export const TIMELINE_INTERVAL_QUERY = {

@@ -16,3 +16,4 @@ export * from './add-friend.usecase.js';
 export * from './remove-friend.usecase.js';
 export * from './list-friends.usecase.js';
 export * from './sync-streams.usecase.js';
+export * from './sync-follower-counts.usecase.js';

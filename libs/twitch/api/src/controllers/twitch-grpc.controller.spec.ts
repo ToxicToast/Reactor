@@ -89,7 +89,11 @@ describe('TwitchGrpcController', () => {
     const secrets = new FixedWebhookSecretGenerator();
 
     controller = new TwitchGrpcController(
-      new ListStatsChannelsUseCase(harness.directory, harness.sessions),
+      new ListStatsChannelsUseCase(
+        harness.directory,
+        harness.sessions,
+        harness.channelStats,
+      ),
       new GetLiveStatusUseCase(harness.liveStatus),
       new ListSessionsUseCase(harness.sessions),
       new GetSessionUseCase(harness.sessions),

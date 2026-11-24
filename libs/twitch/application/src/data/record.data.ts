@@ -1,6 +1,7 @@
 import type { Nullable, Optional } from '@toxictoast/shared-types';
 import type { TwitchObservation } from '@toxictoast/twitch-domain';
 import type {
+  FollowerTotalChange,
   RecordedTwitchEvent,
   StreamStatusChange,
 } from '../interfaces/index.js';
@@ -12,6 +13,7 @@ export interface RecordTwitchEventInput {
   readonly chat?: Optional<Nullable<ChatChange>>;
   readonly media?: Optional<Nullable<MediaChange>>;
   readonly status?: Optional<Nullable<StreamStatusChange>>;
+  readonly followers?: Optional<Nullable<FollowerTotalChange>>;
 }
 
 export interface RecordTwitchEventOutput {

@@ -47,6 +47,7 @@ enum TimelineMetric {
   TIMELINE_METRIC_BITS = 9;
   TIMELINE_METRIC_RAIDS = 10;
   TIMELINE_METRIC_REDEMPTIONS = 11;
+  TIMELINE_METRIC_FOLLOWER_TOTAL = 12;
 }
 
 enum TimelineInterval {
@@ -77,6 +78,8 @@ message StatsChannel {
   bool live = 4;
   optional string current_session_id = 5;
   optional string last_session_at = 6;
+  optional int32 followers = 7;
+  optional string followers_day = 8;
 }
 
 message StreamSession {
