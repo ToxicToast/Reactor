@@ -59,3 +59,4 @@ libs/*/infrastructure/.env
 
 nx-output.txt
 nx-integration.txt
+outdated.txt
