@@ -15,6 +15,7 @@ import { RequestMetadata } from '../grpc/services/index.js';
 import {
   TwitchChannelsController,
   TwitchConnectController,
+  TwitchFriendsController,
 } from './controllers/index.js';
 import { twitchAdminConfigFromEnv } from './functions/index.js';
 import { TwitchGateway } from './twitch.gateway.js';
@@ -30,7 +31,11 @@ import { TwitchGateway } from './twitch.gateway.js';
       urlEnv: GRPC_CLIENT_ENV.TWITCH_BOT,
     }),
   ],
-  controllers: [TwitchConnectController, TwitchChannelsController],
+  controllers: [
+    TwitchConnectController,
+    TwitchChannelsController,
+    TwitchFriendsController,
+  ],
   providers: [
     {
       provide: GATEWAY_TOKENS.TWITCH_ADMIN_CONFIG,

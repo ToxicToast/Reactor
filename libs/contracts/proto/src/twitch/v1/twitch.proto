@@ -47,6 +47,7 @@ enum TimelineMetric {
   TIMELINE_METRIC_BITS = 9;
   TIMELINE_METRIC_RAIDS = 10;
   TIMELINE_METRIC_REDEMPTIONS = 11;
+  TIMELINE_METRIC_FOLLOWER_TOTAL = 12;
 }
 
 enum TimelineInterval {
@@ -77,6 +78,8 @@ message StatsChannel {
   bool live = 4;
   optional string current_session_id = 5;
   optional string last_session_at = 6;
+  optional int32 followers = 7;
+  optional string followers_day = 8;
 }
 
 message StreamSession {
@@ -99,6 +102,12 @@ message StreamSession {
   int32 raids = 17;
   int32 raid_viewers = 18;
   int32 redemptions = 19;
+  optional string title = 20;
+  optional string game_id = 21;
+  optional string game_name = 22;
+  int32 viewer_count = 23;
+  int32 peak_viewers = 24;
+  int32 average_viewers = 25;
 }
 
 message LeaderboardEntry {
@@ -146,6 +155,9 @@ message LiveChannel {
   optional string session_id = 5;
   optional string started_at = 6;
   int32 chatters = 7;
+  optional string title = 8;
+  optional string game_name = 9;
+  optional int32 viewer_count = 10;
 }
 
 message TwitchEvent {

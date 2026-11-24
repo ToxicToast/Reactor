@@ -4,10 +4,7 @@ import type {
   UseCase,
 } from '@toxictoast/shared-application';
 import { Result, type DomainContext } from '@toxictoast/shared-kernel';
-import type {
-  TwitchChannelAnemic,
-  TwitchChannelRepository,
-} from '@toxictoast/twitch-bot-domain';
+import type { TrackedChannel } from '@toxictoast/twitch-bot-domain';
 import { MEDIA_EVENTS, MEDIA_IMPORT } from '../constants/index.js';
 import type { ImportMediaOutput } from '../data/index.js';
 import { observe, oldestFirst, timeWindows } from '../functions/index.js';
@@ -18,11 +15,12 @@ import type {
   TwitchClipSource,
   TwitchVideoSource,
 } from '../interfaces/index.js';
+import type { TrackedChannels } from '../services/index.js';
 
 /** Holt einmal pro Kanal alle Clips und VODs; danach reicht der 5-Minuten-Lauf. */
 export class ImportMediaUseCase implements UseCase<void, ImportMediaOutput> {
   constructor(
-    private readonly channels: TwitchChannelRepository,
+    private readonly channels: TrackedChannels,
     private readonly clips: TwitchClipSource,
     private readonly videos: TwitchVideoSource,
     private readonly clipLedger: PublishedLedger,
@@ -36,7 +34,7 @@ export class ImportMediaUseCase implements UseCase<void, ImportMediaOutput> {
   async execute(): Promise<Result<ImportMediaOutput>> {
     let clips = 0;
     let videos = 0;
-    for (const channel of await this.channels.findConnected()) {
+    for (const channel of await this.channels.list()) {
       if (await this.imports.isImported(channel.id)) {
         continue;
       }
@@ -47,9 +45,7 @@ export class ImportMediaUseCase implements UseCase<void, ImportMediaOutput> {
     return Result.ok({ clips, videos });
   }
 
-  private async import(
-    channel: TwitchChannelAnemic,
-  ): Promise<ImportMediaOutput> {
+  private async import(channel: TrackedChannel): Promise<ImportMediaOutput> {
     const now = this.ctx.date.now();
     const clips = await this.allClips(channel, now);
     const videos = await this.videos.listAll(channel);
@@ -93,7 +89,7 @@ export class ImportMediaUseCase implements UseCase<void, ImportMediaOutput> {
   }
 
   private async allClips(
-    channel: TwitchChannelAnemic,
+    channel: TrackedChannel,
     now: Date,
   ): Promise<Array<TwitchClip>> {
     const found = new Map<string, TwitchClip>();

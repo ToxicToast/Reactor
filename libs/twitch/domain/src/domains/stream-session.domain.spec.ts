@@ -1,3 +1,4 @@
+import { EMPTY_SESSION_STATUS } from '../constants/index.js';
 import { StreamSessionFactory } from '../factories/index.js';
 import type { StreamSessionDomain } from './stream-session.domain.js';
 import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
@@ -45,6 +46,7 @@ describe('StreamSessionDomain', () => {
       started_at: STARTED_AT,
       messages: 0,
       peak_chatters: 0,
+      ...EMPTY_SESSION_STATUS,
       ended_at: null,
     });
     expect(result.value.toEvents().map((event) => event.event_name)).toEqual([
@@ -111,5 +113,30 @@ describe('StreamSessionDomain', () => {
       unique_chatters: 0,
     });
     expect(session.end(new Date()).error.code).toBe('CONFLICT');
+  });
+
+  it('keeps the latest title and game and averages the viewers', () => {
+    const session = startSession();
+
+    session.observeStatus({
+      title: 'Raid-Abend',
+      game_id: '18122',
+      game_name: 'World of Warcraft',
+      viewer_count: 10,
+    });
+    session.observeStatus({
+      title: 'Raid-Abend 2',
+      game_id: '18122',
+      game_name: 'World of Warcraft',
+      viewer_count: 5,
+    });
+
+    expect(session.toAnemic()).toMatchObject({
+      title: 'Raid-Abend 2',
+      viewer_count: 5,
+      peak_viewers: 10,
+      viewer_samples: 2,
+      viewer_sum: 15,
+    });
   });
 });

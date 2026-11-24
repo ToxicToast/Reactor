@@ -5,4 +5,7 @@ export interface StatsChannel extends ChannelRef {
   readonly live: boolean;
   readonly current_session_id: Nullable<string>;
   readonly last_session_at: Nullable<Date>;
+  readonly followers: Nullable<number>;
+  /** Tag der letzten Messung */
+  readonly followers_day: Nullable<string>;
 }

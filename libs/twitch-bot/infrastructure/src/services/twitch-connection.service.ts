@@ -8,6 +8,7 @@ import type {
 } from '@toxictoast/twitch-bot-domain';
 import { NOOP_TWITCH_BOT_METRICS } from '../constants/index.js';
 import {
+  createAppTokenAuthProvider,
   createTwitchApiClient,
   createTwitchAuthProvider,
 } from '../factories/index.js';
@@ -22,6 +23,7 @@ export class TwitchConnection {
   private readonly lost = new Set<string>();
   private provider: Nullable<Promise<RefreshingAuthProvider>> = null;
   private client: Nullable<Promise<ApiClient>> = null;
+  private appClient: Nullable<Promise<ApiClient>> = null;
 
   constructor(
     private readonly config: TwitchConfig,
@@ -66,6 +68,19 @@ export class TwitchConnection {
         });
     }
     return this.client;
+  }
+
+  /** ohne User-Token; reicht für alles Öffentliche, auch bei Freunden */
+  appApi(): Promise<ApiClient> {
+    if (!this.appClient) {
+      this.appClient = createAppTokenAuthProvider(this.config)
+        .then((provider) => createTwitchApiClient(provider))
+        .catch((error: unknown) => {
+          this.appClient = null;
+          throw error;
+        });
+    }
+    return this.appClient;
   }
 
   async use(channel: TwitchChannelAnemic): Promise<ApiClient> {

@@ -86,6 +86,54 @@ export interface SyncMediaResponse {
   created_videos: number;
 }
 
+export interface Friend {
+  id: string;
+  twitch_id: string;
+  login: string;
+  display_name: string;
+  created_at: string;
+  updated_at?: string | undefined;
+}
+
+export interface ListFriendsRequest {
+}
+
+export interface ListFriendsResponse {
+  friends: Friend[];
+}
+
+export interface AddFriendRequest {
+  login: string;
+}
+
+export interface AddFriendResponse {
+  friend: Friend | undefined;
+}
+
+export interface RemoveFriendRequest {
+  id: string;
+}
+
+export interface RemoveFriendResponse {
+  friend: Friend | undefined;
+}
+
+export interface SyncStreamsRequest {
+}
+
+export interface SyncStreamsResponse {
+  live: number;
+  online: number;
+  offline: number;
+}
+
+export interface SyncFollowerCountsRequest {
+}
+
+export interface SyncFollowerCountsResponse {
+  counted: number;
+}
+
 export interface TwitchBotServiceClient {
   startAuthorization(request: StartAuthorizationRequest, metadata?: Metadata): Observable<StartAuthorizationResponse>;
 
@@ -105,6 +153,16 @@ export interface TwitchBotServiceClient {
   syncFollowers(request: SyncFollowersRequest, metadata?: Metadata): Observable<SyncFollowersResponse>;
 
   syncMedia(request: SyncMediaRequest, metadata?: Metadata): Observable<SyncMediaResponse>;
+
+  listFriends(request: ListFriendsRequest, metadata?: Metadata): Observable<ListFriendsResponse>;
+
+  addFriend(request: AddFriendRequest, metadata?: Metadata): Observable<AddFriendResponse>;
+
+  removeFriend(request: RemoveFriendRequest, metadata?: Metadata): Observable<RemoveFriendResponse>;
+
+  syncStreams(request: SyncStreamsRequest, metadata?: Metadata): Observable<SyncStreamsResponse>;
+
+  syncFollowerCounts(request: SyncFollowerCountsRequest, metadata?: Metadata): Observable<SyncFollowerCountsResponse>;
 }
 
 export interface TwitchBotServiceController {
@@ -147,6 +205,31 @@ export interface TwitchBotServiceController {
     request: SyncMediaRequest,
     metadata?: Metadata,
   ): Promise<SyncMediaResponse> | Observable<SyncMediaResponse> | SyncMediaResponse;
+
+  listFriends(
+    request: ListFriendsRequest,
+    metadata?: Metadata,
+  ): Promise<ListFriendsResponse> | Observable<ListFriendsResponse> | ListFriendsResponse;
+
+  addFriend(
+    request: AddFriendRequest,
+    metadata?: Metadata,
+  ): Promise<AddFriendResponse> | Observable<AddFriendResponse> | AddFriendResponse;
+
+  removeFriend(
+    request: RemoveFriendRequest,
+    metadata?: Metadata,
+  ): Promise<RemoveFriendResponse> | Observable<RemoveFriendResponse> | RemoveFriendResponse;
+
+  syncStreams(
+    request: SyncStreamsRequest,
+    metadata?: Metadata,
+  ): Promise<SyncStreamsResponse> | Observable<SyncStreamsResponse> | SyncStreamsResponse;
+
+  syncFollowerCounts(
+    request: SyncFollowerCountsRequest,
+    metadata?: Metadata,
+  ): Promise<SyncFollowerCountsResponse> | Observable<SyncFollowerCountsResponse> | SyncFollowerCountsResponse;
 }
 
 export function TwitchBotServiceControllerMethods() {
@@ -160,6 +243,11 @@ export function TwitchBotServiceControllerMethods() {
       "syncClips",
       "syncFollowers",
       "syncMedia",
+      "listFriends",
+      "addFriend",
+      "removeFriend",
+      "syncStreams",
+      "syncFollowerCounts",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

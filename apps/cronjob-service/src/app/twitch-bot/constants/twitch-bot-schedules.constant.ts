@@ -11,4 +11,8 @@ export const TWITCH_BOT_SCHEDULES = {
     PATTERN_ENV: 'TWITCH_FOLLOWERS_SYNC_CRON',
     DEFAULT_PATTERN: '*/30 * * * *',
   },
+  STREAMS_SYNC: {
+    PATTERN_ENV: 'TWITCH_STREAMS_SYNC_CRON',
+    DEFAULT_PATTERN: '* * * * *',
+  },
 } as const;

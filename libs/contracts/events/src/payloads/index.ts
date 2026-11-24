@@ -29,3 +29,6 @@ export * from './twitch-session.payload.js';
 export * from './webhook.payload.js';
 export * from './twitch-unfollow.payload.js';
 export * from './twitch-video.payload.js';
+export * from './twitch-bot-friend.payload.js';
+export * from './twitch-stream-status.payload.js';
+export * from './twitch-follower-count.payload.js';

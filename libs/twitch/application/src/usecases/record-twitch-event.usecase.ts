@@ -35,6 +35,8 @@ import type {
   PresenceTracker,
   SessionTracker,
   MediaRecorder,
+  StreamStatusRecorder,
+  FollowerTotalRecorder,
 } from '../services/index.js';
 
 export class RecordTwitchEventUseCase implements UseCase<
@@ -54,6 +56,8 @@ export class RecordTwitchEventUseCase implements UseCase<
     private readonly counters: CounterRecorder,
     private readonly chatLog: ChatLogRecorder,
     private readonly media: MediaRecorder,
+    private readonly streamStatus: StreamStatusRecorder,
+    private readonly followerTotals: FollowerTotalRecorder,
     private readonly webhooks: DispatchWebhookEventUseCase,
     private readonly liveStatus: LiveStatusReader,
     private readonly feed: TwitchFeed,
@@ -91,6 +95,12 @@ export class RecordTwitchEventUseCase implements UseCase<
     }
     if (input.media) {
       await this.media.record(input.media);
+    }
+    if (input.status) {
+      await this.streamStatus.record(input.status);
+    }
+    if (input.followers) {
+      await this.followerTotals.record(input.followers);
     }
     expectSuccess(await this.webhooks.execute(this.webhookEvent(input.event)));
     return true;
@@ -179,10 +189,11 @@ export class RecordTwitchEventUseCase implements UseCase<
 
   private async notify(input: RecordTwitchEventInput): Promise<void> {
     await this.feed.publishEvent(input.event);
-    if (
-      input.observation &&
-      LIVE_OBSERVATION_KINDS.has(input.observation.kind)
-    ) {
+    const changesLive =
+      Boolean(input.status) ||
+      (input.observation !== null &&
+        LIVE_OBSERVATION_KINDS.has(input.observation.kind));
+    if (changesLive) {
       await this.feed.publishLive(await this.liveStatus.read());
     }
   }

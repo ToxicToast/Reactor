@@ -1,14 +1,14 @@
-import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
+import type { TrackedChannelId } from '@toxictoast/twitch-bot-domain';
 import type { MediaImportLog } from '../interfaces/index.js';
 
 export class InMemoryMediaImportLog implements MediaImportLog {
-  readonly items = new Map<TwitchChannelId, Date>();
+  readonly items = new Map<TrackedChannelId, Date>();
 
-  async isImported(channelId: TwitchChannelId): Promise<boolean> {
+  async isImported(channelId: TrackedChannelId): Promise<boolean> {
     return this.items.has(channelId);
   }
 
-  async markImported(channelId: TwitchChannelId, at: Date): Promise<void> {
+  async markImported(channelId: TrackedChannelId, at: Date): Promise<void> {
     this.items.set(channelId, at);
   }
 }

@@ -5,18 +5,16 @@ import type {
 } from '@toxictoast/shared-application';
 import { Result, type DomainContext } from '@toxictoast/shared-kernel';
 import { TIME_MS } from '@toxictoast/shared-types';
-import type {
-  TwitchChannelAnemic,
-  TwitchChannelRepository,
-} from '@toxictoast/twitch-bot-domain';
+import type { TrackedChannel } from '@toxictoast/twitch-bot-domain';
 import { CLIP_LOOKBACK_HOURS, MEDIA_EVENTS } from '../constants/index.js';
 import type { SyncClipsOutput } from '../data/index.js';
 import { observe, oldestFirst } from '../functions/index.js';
 import type { PublishedLedger, TwitchClipSource } from '../interfaces/index.js';
+import type { TrackedChannels } from '../services/index.js';
 
 export class SyncClipsUseCase implements UseCase<void, SyncClipsOutput> {
   constructor(
-    private readonly channels: TwitchChannelRepository,
+    private readonly channels: TrackedChannels,
     private readonly source: TwitchClipSource,
     private readonly ledger: PublishedLedger,
     private readonly outbox: Outbox,
@@ -27,13 +25,13 @@ export class SyncClipsUseCase implements UseCase<void, SyncClipsOutput> {
 
   async execute(): Promise<Result<SyncClipsOutput>> {
     let created = 0;
-    for (const channel of await this.channels.findConnected()) {
+    for (const channel of await this.channels.list()) {
       created += await this.sync(channel);
     }
     return Result.ok({ created });
   }
 
-  private async sync(channel: TwitchChannelAnemic): Promise<number> {
+  private async sync(channel: TrackedChannel): Promise<number> {
     const since = new Date(
       this.ctx.date.now().getTime() - this.lookbackHours * TIME_MS.HOUR,
     );

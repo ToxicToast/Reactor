@@ -22,4 +22,10 @@ export const StreamSessionSchema = z.object({
   raids: count,
   raid_viewers: count,
   redemptions: count,
+  title: z.string().optional(),
+  game_id: z.string().optional(),
+  game_name: z.string().optional(),
+  viewer_count: count,
+  peak_viewers: count,
+  average_viewers: count,
 });

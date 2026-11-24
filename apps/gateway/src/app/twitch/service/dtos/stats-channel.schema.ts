@@ -7,4 +7,6 @@ export const StatsChannelSchema = z.object({
   live: z.boolean(),
   current_session_id: z.uuid().optional(),
   last_session_at: z.string().optional(),
+  followers: z.number().int().optional(),
+  followers_day: z.string().optional(),
 });

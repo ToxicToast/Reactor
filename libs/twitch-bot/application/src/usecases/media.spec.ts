@@ -2,7 +2,10 @@ import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
 } from '@toxictoast/shared-application/testing';
-import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
+import type {
+  TwitchChannelId,
+  TwitchFriendId,
+} from '@toxictoast/twitch-bot-domain';
 import { TwitchVideoTypes } from '../constants/index.js';
 import {
   createTestContext,
@@ -11,8 +14,10 @@ import {
   InMemoryMediaImportLog,
   InMemoryPublishedLedger,
   InMemoryTwitchChannelRepository,
+  InMemoryTwitchFriendRepository,
   twitchChannelAnemic,
   twitchClip,
+  twitchFriendAnemic,
   twitchVideo,
 } from '../testing/index.js';
 import { ImportMediaUseCase } from './import-media.usecase.js';
@@ -20,6 +25,7 @@ import { RefreshArchiveUseCase } from './refresh-archive.usecase.js';
 import { SyncClipsUseCase } from './sync-clips.usecase.js';
 import { SyncMediaUseCase } from './sync-media.usecase.js';
 import { SyncVideosUseCase } from './sync-videos.usecase.js';
+import { TrackedChannels } from '../services/index.js';
 
 const CHANNEL_ID = 'channel-1' as TwitchChannelId;
 
@@ -33,6 +39,7 @@ describe('Media sync', () => {
   let outbox: InMemoryOutbox;
   let syncMedia: SyncMediaUseCase;
   let refreshArchive: RefreshArchiveUseCase;
+  let friends: InMemoryTwitchFriendRepository;
 
   const keys = (): Array<string> => {
     return outbox.events.map((e) => `${e.event_namespace}:${e.event_name}`);
@@ -42,6 +49,8 @@ describe('Media sync', () => {
     const ctx = createTestContext();
     const uow = new ImmediateUnitOfWork();
     channels = new InMemoryTwitchChannelRepository();
+    friends = new InMemoryTwitchFriendRepository();
+    const tracked = new TrackedChannels(channels, friends);
     clips = new FakeTwitchClipSource();
     videos = new FakeTwitchVideoSource();
     clipLedger = new InMemoryPublishedLedger();
@@ -50,7 +59,7 @@ describe('Media sync', () => {
     outbox = new InMemoryOutbox();
     syncMedia = new SyncMediaUseCase(
       new ImportMediaUseCase(
-        channels,
+        tracked,
         clips,
         videos,
         clipLedger,
@@ -60,8 +69,8 @@ describe('Media sync', () => {
         uow,
         ctx,
       ),
-      new SyncClipsUseCase(channels, clips, clipLedger, outbox, uow, ctx),
-      new SyncVideosUseCase(channels, videos, videoLedger, outbox, uow, ctx),
+      new SyncClipsUseCase(tracked, clips, clipLedger, outbox, uow, ctx),
+      new SyncVideosUseCase(tracked, videos, videoLedger, outbox, uow, ctx),
     );
     refreshArchive = new RefreshArchiveUseCase(
       videos,
@@ -134,5 +143,20 @@ describe('Media sync', () => {
       video_id: 'a1',
       duration_seconds: 7200,
     });
+  });
+
+  it('imports and syncs friends like own channels', async () => {
+    await friends.save(twitchFriendAnemic('friend-1'));
+    clips.clips = [
+      twitchClip('c1', { created_at: new Date('2026-10-26T19:30:00Z') }),
+    ];
+
+    await syncMedia.execute();
+
+    expect(imports.items.has('friend-1' as TwitchFriendId)).toBe(true);
+    const friendClips = outbox.events.filter((event) => {
+      return event.aggregate_id === 'friend-1';
+    });
+    expect(friendClips.length).toBeGreaterThan(0);
   });
 });

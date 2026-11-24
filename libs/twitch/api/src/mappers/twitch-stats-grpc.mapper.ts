@@ -20,6 +20,7 @@ import {
   type StoredPoll,
   type StreamSessionAnemic,
   type Follow,
+  averageViewers,
 } from '@toxictoast/twitch-domain';
 import { pickCounters } from '../functions/pick-counters.function.js';
 import { CHAT_DELETION_REASON_TO_PROTO } from '../constants/index.js';
@@ -33,6 +34,8 @@ export class TwitchStatsGrpcMapper {
       live: channel.live,
       current_session_id: channel.current_session_id ?? undefined,
       last_session_at: toIso(channel.last_session_at),
+      followers: channel.followers ?? undefined,
+      followers_day: channel.followers_day ?? undefined,
     };
   }
 
@@ -49,6 +52,12 @@ export class TwitchStatsGrpcMapper {
       peak_chatters: session.peak_chatters,
       unique_chatters: session.unique_chatters,
       ...pickCounters(SESSION_COUNTER_KEYS, session),
+      title: session.title ?? undefined,
+      game_id: session.game_id ?? undefined,
+      game_name: session.game_name ?? undefined,
+      viewer_count: session.viewer_count,
+      peak_viewers: session.peak_viewers,
+      average_viewers: averageViewers(session),
     };
   }
 
@@ -107,6 +116,9 @@ export class TwitchStatsGrpcMapper {
       session_id: channel.session_id ?? undefined,
       started_at: toIso(channel.started_at),
       chatters: channel.chatters,
+      title: channel.title ?? undefined,
+      game_name: channel.game_name ?? undefined,
+      viewer_count: channel.viewer_count ?? undefined,
     };
   }
 

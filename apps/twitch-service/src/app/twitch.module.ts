@@ -28,6 +28,8 @@ import {
   ListClipsUseCase,
   ListVideosUseCase,
   MediaRecorder,
+  StreamStatusRecorder,
+  FollowerTotalRecorder,
 } from '@toxictoast/twitch-application';
 import { StreamSessionFactory } from '@toxictoast/twitch-domain';
 import {
@@ -169,6 +171,16 @@ const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
       STREAM_SESSION_REPOSITORY,
     ]),
     provideClass(MediaRecorder, [CLIP_REPOSITORY, VIDEO_REPOSITORY]),
+    provideClass(StreamStatusRecorder, [
+      StreamSessionFactory,
+      STREAM_SESSION_REPOSITORY,
+      DomainPersistence,
+    ]),
+    provideClass(FollowerTotalRecorder, [
+      CHANNEL_DIRECTORY_REPOSITORY,
+      CHANNEL_STATS_REPOSITORY,
+      STATS_CONFIG,
+    ]),
 
     // ── Use Cases ───────────────────────────────
     provideClass(RecordTwitchEventUseCase, [
@@ -184,6 +196,8 @@ const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
       CounterRecorder,
       ChatLogRecorder,
       MediaRecorder,
+      StreamStatusRecorder,
+      FollowerTotalRecorder,
       DispatchWebhookEventUseCase,
       LiveStatusReader,
       RedisTwitchFeed,
@@ -204,6 +218,7 @@ const { DOMAIN_CONTEXT, UNIT_OF_WORK, REDIS, REDIS_SUBSCRIBER, CLOCK } = TOKENS;
     provideClass(ListStatsChannelsUseCase, [
       CHANNEL_DIRECTORY_REPOSITORY,
       STREAM_SESSION_REPOSITORY,
+      CHANNEL_STATS_REPOSITORY,
     ]),
     provideClass(GetLiveStatusUseCase, [LiveStatusReader]),
     provideClass(ListSessionsUseCase, [STREAM_SESSION_REPOSITORY]),

@@ -31,6 +31,7 @@ export enum TimelineMetric {
   TIMELINE_METRIC_BITS = "TIMELINE_METRIC_BITS",
   TIMELINE_METRIC_RAIDS = "TIMELINE_METRIC_RAIDS",
   TIMELINE_METRIC_REDEMPTIONS = "TIMELINE_METRIC_REDEMPTIONS",
+  TIMELINE_METRIC_FOLLOWER_TOTAL = "TIMELINE_METRIC_FOLLOWER_TOTAL",
 }
 
 export enum TimelineInterval {
@@ -74,6 +75,8 @@ export interface StatsChannel {
   live: boolean;
   current_session_id?: string | undefined;
   last_session_at?: string | undefined;
+  followers?: number | undefined;
+  followers_day?: string | undefined;
 }
 
 export interface StreamSession {
@@ -96,6 +99,12 @@ export interface StreamSession {
   raids: number;
   raid_viewers: number;
   redemptions: number;
+  title?: string | undefined;
+  game_id?: string | undefined;
+  game_name?: string | undefined;
+  viewer_count: number;
+  peak_viewers: number;
+  average_viewers: number;
 }
 
 export interface LeaderboardEntry {
@@ -143,6 +152,9 @@ export interface LiveChannel {
   session_id?: string | undefined;
   started_at?: string | undefined;
   chatters: number;
+  title?: string | undefined;
+  game_name?: string | undefined;
+  viewer_count?: number | undefined;
 }
 
 export interface TwitchEvent {

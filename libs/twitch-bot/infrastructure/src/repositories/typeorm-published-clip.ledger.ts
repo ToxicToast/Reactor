@@ -1,6 +1,6 @@
 import type { TransactionContext } from '@toxictoast/shared-persistence';
 import type { Clock } from '@toxictoast/shared-kernel';
-import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
+import type { TrackedChannelId } from '@toxictoast/twitch-bot-domain';
 import type { DataSource } from 'typeorm';
 import type { TwitchPublishedClipRow } from '../interfaces/index.js';
 import { TwitchPublishedClipSchema } from '../schemas/index.js';
@@ -16,7 +16,7 @@ export class TypeOrmPublishedClipLedger extends TypeOrmPublishedLedger<TwitchPub
   }
 
   protected rowOf(
-    channelId: TwitchChannelId,
+    channelId: TrackedChannelId,
     id: string,
     publishedAt: Date,
   ): TwitchPublishedClipRow {

@@ -8,7 +8,9 @@ import {
   type SyncChattersResponse,
   type SyncMediaResponse,
   type SyncFollowersResponse,
+  type SyncStreamsResponse,
   type TwitchBotServiceClient,
+  SyncFollowerCountsResponse,
 } from '@toxictoast/contracts-grpc';
 import type { DomainContext } from '@toxictoast/shared-kernel';
 import { GrpcServiceClient, TOKENS } from '@toxictoast/shared-nest';
@@ -45,6 +47,8 @@ export class TwitchBotProcessor extends SystemJobProcessor {
         return this.syncMedia();
       case TwitchBotJobs.FOLLOWERS_SYNC:
         return this.syncFollowers();
+      case TwitchBotJobs.STREAMS_SYNC:
+        return this.syncStreams();
       default:
         return this.unknownJob(job);
     }
@@ -85,7 +89,9 @@ export class TwitchBotProcessor extends SystemJobProcessor {
     return response;
   }
 
-  private async syncFollowers(): Promise<SyncFollowersResponse> {
+  private async syncFollowers(): Promise<
+    SyncFollowersResponse & SyncFollowerCountsResponse
+  > {
     const response = await firstValueFrom(
       this.twitch.service.syncFollowers(
         {},
@@ -95,6 +101,27 @@ export class TwitchBotProcessor extends SystemJobProcessor {
     if (response.followed > 0 || response.unfollowed > 0) {
       this.logger.log(
         `Followers synced: ${response.followed} found, ${response.unfollowed} unfollowed`,
+      );
+    }
+    const counts = await firstValueFrom(
+      this.twitch.service.syncFollowerCounts(
+        {},
+        this.metadataFor([TwitchBotPermission.SYNC]),
+      ),
+    );
+    return { ...response, ...counts };
+  }
+
+  private async syncStreams(): Promise<SyncStreamsResponse> {
+    const response = await firstValueFrom(
+      this.twitch.service.syncStreams(
+        {},
+        this.metadataFor([TwitchBotPermission.SYNC]),
+      ),
+    );
+    if (response.online > 0 || response.offline > 0) {
+      this.logger.log(
+        `Streams synced: ${response.online} went online, ${response.offline} went offline`,
       );
     }
     return response;

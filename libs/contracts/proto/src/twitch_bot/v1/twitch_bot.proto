@@ -11,6 +11,11 @@ service TwitchBotService {
   rpc SyncClips(SyncClipsRequest) returns (SyncClipsResponse);
   rpc SyncFollowers(SyncFollowersRequest) returns (SyncFollowersResponse);
   rpc SyncMedia(SyncMediaRequest) returns (SyncMediaResponse);
+  rpc ListFriends(ListFriendsRequest) returns (ListFriendsResponse);
+  rpc AddFriend(AddFriendRequest) returns (AddFriendResponse);
+  rpc RemoveFriend(RemoveFriendRequest) returns (RemoveFriendResponse);
+  rpc SyncStreams(SyncStreamsRequest) returns (SyncStreamsResponse);
+  rpc SyncFollowerCounts(SyncFollowerCountsRequest) returns (SyncFollowerCountsResponse);
 }
 
 message Channel {
@@ -84,4 +89,50 @@ message SyncMediaResponse {
   int32 imported_videos = 2;
   int32 created_clips = 3;
   int32 created_videos = 4;
+}
+
+
+message Friend {
+  string id = 1;
+  string twitch_id = 2;
+  string login = 3;
+  string display_name = 4;
+  string created_at = 5;
+  optional string updated_at = 6;
+}
+
+message ListFriendsRequest {}
+
+message ListFriendsResponse {
+  repeated Friend friends = 1;
+}
+
+message AddFriendRequest {
+  string login = 1;
+}
+
+message AddFriendResponse {
+  Friend friend = 1;
+}
+
+message RemoveFriendRequest {
+  string id = 1;
+}
+
+message RemoveFriendResponse {
+  Friend friend = 1;
+}
+
+message SyncStreamsRequest {}
+
+message SyncStreamsResponse {
+  int32 live = 1;
+  int32 online = 2;
+  int32 offline = 3;
+}
+
+message SyncFollowerCountsRequest {}
+
+message SyncFollowerCountsResponse {
+  int32 counted = 1;
 }

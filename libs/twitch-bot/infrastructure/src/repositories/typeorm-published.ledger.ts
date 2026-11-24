@@ -5,7 +5,7 @@ import {
 } from '@toxictoast/shared-persistence';
 import type { Clock } from '@toxictoast/shared-kernel';
 import type { PublishedLedger } from '@toxictoast/twitch-bot-application';
-import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
+import type { TrackedChannelId } from '@toxictoast/twitch-bot-domain';
 import type { DataSource, EntitySchema, ObjectLiteral } from 'typeorm';
 
 export abstract class TypeOrmPublishedLedger<TRow extends ObjectLiteral>
@@ -22,7 +22,7 @@ export abstract class TypeOrmPublishedLedger<TRow extends ObjectLiteral>
   }
 
   protected abstract rowOf(
-    channelId: TwitchChannelId,
+    channelId: TrackedChannelId,
     id: string,
     publishedAt: Date,
   ): TRow;
@@ -30,7 +30,7 @@ export abstract class TypeOrmPublishedLedger<TRow extends ObjectLiteral>
   protected abstract idOf(row: TRow): string;
 
   async markPublished(
-    channelId: TwitchChannelId,
+    channelId: TrackedChannelId,
     ids: ReadonlyArray<string>,
   ): Promise<Array<string>> {
     const publishedAt = this.clock.now();

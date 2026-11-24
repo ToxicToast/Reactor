@@ -22,6 +22,8 @@ import {
   PresenceTracker,
   SessionTracker,
   MediaRecorder,
+  StreamStatusRecorder,
+  FollowerTotalRecorder,
 } from '../services/index.js';
 import type { ChatChange } from '../types/index.js';
 import { RecordTwitchEventUseCase } from '../usecases/index.js';
@@ -108,6 +110,12 @@ export class TwitchTestHarness {
     ),
     new ChatLogRecorder(this.chatMessages, this.sessions),
     new MediaRecorder(this.clips, this.videos),
+    new StreamStatusRecorder(
+      this.sessionFactory,
+      this.sessions,
+      this.persistence,
+    ),
+    new FollowerTotalRecorder(this.directory, this.channelStats, this.config),
     new DispatchWebhookEventUseCase(
       new WebhookDeliveryFactory(this.ctx),
       this.webhooks,

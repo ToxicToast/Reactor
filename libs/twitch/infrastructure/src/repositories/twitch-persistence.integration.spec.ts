@@ -1,6 +1,7 @@
 import { TWITCH_TEST_CHANNEL } from '@toxictoast/twitch-application/testing';
 import type { Nullable } from '@toxictoast/shared-types';
 import {
+  EMPTY_SESSION_STATUS,
   SESSION_COUNTER_KEYS,
   StatsIntervals,
   zeroCounters,
@@ -43,6 +44,7 @@ const session = (
     duration_seconds: null,
     ...zeroCounters(SESSION_COUNTER_KEYS),
     peak_chatters: 0,
+    ...EMPTY_SESSION_STATUS,
     unique_chatters: 0,
     created_at: startedAt,
     updated_at: null,

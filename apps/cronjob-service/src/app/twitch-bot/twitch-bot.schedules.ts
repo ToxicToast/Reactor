@@ -36,6 +36,12 @@ export class TwitchBotSchedules extends JobSchedules {
         defaultPattern: TWITCH_BOT_SCHEDULES.FOLLOWERS_SYNC.DEFAULT_PATTERN,
         attempts: TWITCH_BOT_JOB_ATTEMPTS.SYNC,
       },
+      {
+        name: TwitchBotJobs.STREAMS_SYNC,
+        patternEnv: TWITCH_BOT_SCHEDULES.STREAMS_SYNC.PATTERN_ENV,
+        defaultPattern: TWITCH_BOT_SCHEDULES.STREAMS_SYNC.DEFAULT_PATTERN,
+        attempts: TWITCH_BOT_JOB_ATTEMPTS.SYNC,
+      },
     ];
   }
 }

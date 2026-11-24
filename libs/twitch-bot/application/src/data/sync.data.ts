@@ -1,4 +1,4 @@
-import type { TwitchChannelAnemic } from '@toxictoast/twitch-bot-domain';
+import type { TrackedChannel } from '@toxictoast/twitch-bot-domain';
 
 export interface SyncChattersOutput {
   readonly joined: number;
@@ -31,5 +31,16 @@ export interface SyncMediaOutput {
 }
 
 export interface RefreshArchiveInput {
-  readonly channel: TwitchChannelAnemic;
+  readonly channel: TrackedChannel;
+}
+
+export interface SyncStreamsOutput {
+  /** Channels, die gerade live sind (eigene und Freunde) */
+  readonly live: number;
+  readonly online: number;
+  readonly offline: number;
+}
+
+export interface SyncFollowerCountsOutput {
+  readonly counted: number;
 }

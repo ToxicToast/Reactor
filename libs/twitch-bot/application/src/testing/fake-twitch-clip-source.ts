@@ -1,5 +1,5 @@
 import type { Optional } from '@toxictoast/shared-types';
-import type { TwitchChannelAnemic } from '@toxictoast/twitch-bot-domain';
+import type { TrackedChannel } from '@toxictoast/twitch-bot-domain';
 import type { TwitchClip, TwitchClipSource } from '../interfaces/index.js';
 
 export class FakeTwitchClipSource implements TwitchClipSource {
@@ -11,7 +11,7 @@ export class FakeTwitchClipSource implements TwitchClipSource {
   }> = [];
 
   async listClips(
-    channel: TwitchChannelAnemic,
+    channel: TrackedChannel,
     since: Date,
     until?: Optional<Date>,
   ): Promise<Array<TwitchClip>> {

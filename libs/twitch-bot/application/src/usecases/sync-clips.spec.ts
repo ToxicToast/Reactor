@@ -11,8 +11,10 @@ import {
   TEST_NOW,
   twitchChannelAnemic,
   twitchClip,
+  InMemoryTwitchFriendRepository,
 } from '../testing/index.js';
 import { SyncClipsUseCase } from './sync-clips.usecase.js';
+import { TrackedChannels } from '../services/index.js';
 
 const CHANNEL_ID = 'channel-1' as TwitchChannelId;
 
@@ -22,14 +24,17 @@ describe('SyncClipsUseCase', () => {
   let ledger: InMemoryPublishedClipLedger;
   let outbox: InMemoryOutbox;
   let useCase: SyncClipsUseCase;
+  let friends: InMemoryTwitchFriendRepository;
 
   beforeEach(async () => {
     channels = new InMemoryTwitchChannelRepository();
+    friends = new InMemoryTwitchFriendRepository();
+    const tracked = new TrackedChannels(channels, friends);
     source = new FakeTwitchClipSource();
     ledger = new InMemoryPublishedClipLedger();
     outbox = new InMemoryOutbox();
     useCase = new SyncClipsUseCase(
-      channels,
+      tracked,
       source,
       ledger,
       outbox,

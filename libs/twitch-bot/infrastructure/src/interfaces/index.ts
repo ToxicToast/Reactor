@@ -10,3 +10,5 @@ export * from './active-subscription.interface.js';
 export * from './twitch-bot-metrics.interface.js';
 export * from './twitch-socket-state.interface.js';
 export * from './twitch-credentials-status.interface.js';
+export * from './twitch-friend-row.interface.js';
+export * from './twitch-live-stream-row.interface.js';
