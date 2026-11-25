@@ -26,7 +26,7 @@
     "@toxictoast/security-domain": "*",
     "@toxictoast/shared-grpc": "*",
     "@toxictoast/shared-kernel": "*",
-    "@nestjs/common": "^11.0.0"
+    "@nestjs/common": "^12.0.0"
   },
   "devDependencies": {
     "@toxictoast/shared-application": "*"
