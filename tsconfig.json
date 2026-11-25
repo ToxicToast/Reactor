@@ -158,6 +158,9 @@
     },
     {
       "path": "./apps/shortener-service"
+    },
+    {
+      "path": "./libs/shared/geoip"
     }
   ],
   "compilerOptions": {}
