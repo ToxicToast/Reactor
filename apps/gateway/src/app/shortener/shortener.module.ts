@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import {
   GRPC_CLIENT_ENV,
   SHORTENER_GRPC_CLIENT,
@@ -8,11 +8,16 @@ import {
   SHORTENER_PROTO_FILES,
 } from '@toxictoast/contracts-proto';
 import {
+  countryLookupFromEnv,
+  type CountryLookup,
+} from '@toxictoast/shared-geoip';
+import {
   GrpcClientModule,
   provideClass,
   TOKENS,
 } from '@toxictoast/shared-nest';
-import { CorrelationContext } from '@toxictoast/shared-system';
+import { CorrelationContext, describeError } from '@toxictoast/shared-system';
+import { GATEWAY_TOKENS } from '../constants/index.js';
 import { GrpcModule } from '../grpc/grpc.module.js';
 import { RequestMetadata } from '../grpc/services/index.js';
 import {
@@ -34,11 +39,24 @@ import { LinkClickReporter } from './services/index.js';
   ],
   controllers: [LinkRedirectController, LinksController],
   providers: [
+    {
+      provide: GATEWAY_TOKENS.COUNTRY_LOOKUP,
+      useFactory: (): Promise<CountryLookup> => {
+        const logger = new Logger('GeoIp');
+        return countryLookupFromEnv((error) => {
+          logger.warn(
+            'GeoIP database unavailable, clicks are stored without country',
+            describeError(error),
+          );
+        });
+      },
+    },
     provideClass(LinkGateway, [SHORTENER_GRPC_CLIENT, RequestMetadata]),
     provideClass(LinkClickReporter, [
       TOKENS.EVENT_PUBLISHER,
       TOKENS.DOMAIN_CONTEXT,
       CorrelationContext,
+      GATEWAY_TOKENS.COUNTRY_LOOKUP,
     ]),
   ],
 })

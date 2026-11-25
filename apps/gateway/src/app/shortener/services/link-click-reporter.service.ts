@@ -4,6 +4,7 @@ import {
   ShortenerTopics,
   type ShortenerClickPayloadV1,
 } from '@toxictoast/contracts-events';
+import type { CountryLookup } from '@toxictoast/shared-geoip';
 import { ActorType, type DomainContext } from '@toxictoast/shared-kernel';
 import type { EventPublisher } from '@toxictoast/shared-messaging';
 import {
@@ -21,6 +22,7 @@ export class LinkClickReporter {
     private readonly publisher: EventPublisher,
     private readonly ctx: DomainContext,
     private readonly correlations: CorrelationContext,
+    private readonly countries: CountryLookup,
   ) {}
 
   report(linkId: string, request: Request): void {
@@ -32,7 +34,8 @@ export class LinkClickReporter {
       link_id: linkId,
       referer: this.header(request, 'referer'),
       user_agent: this.header(request, 'user-agent'),
-      country: null,
+      // die IP dient nur dem Nachschlagen und verlässt das Gateway nie
+      country: this.countries.countryOf(request.ip ?? null),
     };
 
     this.publisher
