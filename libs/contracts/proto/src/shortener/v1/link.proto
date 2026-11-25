@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package shortener.v1;
+
+service LinkService {
+  rpc CreateLink(CreateLinkRequest) returns (CreateLinkResponse);
+  rpc UpdateLink(UpdateLinkRequest) returns (UpdateLinkResponse);
+  rpc DeleteLink(DeleteLinkRequest) returns (DeleteLinkResponse);
+  rpc RestoreLink(RestoreLinkRequest) returns (RestoreLinkResponse);
+  rpc GetLink(GetLinkRequest) returns (GetLinkResponse);
+  rpc ListLinks(ListLinksRequest) returns (ListLinksResponse);
+  /** öffentlich für den Redirect; nur aktive, nicht gelöschte Links */
+  rpc ResolveLink(ResolveLinkRequest) returns (ResolveLinkResponse);
+}
+
+message Link {
+  string id = 1;
+  string target_url = 2;
+  optional string description = 3;
+  bool active = 4;
+  string created_at = 5;
+  optional string updated_at = 6;
+  optional string deleted_at = 7;
+}
+
+message CreateLinkRequest {
+  string target_url = 1;
+  optional string description = 2;
+}
+
+message CreateLinkResponse {
+  Link link = 1;
+}
+
+message UpdateLinkRequest {
+  string id = 1;
+  string target_url = 2;
+  optional string description = 3;
+  bool active = 4;
+}
+
+message UpdateLinkResponse {
+  Link link = 1;
+}
+
+message DeleteLinkRequest {
+  string id = 1;
+}
+
+message DeleteLinkResponse {
+  Link link = 1;
+}
+
+message RestoreLinkRequest {
+  string id = 1;
+}
+
+message RestoreLinkResponse {
+  Link link = 1;
+}
+
+message GetLinkRequest {
+  string id = 1;
+  bool with_deleted = 2;
+}
+
+message GetLinkResponse {
+  Link link = 1;
+}
+
+message ListLinksRequest {
+  optional int32 limit = 1;
+  optional int32 offset = 2;
+  bool with_deleted = 3;
+}
+
+message ListLinksResponse {
+  repeated Link links = 1;
+}
+
+message ResolveLinkRequest {
+  string id = 1;
+}
+
+message ResolveLinkResponse {
+  string target_url = 1;
+}

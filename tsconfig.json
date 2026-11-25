@@ -149,6 +149,15 @@
     },
     {
       "path": "./libs/shortener/application"
+    },
+    {
+      "path": "./libs/shortener/infrastructure"
+    },
+    {
+      "path": "./libs/shortener/api"
+    },
+    {
+      "path": "./apps/shortener-service"
     }
   ],
   "compilerOptions": {}

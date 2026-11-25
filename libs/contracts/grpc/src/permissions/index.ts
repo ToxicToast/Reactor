@@ -4,3 +4,4 @@ export * from './audit-permission.constant.js';
 export * from './twitch-bot-permission.constant.js';
 export * from './twitch-permission.constant.js';
 export * from './cronjob-permission.constant.js';
+export * from './shortener-permission.constant.js';
