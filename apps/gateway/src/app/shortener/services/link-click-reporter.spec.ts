@@ -1,0 +1,60 @@
+import type { DomainContext } from '@toxictoast/shared-kernel';
+import type { EventPublisher } from '@toxictoast/shared-messaging';
+import { CorrelationContext } from '@toxictoast/shared-system';
+import type { Request } from 'express';
+import { LinkClickReporter } from './link-click-reporter.service.js';
+
+const LINK_ID = '0192f3a0-0000-7000-8000-00000000d001';
+
+describe('LinkClickReporter', () => {
+  let publish: jest.Mock;
+  let reporter: LinkClickReporter;
+
+  beforeEach(() => {
+    publish = jest.fn().mockResolvedValue(undefined);
+    const ctx = {
+      id: { generate: () => 'event-1' },
+      date: { now: () => new Date('2026-11-25T12:00:00Z') },
+    } as unknown as DomainContext;
+    reporter = new LinkClickReporter(
+      { publish } as unknown as EventPublisher,
+      ctx,
+      new CorrelationContext(),
+    );
+  });
+
+  it('publishes referer and user agent but never the ip', () => {
+    reporter.report(LINK_ID, {
+      ip: '203.0.113.7',
+      headers: {
+        referer: 'https://www.instagram.com/',
+        'user-agent': 'Mozilla/5.0 (iPhone)',
+      },
+    } as unknown as Request);
+
+    const [[events]] = publish.mock.calls;
+    expect(events[0]).toMatchObject({
+      event_namespace: 'shortener.click',
+      event_name: 'clicked',
+      aggregate_id: LINK_ID,
+      actor: { type: 'anonymous', id: null, ip: null },
+      payload: {
+        link_id: LINK_ID,
+        referer: 'https://www.instagram.com/',
+        user_agent: 'Mozilla/5.0 (iPhone)',
+        country: null,
+      },
+    });
+    expect(JSON.stringify(events[0])).not.toContain('203.0.113.7');
+  });
+
+  it('sends null for missing headers', () => {
+    reporter.report(LINK_ID, { headers: {} } as unknown as Request);
+
+    const [[events]] = publish.mock.calls;
+    expect(events[0].payload).toMatchObject({
+      referer: null,
+      user_agent: null,
+    });
+  });
+});

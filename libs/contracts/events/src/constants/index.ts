@@ -35,3 +35,5 @@ export * from './twitch-video-types.constant.js';
 export * from './twitch-bot-friend-events.constant.js';
 export * from './shortener-topics.constant.js';
 export * from './shortener-link-events.constant.js';
+export * from './shortener-click-events.constant.js';
+export * from './shortener-topic-retention.constant.js';
