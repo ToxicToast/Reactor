@@ -1,7 +1,7 @@
 import type { StoredPoll } from '@toxictoast/twitch-domain';
 import { EntitySchema } from 'typeorm';
 import { TWITCH_COLUMNS } from '../constants/index.js';
-import { primaryColumn } from '../functions/index.js';
+import { primaryColumn } from '@toxictoast/shared-persistence';
 import {
   externalIdColumn,
   titleColumn,

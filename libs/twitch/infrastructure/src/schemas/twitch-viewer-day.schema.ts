@@ -1,6 +1,6 @@
 import { VIEWER_COUNTER_KEYS } from '@toxictoast/twitch-domain';
 import { EntitySchema } from 'typeorm';
-import { counterColumns, primaryColumn } from '../functions/index.js';
+import { counterColumns, primaryColumn } from '@toxictoast/shared-persistence';
 import type { ViewerDayRow } from '../interfaces/index.js';
 import { dayColumn, twitchIdColumn } from './twitch.columns.js';
 

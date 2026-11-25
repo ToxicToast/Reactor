@@ -1,5 +1,8 @@
 import {
+  columnOf,
+  incrementCounters,
   TypeOrmTableRepository,
+  whereWithin,
   type TransactionContext,
 } from '@toxictoast/shared-persistence';
 import type {
@@ -11,11 +14,6 @@ import type {
   ViewerStatsRepository,
 } from '@toxictoast/twitch-domain';
 import type { DataSource } from 'typeorm';
-import {
-  columnOf,
-  incrementCounters,
-  whereWithin,
-} from '../functions/index.js';
 import type { ViewerDayRow } from '../interfaces/index.js';
 import { TwitchViewerDaySchema, TwitchViewerSchema } from '../schemas/index.js';
 

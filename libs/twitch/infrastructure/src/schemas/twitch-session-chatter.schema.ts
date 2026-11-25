@@ -1,5 +1,5 @@
 import { EntitySchema } from 'typeorm';
-import { primaryColumn } from '../functions/index.js';
+import { primaryColumn } from '@toxictoast/shared-persistence';
 import type { SessionChatterRow } from '../interfaces/index.js';
 import { twitchIdColumn } from './twitch.columns.js';
 

@@ -1,5 +1,6 @@
 import {
   TypeOrmTableRepository,
+  whereWithin,
   type TransactionContext,
 } from '@toxictoast/shared-persistence';
 import type { Optional } from '@toxictoast/shared-types';
@@ -10,7 +11,6 @@ import type {
   StoredPoll,
 } from '@toxictoast/twitch-domain';
 import type { DataSource } from 'typeorm';
-import { whereWithin } from '../functions/index.js';
 import { TwitchPollSchema } from '../schemas/index.js';
 
 export class TypeOrmPollRepository

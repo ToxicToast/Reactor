@@ -1,4 +1,5 @@
 import {
+  insertOnce,
   TypeOrmTableRepository,
   type TransactionContext,
 } from '@toxictoast/shared-persistence';
@@ -7,7 +8,6 @@ import type {
   TwitchEventLog,
 } from '@toxictoast/twitch-application';
 import type { DataSource } from 'typeorm';
-import { insertOnce } from '../functions/index.js';
 import { TwitchEventSchema } from '../schemas/index.js';
 
 export class TypeOrmTwitchEventLog

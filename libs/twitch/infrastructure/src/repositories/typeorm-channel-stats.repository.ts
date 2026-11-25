@@ -1,5 +1,9 @@
 import {
+  columnOf,
+  incrementCounters,
+  raiseCounter,
   TypeOrmTableRepository,
+  whereWithin,
   type TransactionContext,
 } from '@toxictoast/shared-persistence';
 import type { Nullable } from '@toxictoast/shared-types';
@@ -15,12 +19,6 @@ import {
   type TimelinePoint,
 } from '@toxictoast/twitch-domain';
 import type { DataSource } from 'typeorm';
-import {
-  columnOf,
-  incrementCounters,
-  raiseCounter,
-  whereWithin,
-} from '../functions/index.js';
 import type { ChannelDayRow } from '../interfaces/index.js';
 import { TwitchChannelDaySchema } from '../schemas/index.js';
 

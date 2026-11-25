@@ -1,9 +1,8 @@
 import type { UseCase } from '@toxictoast/shared-application';
-import { Result, ValidationError } from '@toxictoast/shared-kernel';
-import {
-  statsDayOf,
-  type ChannelStatsRepository,
-  type TimelinePoint,
+import { Result, statsDayOf, ValidationError } from '@toxictoast/shared-kernel';
+import type {
+  ChannelStatsRepository,
+  TimelinePoint,
 } from '@toxictoast/twitch-domain';
 import type { GetTimelineInput } from '../data/index.js';
 import type { TwitchStatsConfig } from '../interfaces/index.js';

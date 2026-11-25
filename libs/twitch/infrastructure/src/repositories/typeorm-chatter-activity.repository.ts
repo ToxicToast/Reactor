@@ -1,4 +1,5 @@
 import {
+  insertOnce,
   TypeOrmTableRepository,
   type TransactionContext,
 } from '@toxictoast/shared-persistence';
@@ -7,7 +8,6 @@ import type {
   StreamSessionId,
 } from '@toxictoast/twitch-domain';
 import type { DataSource } from 'typeorm';
-import { insertOnce } from '../functions/index.js';
 import type { ChatterDayRow } from '../interfaces/index.js';
 import {
   TwitchChatterDaySchema,

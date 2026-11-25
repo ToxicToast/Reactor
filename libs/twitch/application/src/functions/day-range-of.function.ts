@@ -1,8 +1,5 @@
-import {
-  statsDayOf,
-  type DayRange,
-  type StatsRange,
-} from '@toxictoast/twitch-domain';
+import { statsDayOf } from '@toxictoast/shared-kernel';
+import type { DayRange, StatsRange } from '@toxictoast/twitch-domain';
 
 export const dayRangeOf = (range: StatsRange, timeZone: string): DayRange => {
   return {

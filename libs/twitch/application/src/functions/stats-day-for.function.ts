@@ -1,8 +1,6 @@
+import { statsDayOf } from '@toxictoast/shared-kernel';
 import type { Nullable } from '@toxictoast/shared-types';
-import {
-  statsDayOf,
-  type StreamSessionAnemic,
-} from '@toxictoast/twitch-domain';
+import type { StreamSessionAnemic } from '@toxictoast/twitch-domain';
 
 export const statsDayFor = (
   occurredAt: Date,

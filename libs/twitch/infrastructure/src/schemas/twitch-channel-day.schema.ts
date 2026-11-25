@@ -4,7 +4,7 @@ import {
   PEAK_CHATTERS_METRIC,
 } from '@toxictoast/twitch-domain';
 import { EntitySchema } from 'typeorm';
-import { counterColumns, primaryColumn } from '../functions/index.js';
+import { counterColumns, primaryColumn } from '@toxictoast/shared-persistence';
 import type { ChannelDayRow } from '../interfaces/index.js';
 import { dayColumn, twitchIdColumn } from './twitch.columns.js';
 

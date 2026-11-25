@@ -1,5 +1,7 @@
 import {
+  incrementCounters,
   TypeOrmTableRepository,
+  whereWithin,
   type TransactionContext,
 } from '@toxictoast/shared-persistence';
 import type {
@@ -9,7 +11,6 @@ import type {
   RewardStatsRepository,
 } from '@toxictoast/twitch-domain';
 import type { DataSource } from 'typeorm';
-import { incrementCounters, whereWithin } from '../functions/index.js';
 import type { RawRewardStat, RewardDayRow } from '../interfaces/index.js';
 import { TwitchRewardDaySchema, TwitchRewardSchema } from '../schemas/index.js';
 

@@ -1,4 +1,5 @@
 import {
+  insertOnce,
   TypeOrmTableRepository,
   type TransactionContext,
 } from '@toxictoast/shared-persistence';
@@ -11,7 +12,6 @@ import {
   type ViewerRef,
 } from '@toxictoast/twitch-domain';
 import type { DataSource } from 'typeorm';
-import { insertOnce } from '../functions/index.js';
 import { TwitchFollowSchema } from '../schemas/index.js';
 
 export class TypeOrmFollowRepository
