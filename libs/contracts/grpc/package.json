@@ -21,7 +21,7 @@
     ]
   },
   "dependencies": {
-    "@nestjs/microservices": "^11.2.7",
+    "@nestjs/microservices": "^12.0.0",
     "@grpc/grpc-js": "^1.14.6",
     "rxjs": "^7.8.2"
   }
