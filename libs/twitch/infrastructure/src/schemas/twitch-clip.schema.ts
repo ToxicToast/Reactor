@@ -1,6 +1,6 @@
 import type { Clip } from '@toxictoast/twitch-domain';
 import { EntitySchema } from 'typeorm';
-import { primaryColumn } from '../functions/index.js';
+import { primaryColumn } from '@toxictoast/shared-persistence';
 import {
   externalIdColumn,
   nameColumn,

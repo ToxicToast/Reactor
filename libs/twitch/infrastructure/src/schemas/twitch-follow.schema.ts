@@ -1,6 +1,6 @@
 import type { Follow } from '@toxictoast/twitch-domain';
 import { EntitySchema } from 'typeorm';
-import { primaryColumn } from '../functions/index.js';
+import { primaryColumn } from '@toxictoast/shared-persistence';
 import { twitchIdColumn, viewerColumns } from './twitch.columns.js';
 
 export const TwitchFollowSchema = new EntitySchema<Follow>({

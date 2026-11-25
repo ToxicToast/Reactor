@@ -143,6 +143,24 @@
     },
     {
       "path": "./apps/twitch-service"
+    },
+    {
+      "path": "./libs/shortener/domain"
+    },
+    {
+      "path": "./libs/shortener/application"
+    },
+    {
+      "path": "./libs/shortener/infrastructure"
+    },
+    {
+      "path": "./libs/shortener/api"
+    },
+    {
+      "path": "./apps/shortener-service"
+    },
+    {
+      "path": "./libs/shared/geoip"
     }
   ],
   "compilerOptions": {}

@@ -214,6 +214,15 @@ const workspaceConfig = [
                 'scope:types',
               ],
             },
+            {
+              sourceTag: 'scope:shortener',
+              onlyDependOnLibsWithTags: [
+                'scope:shortener',
+                'scope:contracts',
+                'scope:shared',
+                'scope:types',
+              ],
+            },
           ],
         },
       ],

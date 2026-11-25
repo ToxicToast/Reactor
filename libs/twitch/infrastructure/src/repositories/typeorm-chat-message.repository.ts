@@ -1,5 +1,7 @@
 import {
+  insertOnce,
   TypeOrmTableRepository,
+  whereWithin,
   type TransactionContext,
 } from '@toxictoast/shared-persistence';
 import type { Optional } from '@toxictoast/shared-types';
@@ -10,7 +12,6 @@ import type {
   ChatMessageRepository,
 } from '@toxictoast/twitch-domain';
 import type { DataSource, ObjectLiteral } from 'typeorm';
-import { insertOnce, whereWithin } from '../functions/index.js';
 import { TwitchChatMessageSchema } from '../schemas/index.js';
 import { CHAT_SEARCH } from '../constants/index.js';
 

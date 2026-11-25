@@ -1,5 +1,5 @@
 import { EntitySchema } from 'typeorm';
-import { counterColumns, primaryColumn } from '../functions/index.js';
+import { counterColumns, primaryColumn } from '@toxictoast/shared-persistence';
 import type { RewardDayRow } from '../interfaces/index.js';
 import {
   dayColumn,

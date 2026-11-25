@@ -8,6 +8,8 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import {
   SECURITY_TOPIC_RETENTION_MS,
   SecurityTopics,
+  SHORTENER_TOPIC_RETENTION_MS,
+  ShortenerTopics,
 } from '@toxictoast/contracts-events';
 import {
   HealthModule,
@@ -30,6 +32,7 @@ import { BanAdminModule } from './security/bans/ban-admin.module.js';
 import { AuditAdminModule } from './audit/audit-admin.module.js';
 import { TwitchAdminModule } from './twitch/twitch-admin.module.js';
 import { TwitchServiceModule } from './twitch/service/twitch-service.module.js';
+import { ShortenerModule } from './shortener/shortener.module.js';
 
 @Module({
   imports: [
@@ -50,8 +53,11 @@ import { TwitchServiceModule } from './twitch/service/twitch-service.module.js';
           };
         },
       },
-      topics: [SecurityTopics.ACCESS],
-      topicRetentionMs: SECURITY_TOPIC_RETENTION_MS,
+      topics: [SecurityTopics.ACCESS, ShortenerTopics.CLICK],
+      topicRetentionMs: {
+        ...SECURITY_TOPIC_RETENTION_MS,
+        ...SHORTENER_TOPIC_RETENTION_MS,
+      },
     }),
     BanListModule,
     AccessReportModule,
@@ -62,6 +68,7 @@ import { TwitchServiceModule } from './twitch/service/twitch-service.module.js';
     AuditAdminModule,
     TwitchAdminModule,
     TwitchServiceModule,
+    ShortenerModule,
   ],
   providers: [
     // ── Auth ────────────────────────────────────

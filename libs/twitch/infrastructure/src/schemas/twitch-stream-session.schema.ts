@@ -1,7 +1,7 @@
 import { anemicColumns } from '@toxictoast/shared-persistence';
 import { SESSION_COUNTER_KEYS } from '@toxictoast/twitch-domain';
 import { EntitySchema } from 'typeorm';
-import { counterColumns } from '../functions/index.js';
+import { counterColumns } from '@toxictoast/shared-persistence';
 import type { StreamSessionRow } from '../interfaces/index.js';
 import { channelColumns, externalIdColumn } from './twitch.columns.js';
 

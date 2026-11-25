@@ -1,0 +1,3 @@
+export const SHORTENER_ENV = {
+  STATS_TIME_ZONE: 'SHORTENER_STATS_TIME_ZONE',
+} as const;

@@ -1,6 +1,6 @@
 import type { RecordedTwitchEvent } from '@toxictoast/twitch-application';
 import { EntitySchema } from 'typeorm';
-import { primaryColumn } from '../functions/index.js';
+import { primaryColumn } from '@toxictoast/shared-persistence';
 import {
   externalIdColumn,
   keyPartColumn,

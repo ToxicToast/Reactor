@@ -45,3 +45,11 @@ export const TWITCH_PACKAGE = 'twitch.v1';
 export const TWITCH_PROTO_FILES = ['twitch/v1/twitch.proto'].map((file) =>
   join(PROTO_ROOT, file),
 );
+
+/* --------------------- */
+
+export const SHORTENER_PACKAGE = 'shortener.v1';
+
+export const SHORTENER_PROTO_FILES = ['shortener/v1/link.proto'].map((file) =>
+  join(PROTO_ROOT, file),
+);

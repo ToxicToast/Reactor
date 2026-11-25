@@ -1,5 +1,6 @@
 import {
   insertMissing,
+  quoteIdentifier,
   TypeOrmTableRepository,
   type TransactionContext,
 } from '@toxictoast/shared-persistence';
@@ -9,7 +10,6 @@ import type {
   PresenceRepository,
 } from '@toxictoast/twitch-domain';
 import type { DataSource } from 'typeorm';
-import { quoteIdentifier } from '../functions/index.js';
 import type { PresenceRow } from '../interfaces/index.js';
 import { TwitchPresenceSchema } from '../schemas/index.js';
 

@@ -1,6 +1,6 @@
 import type { KnownChannel } from '@toxictoast/twitch-domain';
 import { EntitySchema } from 'typeorm';
-import { primaryColumn } from '../functions/index.js';
+import { primaryColumn } from '@toxictoast/shared-persistence';
 import { channelColumns } from './twitch.columns.js';
 
 export const TwitchKnownChannelSchema = new EntitySchema<KnownChannel>({

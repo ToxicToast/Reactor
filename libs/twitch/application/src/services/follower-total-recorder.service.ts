@@ -1,7 +1,7 @@
-import {
-  statsDayOf,
-  type ChannelDirectoryRepository,
-  type ChannelStatsRepository,
+import { statsDayOf } from '@toxictoast/shared-kernel';
+import type {
+  ChannelDirectoryRepository,
+  ChannelStatsRepository,
 } from '@toxictoast/twitch-domain';
 import type {
   FollowerTotalChange,

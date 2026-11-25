@@ -111,6 +111,7 @@
     "@toxictoast/shared-nest": "*",
     "@toxictoast/shared-system": "*",
     "@toxictoast/shared-types": "*",
+    "@toxictoast/shared-geoip": "*",
     "cookie": "^1.1.1",
     "http-proxy-middleware": "^3.0.0",
     "jose": "^5.10.0",

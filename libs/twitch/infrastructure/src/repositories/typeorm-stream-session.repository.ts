@@ -1,5 +1,6 @@
 import {
   TypeOrmRepository,
+  whereWithin,
   type TransactionContext,
 } from '@toxictoast/shared-persistence';
 import type { Nullable, Optional } from '@toxictoast/shared-types';
@@ -9,7 +10,6 @@ import type {
   StreamSessionRepository,
 } from '@toxictoast/twitch-domain';
 import type { DataSource, SelectQueryBuilder } from 'typeorm';
-import { whereWithin } from '../functions/index.js';
 import type { StreamSessionRow } from '../interfaces/index.js';
 import { StreamSessionMapper } from '../mappers/index.js';
 import { TwitchStreamSessionSchema } from '../schemas/index.js';

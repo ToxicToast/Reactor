@@ -1,0 +1,65 @@
+import { Logger } from '@nestjs/common';
+import {
+  ShortenerClickEvents,
+  ShortenerTopics,
+  type ShortenerClickPayloadV1,
+} from '@toxictoast/contracts-events';
+import type { CountryLookup } from '@toxictoast/shared-geoip';
+import { ActorType, type DomainContext } from '@toxictoast/shared-kernel';
+import type { EventPublisher } from '@toxictoast/shared-messaging';
+import {
+  describeError,
+  type CorrelationContext,
+} from '@toxictoast/shared-system';
+import type { Request } from 'express';
+import { SHORTENER_REDIRECT } from '../constants/index.js';
+
+/** Fire-and-forget wie der AccessDeniedReporter; ein verlorener Klick bremst keinen Redirect */
+export class LinkClickReporter {
+  private readonly logger = new Logger(LinkClickReporter.name);
+
+  constructor(
+    private readonly publisher: EventPublisher,
+    private readonly ctx: DomainContext,
+    private readonly correlations: CorrelationContext,
+    private readonly countries: CountryLookup,
+  ) {}
+
+  report(linkId: string, request: Request): void {
+    if (request.method !== SHORTENER_REDIRECT.COUNTED_METHOD) {
+      return;
+    }
+
+    const payload: ShortenerClickPayloadV1 = {
+      link_id: linkId,
+      referer: this.header(request, 'referer'),
+      user_agent: this.header(request, 'user-agent'),
+      // die IP dient nur dem Nachschlagen und verlässt das Gateway nie
+      country: this.countries.countryOf(request.ip ?? null),
+    };
+
+    this.publisher
+      .publish([
+        {
+          event_id: this.ctx.id.generate(),
+          event_namespace: ShortenerTopics.CLICK,
+          event_name: ShortenerClickEvents.CLICKED,
+          event_version: 1,
+          aggregate_id: linkId,
+          occurred_at: this.ctx.date.now(),
+          // bewusst ohne IP, auch nicht im Actor
+          actor: { type: ActorType.ANONYMOUS, id: null, ip: null },
+          correlation_id: this.correlations.current(),
+          payload,
+        },
+      ])
+      .catch((error: unknown) => {
+        this.logger.warn('Reporting a link click failed', describeError(error));
+      });
+  }
+
+  private header(request: Request, name: string): string | null {
+    const value = request.headers[name];
+    return typeof value === 'string' && value.length > 0 ? value : null;
+  }
+}

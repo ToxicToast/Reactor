@@ -69,7 +69,9 @@
               "audit.read",
               "twitch-bot.channel.manage",
               "twitch.stats.read",
-              "twitch.webhook.manage"
+              "twitch.webhook.manage",
+              "shortener.link.write",
+              "shortener.link.delete"
             ]
           }
         }
@@ -146,6 +148,14 @@
         {
           "name": "twitch.webhook.manage",
           "description": "Manage Twitch webhooks"
+        },
+        {
+          "name": "shortener.link.write",
+          "description": "Create, edit, deactivate and read short links"
+        },
+        {
+          "name": "shortener.link.delete",
+          "description": "Delete and restore short links"
         }
       ]
     }
