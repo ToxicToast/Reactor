@@ -143,6 +143,12 @@
     },
     {
       "path": "./apps/twitch-service"
+    },
+    {
+      "path": "./libs/shortener/domain"
+    },
+    {
+      "path": "./libs/shortener/application"
     }
   ],
   "compilerOptions": {}

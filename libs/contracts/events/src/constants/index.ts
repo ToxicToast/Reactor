@@ -33,3 +33,5 @@ export * from './webhook-topic-retention.constant.js';
 export * from './twitch-video-events.constant.js';
 export * from './twitch-video-types.constant.js';
 export * from './twitch-bot-friend-events.constant.js';
+export * from './shortener-topics.constant.js';
+export * from './shortener-link-events.constant.js';
