@@ -17,7 +17,7 @@ import type {
   ListStatsChannelsResponse,
 } from '@toxictoast/contracts-grpc';
 import type { Observable } from 'rxjs';
-import { IdParamDto } from '../../../common/dtos/index.js';
+import { IdParamDto, RangeQueryDto } from '../../../common/dtos/index.js';
 import { sseStream } from '../../../common/functions/index.js';
 import { TWITCH_SSE_EVENTS } from '../constants/index.js';
 import {
@@ -32,7 +32,6 @@ import {
   TimelineQueryDto,
   TimelineResponseDto,
   TwitchPagedRangeQueryDto,
-  TwitchRangeQueryDto,
 } from '../dtos/index.js';
 import { TwitchServiceGateway } from '../twitch-service.gateway.js';
 
@@ -84,7 +83,7 @@ export class TwitchStatsController {
   @ApiOkResponse({ type: RewardListResponseDto })
   rewards(
     @Param() { channel_id }: ChannelIdParamDto,
-    @Query() query: TwitchRangeQueryDto,
+    @Query() query: RangeQueryDto,
   ): Observable<ListRewardsResponse> {
     return this.twitch.listRewards({ channel_id, ...query });
   }

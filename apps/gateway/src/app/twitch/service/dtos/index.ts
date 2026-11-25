@@ -21,7 +21,6 @@ export * from './twitch-webhook-secret-response.dto.js';
 export * from './twitch-webhook-list-response.dto.js';
 export * from './twitch-webhook-delivery-list-response.dto.js';
 export * from './channel-id-param.dto.js';
-export * from './twitch-range-query.dto.js';
 export * from './twitch-paged-range-query.dto.js';
 export * from './leaderboard-query.dto.js';
 export * from './timeline-query.dto.js';
