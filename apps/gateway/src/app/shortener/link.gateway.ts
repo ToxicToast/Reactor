@@ -6,6 +6,8 @@ import {
   type DeleteLinkResponse,
   type GetLinkRequest,
   type GetLinkResponse,
+  type GetLinkStatsRequest,
+  type GetLinkStatsResponse,
   type LinkServiceClient,
   type ListLinksRequest,
   type ListLinksResponse,
@@ -49,5 +51,9 @@ export class LinkGateway extends GrpcGateway<LinkServiceClient> {
 
   resolve(id: string): Observable<ResolveLinkResponse> {
     return this.service.resolveLink({ id }, this.metadata());
+  }
+
+  stats(request: GetLinkStatsRequest): Observable<GetLinkStatsResponse> {
+    return this.service.getLinkStats(request, this.metadata());
   }
 }

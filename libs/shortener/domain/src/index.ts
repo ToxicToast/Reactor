@@ -1,5 +1,6 @@
 export * from './types/index.js';
 export * from './constants/index.js';
+export * from './interfaces/index.js';
 export * from './anemics/index.js';
 export * from './data/index.js';
 export * from './functions/index.js';

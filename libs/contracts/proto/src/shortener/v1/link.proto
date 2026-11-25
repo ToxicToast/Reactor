@@ -9,8 +9,8 @@ service LinkService {
   rpc RestoreLink(RestoreLinkRequest) returns (RestoreLinkResponse);
   rpc GetLink(GetLinkRequest) returns (GetLinkResponse);
   rpc ListLinks(ListLinksRequest) returns (ListLinksResponse);
-  /** öffentlich für den Redirect; nur aktive, nicht gelöschte Links */
   rpc ResolveLink(ResolveLinkRequest) returns (ResolveLinkResponse);
+  rpc GetLinkStats(GetLinkStatsRequest) returns (GetLinkStatsResponse);
 }
 
 message Link {
@@ -84,4 +84,33 @@ message ResolveLinkRequest {
 
 message ResolveLinkResponse {
   string target_url = 1;
+}
+
+message GetLinkStatsRequest {
+  string id = 1;
+  optional string from = 2;
+  optional string to = 3;
+}
+
+message ClickCount {
+  string key = 1;
+  int32 clicks = 2;
+}
+
+message DailyClicks {
+  string day = 1;
+  int32 clicks = 2;
+}
+
+message LinkStats {
+  int32 total = 1;
+  repeated DailyClicks days = 2;
+  repeated ClickCount referrers = 3;
+  repeated ClickCount devices = 4;
+  repeated ClickCount browsers = 5;
+  repeated ClickCount countries = 6;
+}
+
+message GetLinkStatsResponse {
+  LinkStats stats = 1;
 }

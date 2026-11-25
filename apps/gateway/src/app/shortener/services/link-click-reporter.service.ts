@@ -11,6 +11,7 @@ import {
   type CorrelationContext,
 } from '@toxictoast/shared-system';
 import type { Request } from 'express';
+import { SHORTENER_REDIRECT } from '../constants/index.js';
 
 /** Fire-and-forget wie der AccessDeniedReporter; ein verlorener Klick bremst keinen Redirect */
 export class LinkClickReporter {
@@ -23,6 +24,10 @@ export class LinkClickReporter {
   ) {}
 
   report(linkId: string, request: Request): void {
+    if (request.method !== SHORTENER_REDIRECT.COUNTED_METHOD) {
+      return;
+    }
+
     const payload: ShortenerClickPayloadV1 = {
       link_id: linkId,
       referer: this.header(request, 'referer'),

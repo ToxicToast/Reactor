@@ -1,5 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ShortenerTopics } from '@toxictoast/contracts-events';
+import {
+  SHORTENER_TOPIC_RETENTION_MS,
+  ShortenerClickEvents,
+  ShortenerTopics,
+} from '@toxictoast/contracts-events';
+import { eventKey } from '@toxictoast/shared-kernel';
 import {
   HealthModule,
   MessagingModule,
@@ -7,6 +12,7 @@ import {
   PersistenceModule,
   SystemModule,
 } from '@toxictoast/shared-nest';
+import { LinkClickHandler } from '@toxictoast/shortener-api';
 import {
   shortenerMigrations,
   shortenerSchemas,
@@ -22,10 +28,22 @@ import { ShortenerModule } from './shortener.module.js';
     }),
     MessagingModule.forRoot({
       groupId: 'shortener-service',
+      imports: [ShortenerModule],
+      handlers: {
+        inject: [LinkClickHandler],
+        useFactory: (clicks: LinkClickHandler) => {
+          return {
+            [eventKey(ShortenerTopics.CLICK, ShortenerClickEvents.CLICKED)]: (
+              event,
+            ) => clicks.handle(event),
+          };
+        },
+      },
       topics: [...Object.values(ShortenerTopics)],
+      topicRetentionMs: SHORTENER_TOPIC_RETENTION_MS,
     }),
     HealthModule.forRoot({ database: true }),
-    MetricsModule.forRoot({ outbox: true }),
+    MetricsModule.forRoot({ outbox: true, consumer: true }),
     ShortenerModule,
   ],
 })

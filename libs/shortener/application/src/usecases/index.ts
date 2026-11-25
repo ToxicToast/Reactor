@@ -5,3 +5,5 @@ export * from './restore-link.usecase.js';
 export * from './get-link.usecase.js';
 export * from './list-links.usecase.js';
 export * from './resolve-link.usecase.js';
+export * from './record-click.usecase.js';
+export * from './get-link-stats.usecase.js';

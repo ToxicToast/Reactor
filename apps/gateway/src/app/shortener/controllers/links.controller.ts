@@ -20,6 +20,7 @@ import type {
   CreateLinkResponse,
   DeleteLinkResponse,
   GetLinkResponse,
+  GetLinkStatsResponse,
   ListLinksResponse,
   RestoreLinkResponse,
   UpdateLinkResponse,
@@ -28,12 +29,14 @@ import type { Observable } from 'rxjs';
 import {
   IdParamDto,
   ListQueryDto,
+  RangeQueryDto,
   WithDeletedQueryDto,
 } from '../../common/dtos/index.js';
 import {
   CreateLinkDto,
   LinkListResponseDto,
   LinkResponseDto,
+  LinkStatsResponseDto,
   UpdateLinkDto,
 } from '../dtos/index.js';
 import { LinkGateway } from '../link.gateway.js';
@@ -57,6 +60,15 @@ export class LinksController {
     @Query() { with_deleted }: WithDeletedQueryDto,
   ): Observable<GetLinkResponse> {
     return this.links.get({ id, with_deleted });
+  }
+
+  @Get(':id/stats')
+  @ApiOkResponse({ type: LinkStatsResponseDto })
+  stats(
+    @Param() { id }: IdParamDto,
+    @Query() query: RangeQueryDto,
+  ): Observable<GetLinkStatsResponse> {
+    return this.links.stats({ id, ...query });
   }
 
   @Post()

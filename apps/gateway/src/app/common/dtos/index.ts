@@ -3,3 +3,4 @@ export * from './with-deleted-query.dto.js';
 export * from './list-query.dto.js';
 export * from './paging.schema.js';
 export * from './range.schema.js';
+export * from './range-query.dto.js';

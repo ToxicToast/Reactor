@@ -8,6 +8,8 @@ import {
   type DeleteLinkResponse,
   type GetLinkRequest,
   type GetLinkResponse,
+  type GetLinkStatsRequest,
+  type GetLinkStatsResponse,
   type LinkServiceController,
   type ListLinksRequest,
   type ListLinksResponse,
@@ -20,6 +22,7 @@ import {
 } from '@toxictoast/contracts-grpc';
 import {
   hasPermission,
+  parseDate,
   parseId,
   requirePermission,
   unwrap,
@@ -28,18 +31,20 @@ import { ActorProvider } from '@toxictoast/shared-kernel';
 import {
   CreateLinkUseCase,
   DeleteLinkUseCase,
+  GetLinkStatsUseCase,
   GetLinkUseCase,
   ListLinksUseCase,
   ResolveLinkUseCase,
   RestoreLinkUseCase,
   UpdateLinkUseCase,
 } from '@toxictoast/shortener-application';
-import { LinkGrpcMapper } from '../mappers/index.js';
+import { LinkGrpcMapper, LinkStatsGrpcMapper } from '../mappers/index.js';
 
 @Controller()
 @LinkServiceControllerMethods()
 export class LinkGrpcController implements LinkServiceController {
   private readonly mapper = new LinkGrpcMapper();
+  private readonly statsMapper = new LinkStatsGrpcMapper();
 
   constructor(
     private readonly createLinkUseCase: CreateLinkUseCase,
@@ -49,6 +54,7 @@ export class LinkGrpcController implements LinkServiceController {
     private readonly getLinkUseCase: GetLinkUseCase,
     private readonly listLinksUseCase: ListLinksUseCase,
     private readonly resolveLinkUseCase: ResolveLinkUseCase,
+    private readonly getLinkStatsUseCase: GetLinkStatsUseCase,
     private readonly actors: ActorProvider,
   ) {}
 
@@ -119,6 +125,20 @@ export class LinkGrpcController implements LinkServiceController {
     return unwrap(
       await this.resolveLinkUseCase.execute({ id: parseId(request.id) }),
     );
+  }
+
+  async getLinkStats(
+    request: GetLinkStatsRequest,
+  ): Promise<GetLinkStatsResponse> {
+    requirePermission(this.actors.current(), ShortenerPermission.LINK_WRITE);
+    const stats = unwrap(
+      await this.getLinkStatsUseCase.execute({
+        id: parseId(request.id),
+        from: parseDate(request.from, 'from'),
+        to: parseDate(request.to, 'to'),
+      }),
+    );
+    return { stats: this.statsMapper.toProto(stats) };
   }
 
   private withDeleted(requested: boolean): boolean {

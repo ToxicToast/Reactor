@@ -10,3 +10,4 @@ export * from './create-redis-client.function.js';
 export * from './uuid-env.function.js';
 export * from './secret-keyring-env.function.js';
 export * from './error-message.function.js';
+export * from './time-zone-env.function.js';

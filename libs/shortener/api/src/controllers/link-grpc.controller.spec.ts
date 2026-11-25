@@ -13,6 +13,7 @@ import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
 import {
   CreateLinkUseCase,
   DeleteLinkUseCase,
+  GetLinkStatsUseCase,
   GetLinkUseCase,
   ListLinksUseCase,
   ResolveLinkUseCase,
@@ -20,6 +21,7 @@ import {
   UpdateLinkUseCase,
 } from '@toxictoast/shortener-application';
 import {
+  InMemoryLinkClickRepository,
   InMemoryLinkRepository,
   TEST_NOW,
 } from '@toxictoast/shortener-application/testing';
@@ -34,9 +36,8 @@ describe('LinkGrpcController', () => {
   let controller: LinkGrpcController;
 
   beforeEach(() => {
-    const factory = new LinkFactory(
-      createFixedTestContext(LINK_ID, () => TEST_NOW),
-    );
+    const ctx = createFixedTestContext(LINK_ID, () => TEST_NOW);
+    const factory = new LinkFactory(ctx);
     const repository = new InMemoryLinkRepository();
     const persistence = new DomainPersistence(
       new InMemoryOutbox(),
@@ -51,6 +52,12 @@ describe('LinkGrpcController', () => {
       new GetLinkUseCase(repository),
       new ListLinksUseCase(repository),
       new ResolveLinkUseCase(factory, repository),
+      new GetLinkStatsUseCase(
+        repository,
+        new InMemoryLinkClickRepository(),
+        { time_zone: 'Europe/Berlin' },
+        ctx,
+      ),
       actors,
     );
   });
@@ -93,5 +100,28 @@ describe('LinkGrpcController', () => {
     await expect(
       grpcCode(controller.deleteLink({ id: LINK_ID })),
     ).resolves.toBe(status.PERMISSION_DENIED);
+  });
+
+  it('returns empty stats for a new link', async () => {
+    await controller.createLink({ target_url: TARGET });
+
+    const { stats } = await controller.getLinkStats({ id: LINK_ID });
+
+    expect(stats).toEqual({
+      total: 0,
+      days: [],
+      referrers: [],
+      devices: [],
+      browsers: [],
+      countries: [],
+    });
+  });
+
+  it('rejects a range that is not a date', async () => {
+    await controller.createLink({ target_url: TARGET });
+
+    await expect(
+      grpcCode(controller.getLinkStats({ id: LINK_ID, from: 'kaputt' })),
+    ).resolves.toBe(status.INVALID_ARGUMENT);
   });
 });

@@ -38,6 +38,8 @@
   },
   "dependencies": {
     "@toxictoast/shared-persistence": "*",
+    "@toxictoast/shared-system": "*",
+    "@toxictoast/shortener-application": "*",
     "@toxictoast/shortener-domain": "*",
     "typeorm": "^1.1.2",
     "@toxictoast/shared-types": "*"

@@ -82,6 +82,35 @@ export interface ResolveLinkResponse {
   target_url: string;
 }
 
+export interface GetLinkStatsRequest {
+  id: string;
+  from?: string | undefined;
+  to?: string | undefined;
+}
+
+export interface ClickCount {
+  key: string;
+  clicks: number;
+}
+
+export interface DailyClicks {
+  day: string;
+  clicks: number;
+}
+
+export interface LinkStats {
+  total: number;
+  days: DailyClicks[];
+  referrers: ClickCount[];
+  devices: ClickCount[];
+  browsers: ClickCount[];
+  countries: ClickCount[];
+}
+
+export interface GetLinkStatsResponse {
+  stats: LinkStats | undefined;
+}
+
 export interface LinkServiceClient {
   createLink(request: CreateLinkRequest, metadata?: Metadata): Observable<CreateLinkResponse>;
 
@@ -95,9 +124,9 @@ export interface LinkServiceClient {
 
   listLinks(request: ListLinksRequest, metadata?: Metadata): Observable<ListLinksResponse>;
 
-  /** öffentlich für den Redirect; nur aktive, nicht gelöschte Links */
-
   resolveLink(request: ResolveLinkRequest, metadata?: Metadata): Observable<ResolveLinkResponse>;
+
+  getLinkStats(request: GetLinkStatsRequest, metadata?: Metadata): Observable<GetLinkStatsResponse>;
 }
 
 export interface LinkServiceController {
@@ -131,12 +160,15 @@ export interface LinkServiceController {
     metadata?: Metadata,
   ): Promise<ListLinksResponse> | Observable<ListLinksResponse> | ListLinksResponse;
 
-  /** öffentlich für den Redirect; nur aktive, nicht gelöschte Links */
-
   resolveLink(
     request: ResolveLinkRequest,
     metadata?: Metadata,
   ): Promise<ResolveLinkResponse> | Observable<ResolveLinkResponse> | ResolveLinkResponse;
+
+  getLinkStats(
+    request: GetLinkStatsRequest,
+    metadata?: Metadata,
+  ): Promise<GetLinkStatsResponse> | Observable<GetLinkStatsResponse> | GetLinkStatsResponse;
 }
 
 export function LinkServiceControllerMethods() {
@@ -149,6 +181,7 @@ export function LinkServiceControllerMethods() {
       "getLink",
       "listLinks",
       "resolveLink",
+      "getLinkStats",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

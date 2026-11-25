@@ -25,6 +25,7 @@ describe('LinkClickReporter', () => {
 
   it('publishes referer and user agent but never the ip', () => {
     reporter.report(LINK_ID, {
+      method: 'GET',
       ip: '203.0.113.7',
       headers: {
         referer: 'https://www.instagram.com/',
@@ -49,12 +50,24 @@ describe('LinkClickReporter', () => {
   });
 
   it('sends null for missing headers', () => {
-    reporter.report(LINK_ID, { headers: {} } as unknown as Request);
+    reporter.report(LINK_ID, {
+      method: 'GET',
+      headers: {},
+    } as unknown as Request);
 
     const [[events]] = publish.mock.calls;
     expect(events[0].payload).toMatchObject({
       referer: null,
       user_agent: null,
     });
+  });
+
+  it('does not count head requests', () => {
+    reporter.report(LINK_ID, {
+      method: 'HEAD',
+      headers: {},
+    } as unknown as Request);
+
+    expect(publish).not.toHaveBeenCalled();
   });
 });
