@@ -3,3 +3,4 @@ export * from './id.type.js';
 export * from './mutable.type.js';
 export * from './domain-event-definitions.type.js';
 export * from './payload-record.type.js';
+export * from './metric-values.type.js';

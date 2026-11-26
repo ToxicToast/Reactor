@@ -161,6 +161,21 @@
     },
     {
       "path": "./libs/shared/geoip"
+    },
+    {
+      "path": "./libs/publisher/domain"
+    },
+    {
+      "path": "./libs/publisher/application"
+    },
+    {
+      "path": "./libs/publisher/infrastructure"
+    },
+    {
+      "path": "./libs/publisher/api"
+    },
+    {
+      "path": "./apps/publisher-service"
     }
   ],
   "compilerOptions": {}

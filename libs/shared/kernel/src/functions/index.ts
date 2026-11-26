@@ -9,3 +9,4 @@ export * from './read-payload.function.js';
 export * from './truncate-text.function.js';
 export * from './define-domain-events.function.js';
 export * from './stats-day-of.function.js';
+export * from './metrics-changed.function.js';
