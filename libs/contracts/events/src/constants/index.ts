@@ -37,3 +37,8 @@ export * from './shortener-topics.constant.js';
 export * from './shortener-link-events.constant.js';
 export * from './shortener-click-events.constant.js';
 export * from './shortener-topic-retention.constant.js';
+export * from './social-topics.constant.js';
+export * from './social-account-events.constant.js';
+export * from './social-post-events.constant.js';
+export * from './social-platforms.constant.js';
+export * from './social-topic-retention.constant.js';

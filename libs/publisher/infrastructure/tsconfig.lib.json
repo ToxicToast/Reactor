@@ -17,6 +17,9 @@
     },
     {
       "path": "../domain/tsconfig.lib.json"
+    },
+    {
+      "path": "../../contracts/events/tsconfig.lib.json"
     }
   ],
   "exclude": [

@@ -34,3 +34,8 @@ export * from './twitch-stream-status.payload.js';
 export * from './twitch-follower-count.payload.js';
 export * from './shortener-link.payload.js';
 export * from './shortener-click.payload.js';
+export * from './social-platform.payload.js';
+export * from './social-account.payload.js';
+export * from './social-post-metrics.payload.js';
+export * from './social-post.payload.js';
+export * from './social-post-check-failed.payload.js';

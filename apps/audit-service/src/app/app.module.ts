@@ -8,6 +8,7 @@ import {
   EVENT_TOPICS,
   SECURITY_TOPIC_RETENTION_MS,
   SHORTENER_TOPIC_RETENTION_MS,
+  SOCIAL_TOPIC_RETENTION_MS,
   WEBHOOK_TOPIC_RETENTION_MS,
 } from '@toxictoast/contracts-events';
 import {
@@ -43,6 +44,7 @@ import { AuditModule } from './audit.module.js';
         ...SECURITY_TOPIC_RETENTION_MS,
         ...WEBHOOK_TOPIC_RETENTION_MS,
         ...SHORTENER_TOPIC_RETENTION_MS,
+        ...SOCIAL_TOPIC_RETENTION_MS,
       },
     }),
     HealthModule.forRoot({ database: true }),
