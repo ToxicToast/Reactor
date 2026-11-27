@@ -1,21 +1,12 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
+import 'reflect-metadata';
+import {
+  PUBLISHER_PACKAGE,
+  PUBLISHER_PROTO_FILES,
+} from '@toxictoast/contracts-proto';
+import { bootstrapService } from '@toxictoast/shared-nest';
+import { AppModule } from './app/app.module.js';
 
-import { Logger } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app/app.module';
-
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
-  );
-}
-
-bootstrap();
+void bootstrapService(AppModule, {
+  package: PUBLISHER_PACKAGE,
+  protoPath: PUBLISHER_PROTO_FILES,
+});

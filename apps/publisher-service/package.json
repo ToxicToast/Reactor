@@ -4,6 +4,10 @@
   "private": true,
   "nx": {
     "name": "publisher-service",
+    "tags": [
+      "scope:publisher",
+      "type:app"
+    ],
     "targets": {
       "prune-lockfile": {
         "dependsOn": [
@@ -48,7 +52,10 @@
         ],
         "options": {
           "buildTarget": "publisher-service:build",
-          "runBuildTargetDependencies": false
+          "runBuildTargetDependencies": false,
+          "runtimeArgs": [
+            "--env-file=apps/publisher-service/.env"
+          ]
         },
         "configurations": {
           "development": {
@@ -63,18 +70,48 @@
         "options": {
           "passWithNoTests": true
         }
+      },
+      "docker-build": {
+        "dependsOn": [
+          "prune"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "VERSION": "local",
+          "REGISTRY": "ghcr.io/toxictoast",
+          "command": "docker build -f apps/publisher-service/Dockerfile -t {args.REGISTRY}/publisher-service:{args.VERSION} -t {args.REGISTRY}/publisher-service:latest apps/publisher-service/dist"
+        }
+      },
+      "docker-push": {
+        "executor": "nx:run-commands",
+        "options": {
+          "VERSION": "local",
+          "REGISTRY": "ghcr.io/toxictoast",
+          "parallel": false,
+          "commands": [
+            "docker push {args.REGISTRY}/publisher-service:{args.VERSION}",
+            "docker push {args.REGISTRY}/publisher-service:latest"
+          ]
+        }
       }
-    },
-    "tags": [
-      "scope:publisher",
-      "type:app"
-    ]
+    }
   },
   "dependencies": {
+    "@toxictoast/publisher-api": "*",
+    "@toxictoast/publisher-application": "*",
+    "@toxictoast/publisher-infrastructure": "*",
+    "@toxictoast/contracts-proto": "*",
+    "@toxictoast/contracts-events": "*",
+    "@toxictoast/shared-nest": "*",
+    "@toxictoast/shared-kernel": "*",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
+    "@nestjs/platform-express": "^11.0.0",
     "reflect-metadata": "^0.2.0",
-    "tslib": "^2.3.0"
+    "rxjs": "^7.8.2",
+    "tslib": "^2.3.0",
+    "typeorm": "^1.1.2",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
     "@nestjs/testing": "^11.0.0"

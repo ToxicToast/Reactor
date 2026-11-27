@@ -20,5 +20,28 @@
     "eslint.config.js",
     "eslint.config.cjs",
     "eslint.config.mjs"
+  ],
+  "references": [
+    {
+      "path": "../../libs/shared/kernel/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/shared/nest/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/contracts/events/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/contracts/proto/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/publisher/infrastructure/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/publisher/application/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/publisher/api/tsconfig.lib.json"
+    }
   ]
 }

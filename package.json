@@ -18,6 +18,7 @@
     "serve:twitchbot": "nx serve twitch-bot",
     "serve:twitch": "nx serve twitch-service",
     "serve:shortener": "nx serve shortener-service",
+    "serve:publisher": "nx serve publisher-service",
     "prepare": "husky",
     "lint:staged": "lint-staged"
   },
