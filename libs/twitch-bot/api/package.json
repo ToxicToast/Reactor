@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@toxictoast/contracts-grpc": "*",
+    "@toxictoast/shared-application": "*",
     "@toxictoast/shared-grpc": "*",
     "@toxictoast/shared-kernel": "*",
     "@toxictoast/twitch-bot-application": "*",

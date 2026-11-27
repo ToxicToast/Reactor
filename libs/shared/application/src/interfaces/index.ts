@@ -10,3 +10,4 @@ export * from './aggregate-change.interface.js';
 export * from './aggregate-change-options.interface.js';
 export * from './oauth-token.interface.js';
 export * from './oauth-token-store.interface.js';
+export * from './oauth-authorization-url.interface.js';

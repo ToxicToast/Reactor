@@ -1,4 +1,3 @@
-export * from './start-authorization.usecase.js';
 export * from './complete-authorization.usecase.js';
 export * from './list-channels.usecase.js';
 export * from './disconnect-channel.usecase.js';

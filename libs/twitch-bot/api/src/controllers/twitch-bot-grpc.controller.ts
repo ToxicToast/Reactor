@@ -31,7 +31,6 @@ import {
   ListChannelsUseCase,
   ListFriendsUseCase,
   RemoveFriendUseCase,
-  StartAuthorizationUseCase,
   SyncChattersUseCase,
   SyncClipsUseCase,
   SyncFollowerCountsUseCase,
@@ -43,6 +42,7 @@ import {
   TwitchChannelGrpcMapper,
   TwitchFriendGrpcMapper,
 } from '../mappers/index.js';
+import { StartOAuthUseCase } from '@toxictoast/shared-application';
 
 @Controller()
 @TwitchBotServiceControllerMethods()
@@ -51,7 +51,7 @@ export class TwitchBotGrpcController implements TwitchBotServiceController {
   private readonly friendMapper = new TwitchFriendGrpcMapper();
 
   constructor(
-    private readonly startAuthorizationUseCase: StartAuthorizationUseCase,
+    private readonly startAuthorizationUseCase: StartOAuthUseCase,
     private readonly completeAuthorizationUseCase: CompleteAuthorizationUseCase,
     private readonly listChannelsUseCase: ListChannelsUseCase,
     private readonly disconnectChannelUseCase: DisconnectChannelUseCase,

@@ -1,5 +1,8 @@
 import { status } from '@grpc/grpc-js';
-import { DomainPersistence } from '@toxictoast/shared-application';
+import {
+  DomainPersistence,
+  StartOAuthUseCase,
+} from '@toxictoast/shared-application';
 import {
   ImmediateUnitOfWork,
   InMemoryOAuthTokenStore,
@@ -18,7 +21,6 @@ import {
   ListChannelsUseCase,
   ListFriendsUseCase,
   RemoveFriendUseCase,
-  StartAuthorizationUseCase,
   SyncChattersUseCase,
   SyncClipsUseCase,
   SyncFollowersUseCase,
@@ -29,6 +31,7 @@ import {
   RefreshArchiveUseCase,
   SyncStreamsUseCase,
   SyncFollowerCountsUseCase,
+  TWITCH_BOT_SCOPES,
 } from '@toxictoast/twitch-bot-application';
 import {
   createTestContext,
@@ -107,7 +110,7 @@ describe('TwitchBotGrpcController', () => {
 
     actors = new TestActorProvider(testActor(['twitch-bot.channel.manage']));
     controller = new TwitchBotGrpcController(
-      new StartAuthorizationUseCase(auth),
+      new StartOAuthUseCase(auth, TWITCH_BOT_SCOPES),
       new CompleteAuthorizationUseCase(
         factory,
         channels,

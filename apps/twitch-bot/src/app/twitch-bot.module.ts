@@ -23,7 +23,6 @@ import {
   RemoveFriendUseCase,
   ResumeSubscriptionsUseCase,
   RevokeChannelUseCase,
-  StartAuthorizationUseCase,
   SyncChattersUseCase,
   SyncClipsUseCase,
   SyncFollowersUseCase,
@@ -34,6 +33,8 @@ import {
   TrackedChannels,
   SyncStreamsUseCase,
   SyncFollowerCountsUseCase,
+  TWITCH_BOT_SCOPES,
+  type TwitchAuthClient,
 } from '@toxictoast/twitch-bot-application';
 import {
   ChatterDiffService,
@@ -72,7 +73,10 @@ import { TWITCH_BOT_ENV, TWITCH_BOT_TOKENS } from './constants/index.js';
 import { TwitchSubscriptionLifecycle } from './lifecycles/index.js';
 import { PrometheusTwitchBotMetrics } from './metrics/index.js';
 import { TwitchReadinessProbe } from './probes/index.js';
-import type { OAuthTokenStore } from '@toxictoast/shared-application';
+import {
+  type OAuthTokenStore,
+  StartOAuthUseCase,
+} from '@toxictoast/shared-application';
 import {
   TransactionContext,
   TypeOrmOAuthTokenStore,
@@ -273,7 +277,13 @@ const logError = (error: unknown, context: string): void => {
       UNIT_OF_WORK,
       DOMAIN_CONTEXT,
     ]),
-    provideClass(StartAuthorizationUseCase, [TWITCH_AUTH_CLIENT]),
+    {
+      provide: StartOAuthUseCase,
+      inject: [TWITCH_AUTH_CLIENT],
+      useFactory: (auth: TwitchAuthClient) => {
+        return new StartOAuthUseCase(auth, TWITCH_BOT_SCOPES);
+      },
+    },
     provideClass(CompleteAuthorizationUseCase, [
       TwitchChannelFactory,
       TWITCH_CHANNEL_REPOSITORY,
