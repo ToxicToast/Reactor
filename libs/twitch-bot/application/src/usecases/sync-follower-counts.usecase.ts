@@ -1,4 +1,5 @@
 import type {
+  ObservedEvent,
   Outbox,
   UnitOfWork,
   UseCase,
@@ -7,7 +8,6 @@ import { Result, type DomainContext } from '@toxictoast/shared-kernel';
 import type { TwitchChannelRepository } from '@toxictoast/twitch-bot-domain';
 import { FOLLOWER_EVENTS } from '../constants/index.js';
 import type { SyncFollowerCountsOutput } from '../data/index.js';
-import type { TwitchObservedEvent } from '../events/index.js';
 import { observe } from '../functions/index.js';
 import type {
   FollowerCountPayload,
@@ -35,7 +35,7 @@ export class SyncFollowerCountsUseCase implements UseCase<
       return Result.ok({ counted: 0 });
     }
 
-    const events: Array<TwitchObservedEvent<object>> = [];
+    const events: Array<ObservedEvent<object>> = [];
     for (const channel of await this.channels.list()) {
       const payload: FollowerCountPayload = {
         total: await this.source.countFollowers(channel, via),

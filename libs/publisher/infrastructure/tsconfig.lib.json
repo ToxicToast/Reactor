@@ -19,6 +19,9 @@
       "path": "../domain/tsconfig.lib.json"
     },
     {
+      "path": "../../shared/social/tsconfig.lib.json"
+    },
+    {
       "path": "../../contracts/events/tsconfig.lib.json"
     }
   ],

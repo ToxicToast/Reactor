@@ -1,4 +1,5 @@
 import type {
+  ObservedEvent,
   Outbox,
   UnitOfWork,
   UseCase,
@@ -7,7 +8,6 @@ import { Result, type DomainContext } from '@toxictoast/shared-kernel';
 import type { TrackedChannel } from '@toxictoast/twitch-bot-domain';
 import { STREAM_EVENTS } from '../constants/index.js';
 import type { SyncStreamsOutput } from '../data/index.js';
-import type { TwitchObservedEvent } from '../events/index.js';
 import {
   observe,
   streamOnlinePayloadOf,
@@ -54,7 +54,7 @@ export class SyncStreamsUseCase implements UseCase<void, SyncStreamsOutput> {
       (await this.ledger.list()).map((entry) => [entry.channel_id, entry]),
     );
 
-    const events: Array<TwitchObservedEvent> = [];
+    const events: Array<ObservedEvent> = [];
     const started: Array<LiveStreamEntry> = [];
     const ended: Array<TrackedChannel> = [];
 

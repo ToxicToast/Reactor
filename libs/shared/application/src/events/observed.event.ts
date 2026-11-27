@@ -1,6 +1,7 @@
 import type { DomainEvent } from '@toxictoast/shared-kernel';
 
-export class TwitchObservedEvent<
+/** eine Beobachtung von außen, nicht von einem Aggregat ausgelöst; landet wie jedes Event über die Outbox */
+export class ObservedEvent<
   TPayload extends object = object,
 > implements DomainEvent<TPayload> {
   readonly event_version = 1;

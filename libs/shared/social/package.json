@@ -1,0 +1,28 @@
+{
+  "name": "@toxictoast/shared-social",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "nx": {
+    "name": "shared-social",
+    "tags": [
+      "scope:shared",
+      "type:application"
+    ]
+  },
+  "dependencies": {
+    "@toxictoast/shared-application": "*",
+    "@toxictoast/shared-kernel": "*",
+    "@toxictoast/shared-types": "*"
+  }
+}
