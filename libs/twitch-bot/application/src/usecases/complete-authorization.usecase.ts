@@ -1,13 +1,9 @@
-import type {
-  DomainPersistence,
-  OAuthTokenStore,
-  UseCase,
-} from '@toxictoast/shared-application';
 import {
-  DomainError,
-  Result,
-  ValidationError,
-} from '@toxictoast/shared-kernel';
+  CompleteOAuthUseCase,
+  type DomainPersistence,
+  type OAuthTokenStore,
+} from '@toxictoast/shared-application';
+import type { Nullable } from '@toxictoast/shared-types';
 import type {
   TwitchChannelAnemic,
   TwitchChannelData,
@@ -16,92 +12,40 @@ import type {
   TwitchChannelRepository,
 } from '@toxictoast/twitch-bot-domain';
 import { TWITCH_BOT_SCOPES } from '../constants/index.js';
-import type { CompleteAuthorizationInput } from '../data/index.js';
 import type {
   TwitchAuthClient,
   TwitchAuthorization,
   TwitchEventSubscriber,
 } from '../interfaces/index.js';
 
-export class CompleteAuthorizationUseCase implements UseCase<
-  CompleteAuthorizationInput,
-  TwitchChannelAnemic
+export class CompleteAuthorizationUseCase extends CompleteOAuthUseCase<
+  TwitchChannelAnemic,
+  TwitchChannelDomain,
+  TwitchChannelData,
+  TwitchAuthorization
 > {
   constructor(
-    private readonly factory: TwitchChannelFactory,
-    private readonly repository: TwitchChannelRepository,
-    private readonly persistence: DomainPersistence,
-    private readonly auth: TwitchAuthClient,
-    private readonly tokens: OAuthTokenStore,
+    factory: TwitchChannelFactory,
+    private readonly channels: TwitchChannelRepository,
+    persistence: DomainPersistence,
+    auth: TwitchAuthClient,
+    tokens: OAuthTokenStore,
     private readonly subscriber: TwitchEventSubscriber,
-  ) {}
-
-  async execute(
-    input: CompleteAuthorizationInput,
-  ): Promise<Result<TwitchChannelAnemic>> {
-    if (input.code.trim().length === 0) {
-      return Result.fail(new ValidationError('Code must not be empty'));
-    }
-
-    const authorization = await this.exchange(input);
-    if (authorization.isFailure) {
-      return Result.fail(authorization.error);
-    }
-
-    const { user, token } = authorization.value;
-    const channel = await this.load({ ...user, scopes: token.scopes });
-    if (channel.isFailure) {
-      return Result.fail(channel.error);
-    }
-
-    const missing = channel.value.missingScopes(TWITCH_BOT_SCOPES);
-    if (missing.length > 0) {
-      return Result.fail(
-        new ValidationError(`Missing scopes: ${missing.join(', ')}`),
-      );
-    }
-
-    const saved = await this.persistence.persist(
-      channel.value,
-      this.repository,
-    );
-    if (saved.isFailure) {
-      return Result.fail(saved.error);
-    }
-
-    await this.tokens.save(saved.value.id, token);
-    await this.subscriber.start(saved.value);
-    return Result.ok(saved.value);
+  ) {
+    super(factory, channels, persistence, auth, tokens, TWITCH_BOT_SCOPES);
   }
 
-  private async exchange(
-    input: CompleteAuthorizationInput,
-  ): Promise<Result<TwitchAuthorization>> {
-    try {
-      return Result.ok(
-        await this.auth.exchangeCode(input.code, input.redirect_uri),
-      );
-    } catch (error: unknown) {
-      if (error instanceof DomainError) {
-        return Result.fail(error);
-      }
-      throw error;
-    }
+  protected dataOf(authorization: TwitchAuthorization): TwitchChannelData {
+    return { ...authorization.user, scopes: authorization.token.scopes };
   }
 
-  private async load(
+  protected findExisting(
     data: TwitchChannelData,
-  ): Promise<Result<TwitchChannelDomain>> {
-    const existing = await this.repository.findByTwitchId(data.twitch_id);
-    if (!existing) {
-      return this.factory.createDomain(data);
-    }
+  ): Promise<Nullable<TwitchChannelAnemic>> {
+    return this.channels.findByTwitchId(data.twitch_id);
+  }
 
-    const channel = this.factory.reconstitute(existing);
-    const reconnected = channel.reconnect(data);
-    if (reconnected.isFailure) {
-      return Result.fail(reconnected.error);
-    }
-    return Result.ok(channel);
+  protected afterConnect(channel: TwitchChannelAnemic): Promise<void> {
+    return this.subscriber.start(channel);
   }
 }

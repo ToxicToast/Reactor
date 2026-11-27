@@ -11,3 +11,5 @@ export * from './aggregate-change-options.interface.js';
 export * from './oauth-token.interface.js';
 export * from './oauth-token-store.interface.js';
 export * from './oauth-authorization-url.interface.js';
+export * from './oauth-code-exchange.interface.js';
+export * from './oauth-authorization.interface.js';
