@@ -8,7 +8,14 @@
     "types": ["node"]
   },
   "include": ["src/**/*.ts"],
-  "references": [],
+  "references": [
+    {
+      "path": "../../shared/social/tsconfig.lib.json"
+    },
+    {
+      "path": "../../contracts/events/tsconfig.lib.json"
+    }
+  ],
   "exclude": [
     "jest.config.ts",
     "jest.config.cts",

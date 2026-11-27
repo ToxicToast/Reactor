@@ -19,5 +19,9 @@
       "type:infrastructure"
     ]
   },
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "@toxictoast/contracts-events": "*",
+    "@toxictoast/shared-social": "*"
+  }
 }
