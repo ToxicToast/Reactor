@@ -1,12 +1,12 @@
+import type { OAuthToken } from '@toxictoast/shared-application';
 import type { SecretCipher } from '@toxictoast/shared-system';
-import type { TwitchToken } from '@toxictoast/twitch-bot-application';
-import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
-import type { TwitchTokenRow } from '../interfaces/index.js';
+import type { OAuthTokenRow } from '../interfaces/index.js';
 
-export class TwitchTokenMapper {
+/** beide Tokens liegen nur verschlüsselt in der Datenbank */
+export class OAuthTokenMapper {
   constructor(private readonly cipher: SecretCipher) {}
 
-  toToken(row: TwitchTokenRow): TwitchToken {
+  toToken(row: OAuthTokenRow): OAuthToken {
     return {
       access_token: this.cipher.decrypt(row.access_token),
       refresh_token:
@@ -19,13 +19,9 @@ export class TwitchTokenMapper {
     };
   }
 
-  toRow(
-    channelId: TwitchChannelId,
-    token: TwitchToken,
-    updatedAt: Date,
-  ): TwitchTokenRow {
+  toRow(ownerId: string, token: OAuthToken, updatedAt: Date): OAuthTokenRow {
     return {
-      channel_id: channelId,
+      owner_id: ownerId,
       access_token: this.cipher.encrypt(token.access_token),
       refresh_token:
         token.refresh_token === null

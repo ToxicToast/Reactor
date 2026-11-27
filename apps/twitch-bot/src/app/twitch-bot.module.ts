@@ -26,7 +26,6 @@ import {
   StartAuthorizationUseCase,
   SyncChattersUseCase,
   SyncClipsUseCase,
-  type TwitchTokenStore,
   SyncFollowersUseCase,
   ImportMediaUseCase,
   RefreshArchiveUseCase,
@@ -41,6 +40,7 @@ import {
   TwitchChannelFactory,
   TwitchFriendFactory,
   type TwitchChannelRepository,
+  TwitchChannelId,
 } from '@toxictoast/twitch-bot-domain';
 import {
   requestAppToken,
@@ -59,7 +59,6 @@ import {
   TypeOrmPublishedClipLedger,
   TypeOrmTwitchChannelRepository,
   TypeOrmTwitchFriendRepository,
-  TypeOrmTwitchTokenStore,
   type TwitchBotMetrics,
   type TwitchConfig,
   TwitchTokenSchema,
@@ -73,6 +72,12 @@ import { TWITCH_BOT_ENV, TWITCH_BOT_TOKENS } from './constants/index.js';
 import { TwitchSubscriptionLifecycle } from './lifecycles/index.js';
 import { PrometheusTwitchBotMetrics } from './metrics/index.js';
 import { TwitchReadinessProbe } from './probes/index.js';
+import type { OAuthTokenStore } from '@toxictoast/shared-application';
+import {
+  TransactionContext,
+  TypeOrmOAuthTokenStore,
+} from '@toxictoast/shared-persistence';
+import { DataSource } from 'typeorm';
 
 const {
   TWITCH_CONFIG,
@@ -143,11 +148,24 @@ const logError = (error: unknown, context: string): void => {
       DATABASE_INJECT,
       FOLLOWER_REPOSITORY,
     ),
-    provideClass(
-      TypeOrmTwitchTokenStore,
-      [...DATABASE_INJECT, TOKEN_CIPHER, CLOCK],
-      TWITCH_TOKEN_STORE,
-    ),
+    {
+      provide: TWITCH_TOKEN_STORE,
+      inject: [...DATABASE_INJECT, TOKEN_CIPHER, CLOCK],
+      useFactory: (
+        dataSource: DataSource,
+        context: TransactionContext,
+        cipher: SecretCipher,
+        clock: Clock,
+      ) => {
+        return new TypeOrmOAuthTokenStore<TwitchChannelId>(
+          dataSource,
+          context,
+          cipher,
+          clock,
+          TwitchTokenSchema,
+        );
+      },
+    },
     provideClass(
       TypeOrmPublishedClipLedger,
       [...DATABASE_INJECT, CLOCK],
@@ -184,7 +202,7 @@ const logError = (error: unknown, context: string): void => {
       useFactory: (
         config: TwitchConfig,
         channels: TwitchChannelRepository,
-        tokens: TwitchTokenStore,
+        tokens: OAuthTokenStore,
         metrics: TwitchBotMetrics,
       ) => {
         return new TwitchConnection(

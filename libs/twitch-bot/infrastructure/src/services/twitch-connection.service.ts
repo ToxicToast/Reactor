@@ -1,7 +1,7 @@
 import type { ApiClient } from '@twurple/api';
 import type { AccessToken, RefreshingAuthProvider } from '@twurple/auth';
 import type { Nullable } from '@toxictoast/shared-types';
-import type { TwitchTokenStore } from '@toxictoast/twitch-bot-application';
+import type { OAuthTokenStore } from '@toxictoast/shared-application';
 import type {
   TwitchChannelAnemic,
   TwitchChannelRepository,
@@ -28,7 +28,7 @@ export class TwitchConnection {
   constructor(
     private readonly config: TwitchConfig,
     private readonly channels: TwitchChannelRepository,
-    private readonly tokens: TwitchTokenStore,
+    private readonly tokens: OAuthTokenStore,
     private readonly metrics: TwitchBotMetrics = NOOP_TWITCH_BOT_METRICS,
     private readonly onError: (error: unknown, context: string) => void = () =>
       undefined,

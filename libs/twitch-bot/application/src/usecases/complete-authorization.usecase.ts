@@ -1,5 +1,6 @@
 import type {
   DomainPersistence,
+  OAuthTokenStore,
   UseCase,
 } from '@toxictoast/shared-application';
 import {
@@ -20,7 +21,6 @@ import type {
   TwitchAuthClient,
   TwitchAuthorization,
   TwitchEventSubscriber,
-  TwitchTokenStore,
 } from '../interfaces/index.js';
 
 export class CompleteAuthorizationUseCase implements UseCase<
@@ -32,7 +32,7 @@ export class CompleteAuthorizationUseCase implements UseCase<
     private readonly repository: TwitchChannelRepository,
     private readonly persistence: DomainPersistence,
     private readonly auth: TwitchAuthClient,
-    private readonly tokens: TwitchTokenStore,
+    private readonly tokens: OAuthTokenStore,
     private readonly subscriber: TwitchEventSubscriber,
   ) {}
 

@@ -1,16 +1,7 @@
-import { EntitySchema } from 'typeorm';
-import type { TwitchTokenRow } from '../interfaces/index.js';
+import { oauthTokenSchema } from '@toxictoast/shared-persistence';
 
-export const TwitchTokenSchema = new EntitySchema<TwitchTokenRow>({
+export const TwitchTokenSchema = oauthTokenSchema({
   name: 'TwitchToken',
   tableName: 'twitch_tokens',
-  columns: {
-    channel_id: { type: 'uuid', primary: true },
-    access_token: { type: 'text' },
-    refresh_token: { type: 'text', nullable: true },
-    scopes: { type: 'text', array: true },
-    expires_in: { type: 'int', nullable: true },
-    obtained_at: { type: 'timestamptz' },
-    updated_at: { type: 'timestamptz' },
-  },
+  ownerColumn: 'channel_id',
 });

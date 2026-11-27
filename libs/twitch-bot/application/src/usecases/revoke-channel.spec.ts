@@ -2,6 +2,7 @@ import { DomainPersistence } from '@toxictoast/shared-application';
 import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
+  InMemoryOAuthTokenStore,
 } from '@toxictoast/shared-application/testing';
 import {
   TwitchChannelFactory,
@@ -11,7 +12,6 @@ import {
   createTestContext,
   FakeTwitchAuthClient,
   InMemoryTwitchChannelRepository,
-  InMemoryTwitchTokenStore,
   RecordingTwitchEventSubscriber,
   twitchChannelAnemic,
 } from '../testing/index.js';
@@ -21,14 +21,14 @@ const CHANNEL_ID = 'channel-1' as TwitchChannelId;
 
 describe('RevokeChannelUseCase', () => {
   let repository: InMemoryTwitchChannelRepository;
-  let tokens: InMemoryTwitchTokenStore;
+  let tokens: InMemoryOAuthTokenStore;
   let subscriber: RecordingTwitchEventSubscriber;
   let outbox: InMemoryOutbox;
   let useCase: RevokeChannelUseCase;
 
   beforeEach(async () => {
     repository = new InMemoryTwitchChannelRepository();
-    tokens = new InMemoryTwitchTokenStore();
+    tokens = new InMemoryOAuthTokenStore();
     subscriber = new RecordingTwitchEventSubscriber();
     outbox = new InMemoryOutbox();
     useCase = new RevokeChannelUseCase(

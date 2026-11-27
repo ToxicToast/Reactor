@@ -1,5 +1,6 @@
 import type {
   DomainPersistence,
+  OAuthTokenStore,
   UseCase,
 } from '@toxictoast/shared-application';
 import { NotFoundError, Result } from '@toxictoast/shared-kernel';
@@ -9,10 +10,7 @@ import type {
   TwitchChannelRepository,
 } from '@toxictoast/twitch-bot-domain';
 import type { RevokeChannelInput } from '../data/index.js';
-import type {
-  TwitchEventSubscriber,
-  TwitchTokenStore,
-} from '../interfaces/index.js';
+import type { TwitchEventSubscriber } from '../interfaces/index.js';
 
 export class RevokeChannelUseCase implements UseCase<
   RevokeChannelInput,
@@ -22,7 +20,7 @@ export class RevokeChannelUseCase implements UseCase<
     private readonly factory: TwitchChannelFactory,
     private readonly repository: TwitchChannelRepository,
     private readonly persistence: DomainPersistence,
-    private readonly tokens: TwitchTokenStore,
+    private readonly tokens: OAuthTokenStore,
     private readonly subscriber: TwitchEventSubscriber,
   ) {}
 

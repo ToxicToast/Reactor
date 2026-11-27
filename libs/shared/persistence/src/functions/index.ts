@@ -9,3 +9,4 @@ export * from './raise-counter.function.js';
 export * from './where-within.function.js';
 export * from './counter-columns.function.js';
 export * from './primary-column.function.js';
+export * from './oauth-token-schema.function.js';

@@ -3,11 +3,10 @@ import {
   FakeTwitchAuthClient,
   twitchChannelAnemic,
 } from '@toxictoast/twitch-bot-application/testing';
-import type { TwitchChannelId } from '@toxictoast/twitch-bot-domain';
 import { SecretCipher } from '@toxictoast/shared-system';
 import { TwitchAccessTokenMapper } from './twitch-access-token.mapper.js';
 import { TwitchChannelMapper } from './twitch-channel.mapper.js';
-import { TwitchTokenMapper } from './twitch-token.mapper.js';
+import { OAuthTokenMapper } from '@toxictoast/shared-persistence';
 
 const TOKEN = new FakeTwitchAuthClient().authorization.token;
 
@@ -22,14 +21,14 @@ describe('TwitchChannelMapper', () => {
   });
 });
 
-describe('TwitchTokenMapper', () => {
-  const mapper = new TwitchTokenMapper(
+describe('OAuthTokenMapper', () => {
+  const mapper = new OAuthTokenMapper(
     SecretCipher.withSingleKey(randomBytes(32)),
   );
 
   it('stores both tokens encrypted and restores them', () => {
     const row = mapper.toRow(
-      'channel-1' as TwitchChannelId,
+      'channel-1',
       TOKEN,
       new Date('2026-10-26T21:00:00Z'),
     );
@@ -42,7 +41,7 @@ describe('TwitchTokenMapper', () => {
   it('keeps a missing refresh token missing', () => {
     const token = { ...TOKEN, refresh_token: null };
     const row = mapper.toRow(
-      'channel-1' as TwitchChannelId,
+      'channel-1',
       token,
       new Date('2026-10-26T21:00:00Z'),
     );

@@ -9,7 +9,8 @@ import { TwitchBotTestDatabase } from '../testing/index.js';
 import { TypeOrmChatterRepository } from './typeorm-chatter.repository.js';
 import { TypeOrmPublishedClipLedger } from './typeorm-published-clip.ledger.js';
 import { TypeOrmTwitchChannelRepository } from './typeorm-twitch-channel.repository.js';
-import { TypeOrmTwitchTokenStore } from './typeorm-twitch-token.store.js';
+import { TypeOrmOAuthTokenStore } from '@toxictoast/shared-persistence';
+import { TwitchTokenSchema } from '../schemas/index.js';
 
 const CHANNEL_ID = '0192f3a0-0000-7000-8000-000000000c01' as TwitchChannelId;
 const OTHER_ID = '0192f3a0-0000-7000-8000-000000000c02' as TwitchChannelId;
@@ -26,7 +27,7 @@ describe('twitch-bot persistence', () => {
   const database = new TwitchBotTestDatabase();
   let channels: TypeOrmTwitchChannelRepository;
   let chatters: TypeOrmChatterRepository;
-  let tokens: TypeOrmTwitchTokenStore;
+  let tokens: TypeOrmOAuthTokenStore<TwitchChannelId>;
   let ledger: TypeOrmPublishedClipLedger;
 
   beforeAll(async () => {
@@ -39,11 +40,12 @@ describe('twitch-bot persistence', () => {
       database.dataSource,
       database.context,
     );
-    tokens = new TypeOrmTwitchTokenStore(
+    tokens = new TypeOrmOAuthTokenStore<TwitchChannelId>(
       database.dataSource,
       database.context,
       SecretCipher.withSingleKey(randomBytes(32)),
       clock,
+      TwitchTokenSchema,
     );
     ledger = new TypeOrmPublishedClipLedger(
       database.dataSource,

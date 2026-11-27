@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@toxictoast/contracts-events": "*",
+    "@toxictoast/shared-application": "*",
     "@toxictoast/shared-kernel": "*",
     "@toxictoast/shared-persistence": "*",
     "@toxictoast/shared-system": "*",

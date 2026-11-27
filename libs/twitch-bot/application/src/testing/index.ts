@@ -4,7 +4,6 @@ export * from './twitch-clip.fixture.js';
 export * from './twitch-video.fixture.js';
 export * from './in-memory-twitch-channel.repository.js';
 export * from './in-memory-chatter.repository.js';
-export * from './in-memory-twitch-token-store.js';
 export * from './in-memory-published-ledger.js';
 export * from './in-memory-published-clip-ledger.js';
 export * from './in-memory-media-import-log.js';

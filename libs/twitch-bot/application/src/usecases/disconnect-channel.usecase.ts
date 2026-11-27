@@ -1,6 +1,7 @@
 import {
   AggregateEditor,
   type DomainPersistence,
+  type OAuthTokenStore,
   type UseCase,
 } from '@toxictoast/shared-application';
 import { Result } from '@toxictoast/shared-kernel';
@@ -11,10 +12,7 @@ import type {
   TwitchChannelRepository,
 } from '@toxictoast/twitch-bot-domain';
 import type { DisconnectChannelInput } from '../data/index.js';
-import type {
-  TwitchEventSubscriber,
-  TwitchTokenStore,
-} from '../interfaces/index.js';
+import type { TwitchEventSubscriber } from '../interfaces/index.js';
 
 export class DisconnectChannelUseCase implements UseCase<
   DisconnectChannelInput,
@@ -29,7 +27,7 @@ export class DisconnectChannelUseCase implements UseCase<
     factory: TwitchChannelFactory,
     repository: TwitchChannelRepository,
     persistence: DomainPersistence,
-    private readonly tokens: TwitchTokenStore,
+    private readonly tokens: OAuthTokenStore,
     private readonly subscriber: TwitchEventSubscriber,
   ) {
     this.editor = new AggregateEditor<TwitchChannelAnemic, TwitchChannelDomain>(

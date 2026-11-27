@@ -2,13 +2,13 @@ import { DomainPersistence } from '@toxictoast/shared-application';
 import {
   ImmediateUnitOfWork,
   InMemoryOutbox,
+  InMemoryOAuthTokenStore,
 } from '@toxictoast/shared-application/testing';
 import { TwitchChannelFactory } from '@toxictoast/twitch-bot-domain';
 import {
   createTestContext,
   FakeTwitchAuthClient,
   InMemoryTwitchChannelRepository,
-  InMemoryTwitchTokenStore,
   RecordingTwitchEventSubscriber,
   twitchChannelAnemic,
 } from '../testing/index.js';
@@ -19,7 +19,7 @@ const REDIRECT = 'http://localhost:4000/admin/twitch/callback';
 
 describe('CompleteAuthorizationUseCase', () => {
   let repository: InMemoryTwitchChannelRepository;
-  let tokens: InMemoryTwitchTokenStore;
+  let tokens: InMemoryOAuthTokenStore;
   let subscriber: RecordingTwitchEventSubscriber;
   let auth: FakeTwitchAuthClient;
   let outbox: InMemoryOutbox;
@@ -27,7 +27,7 @@ describe('CompleteAuthorizationUseCase', () => {
 
   beforeEach(() => {
     repository = new InMemoryTwitchChannelRepository();
-    tokens = new InMemoryTwitchTokenStore();
+    tokens = new InMemoryOAuthTokenStore();
     subscriber = new RecordingTwitchEventSubscriber();
     auth = new FakeTwitchAuthClient();
     outbox = new InMemoryOutbox();

@@ -1,8 +1,8 @@
+import type { OAuthToken } from '@toxictoast/shared-application';
 import type { AccessToken } from '@twurple/auth';
-import type { TwitchToken } from '@toxictoast/twitch-bot-application';
 
 export class TwitchAccessTokenMapper {
-  toAccessToken(token: TwitchToken): AccessToken {
+  toAccessToken(token: OAuthToken): AccessToken {
     return {
       accessToken: token.access_token,
       refreshToken: token.refresh_token,
@@ -12,7 +12,7 @@ export class TwitchAccessTokenMapper {
     };
   }
 
-  toToken(token: AccessToken): TwitchToken {
+  toToken(token: AccessToken): OAuthToken {
     return {
       access_token: token.accessToken,
       refresh_token: token.refreshToken,

@@ -2,6 +2,7 @@ import { status } from '@grpc/grpc-js';
 import { DomainPersistence } from '@toxictoast/shared-application';
 import {
   ImmediateUnitOfWork,
+  InMemoryOAuthTokenStore,
   InMemoryOutbox,
 } from '@toxictoast/shared-application/testing';
 import { createFixedTestContext } from '@toxictoast/shared-kernel/testing';
@@ -41,7 +42,6 @@ import {
   InMemoryPublishedClipLedger,
   InMemoryTwitchChannelRepository,
   InMemoryTwitchFriendRepository,
-  InMemoryTwitchTokenStore,
   RecordingTwitchEventSubscriber,
   twitchChannelAnemic,
   FakeTwitchVideoSource,
@@ -71,7 +71,7 @@ describe('TwitchBotGrpcController', () => {
     const channels = new InMemoryTwitchChannelRepository();
     const friends = new InMemoryTwitchFriendRepository();
     const tracked = new TrackedChannels(channels, friends);
-    const tokens = new InMemoryTwitchTokenStore();
+    const tokens = new InMemoryOAuthTokenStore();
     const subscriber = new RecordingTwitchEventSubscriber();
     const outbox = new InMemoryOutbox();
     const uow = new ImmediateUnitOfWork();
