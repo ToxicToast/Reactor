@@ -8,7 +8,26 @@
     "types": ["node"]
   },
   "include": ["src/**/*.ts"],
-  "references": [],
+  "references": [
+    {
+      "path": "../../shared/kernel/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/grpc/tsconfig.lib.json"
+    },
+    {
+      "path": "../domain/tsconfig.lib.json"
+    },
+    {
+      "path": "../application/tsconfig.lib.json"
+    },
+    {
+      "path": "../../contracts/grpc/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/application/tsconfig.lib.json"
+    }
+  ],
   "exclude": [
     "jest.config.ts",
     "jest.config.cts",

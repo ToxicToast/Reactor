@@ -13,5 +13,7 @@ export * from './generated/twitch/v1/twitch.js';
 
 export * from './generated/shortener/v1/link.js';
 
+export * from './generated/publisher/v1/social_post.js';
+
 export * from './permissions/index.js';
 export * from './clients/index.js';

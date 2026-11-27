@@ -53,3 +53,11 @@ export const SHORTENER_PACKAGE = 'shortener.v1';
 export const SHORTENER_PROTO_FILES = ['shortener/v1/link.proto'].map((file) =>
   join(PROTO_ROOT, file),
 );
+
+/* --------------------- */
+
+export const PUBLISHER_PACKAGE = 'publisher.v1';
+
+export const PUBLISHER_PROTO_FILES = ['publisher/v1/social_post.proto'].map(
+  (file) => join(PROTO_ROOT, file),
+);

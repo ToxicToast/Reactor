@@ -1,4 +1,4 @@
-import type { Post } from '@toxictoast/publisher-domain';
+import { POST_LIMITS, type Post } from '@toxictoast/publisher-domain';
 import { EntitySchema } from 'typeorm';
 import { PUBLISHER_COLUMNS } from '../constants/index.js';
 import { refColumns, remoteIdColumn } from './publisher.columns.js';
@@ -12,7 +12,7 @@ export const PostSchema = new EntitySchema<Post>({
     url: { type: 'text' },
     title: {
       type: 'varchar',
-      length: PUBLISHER_COLUMNS.TITLE_LENGTH,
+      length: POST_LIMITS.TITLE_MAX,
       nullable: true,
     },
     published_at: { type: 'timestamptz' },

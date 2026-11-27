@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package publisher.v1;
+
+service SocialPostService {
+  /** für den Cronjob: welche Posts als Nächstes abgefragt werden */
+  rpc ListDuePosts(ListDuePostsRequest) returns (ListDuePostsResponse);
+}
+
+message ListDuePostsRequest {}
+
+message DuePost {
+  string platform = 1;
+  string remote_id = 2;
+  string published_at = 3;
+  optional string checked_at = 4;
+}
+
+message ListDuePostsResponse {
+  repeated DuePost posts = 1;
+}
