@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { provideClass } from '@toxictoast/shared-nest';
+import { ActorContext } from '@toxictoast/shared-system';
 import { AuthModule } from '../auth/auth.module.js';
 import { GATEWAY_TOKENS } from '../constants/index.js';
 import { AdminAuthController } from './controllers/index.js';
@@ -8,6 +9,7 @@ import { AdminSessionMiddleware } from './middlewares/index.js';
 import {
   AdminSessions,
   KeycloakOidcClient,
+  OAuthConnectFlow,
   SealedCookie,
 } from './services/index.js';
 
@@ -27,8 +29,9 @@ const { ADMIN_AUTH_CONFIG, KEYCLOAK_CONFIG } = GATEWAY_TOKENS;
     provideClass(SealedCookie, [ADMIN_AUTH_CONFIG]),
     provideClass(AdminSessions, [SealedCookie]),
     provideClass(KeycloakOidcClient, [KEYCLOAK_CONFIG, ADMIN_AUTH_CONFIG]),
+    provideClass(OAuthConnectFlow, [SealedCookie, AdminSessions, ActorContext]),
     AdminSessionMiddleware,
   ],
-  exports: [ADMIN_AUTH_CONFIG, SealedCookie, AdminSessions],
+  exports: [ADMIN_AUTH_CONFIG, SealedCookie, AdminSessions, OAuthConnectFlow],
 })
 export class AdminModule {}
