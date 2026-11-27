@@ -37,7 +37,8 @@ describe('Social contracts', () => {
       shares: true,
       saves: true,
       reach: true,
-      watch_time_ms: true,
+      avg_watch_time_ms: true,
+      total_watch_time_ms: true,
       avg_view_percentage: true,
       followers_gained: true,
     };

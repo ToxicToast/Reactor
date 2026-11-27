@@ -41,7 +41,8 @@ export const postMetricColumns = {
   shares: counterColumn,
   saves: counterColumn,
   reach: counterColumn,
-  watch_time_ms: measureColumn,
+  avg_watch_time_ms: measureColumn,
+  total_watch_time_ms: measureColumn,
   avg_view_percentage: measureColumn,
   followers_gained: counterColumn,
 } satisfies Record<PostMetricKey, EntitySchemaColumnOptions>;

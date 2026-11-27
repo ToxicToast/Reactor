@@ -6,7 +6,10 @@ export const POST_METRIC_KEYS = [
   'shares',
   'saves',
   'reach',
-  'watch_time_ms',
+  /** durchschnittliche Wiedergabedauer pro Aufruf */
+  'avg_watch_time_ms',
+  /** gesamte Abspielzeit inklusive Wiederholungen */
+  'total_watch_time_ms',
   'avg_view_percentage',
   'followers_gained',
 ] as const;

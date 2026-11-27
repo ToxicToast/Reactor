@@ -14,7 +14,8 @@ const metrics = {
   shares: null,
   saves: null,
   reach: null,
-  watch_time_ms: 123456,
+  avg_watch_time_ms: 9500,
+  total_watch_time_ms: 123456,
   avg_view_percentage: 61.5,
   followers_gained: 2,
 };
