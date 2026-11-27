@@ -5,6 +5,7 @@ import { SocialTopics } from './social-topics.constant.js';
 import { TwitchStatsTopics } from './twitch-stats-topics.constant.js';
 import { TwitchTopics } from './twitch-topics.constant.js';
 import { WebhookTopics } from './webhook-topics.constant.js';
+import { YouTubeTopics } from './youtube-topics.constant.js';
 
 export const EVENT_TOPICS: ReadonlyArray<string> = [
   ...Object.values(BlogTopics),
@@ -14,4 +15,5 @@ export const EVENT_TOPICS: ReadonlyArray<string> = [
   ...Object.values(WebhookTopics),
   ...Object.values(ShortenerTopics),
   ...Object.values(SocialTopics),
+  ...Object.values(YouTubeTopics),
 ];

@@ -42,3 +42,5 @@ export * from './social-account-events.constant.js';
 export * from './social-post-events.constant.js';
 export * from './social-platforms.constant.js';
 export * from './social-topic-retention.constant.js';
+export * from './youtube-topics.constant.js';
+export * from './youtube-channel-events.constant.js';

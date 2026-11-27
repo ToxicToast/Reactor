@@ -10,3 +10,6 @@ export * from './clock.interface.js';
 export * from './domain-context.interface.js';
 export * from './actor.interface.js';
 export * from './actor-identity.interface.js';
+export * from './connected-account-anemic.interface.js';
+export * from './connected-account-events.interface.js';
+export * from './connected-account-messages.interface.js';

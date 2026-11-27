@@ -10,3 +10,5 @@ export * from './truncate-text.function.js';
 export * from './define-domain-events.function.js';
 export * from './stats-day-of.function.js';
 export * from './metrics-changed.function.js';
+export * from './normalize-scopes.function.js';
+export * from './missing-scopes.function.js';

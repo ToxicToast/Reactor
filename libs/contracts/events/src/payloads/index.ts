@@ -39,3 +39,4 @@ export * from './social-account.payload.js';
 export * from './social-post-metrics.payload.js';
 export * from './social-post.payload.js';
 export * from './social-post-check-failed.payload.js';
+export * from './youtube-channel.payload.js';

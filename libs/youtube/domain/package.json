@@ -20,5 +20,8 @@
       "type:domain"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "@toxictoast/shared-kernel": "*",
+    "@toxictoast/shared-types": "*"
+  }
 }

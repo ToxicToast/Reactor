@@ -1,5 +1,6 @@
-import { BaseDomain, ConflictError, Result } from '@toxictoast/shared-kernel';
+import { ConnectedAccountDomain, type Result } from '@toxictoast/shared-kernel';
 import type { TwitchChannelAnemic } from '../anemics/index.js';
+import { TWITCH_CHANNEL_MESSAGES } from '../constants/index.js';
 import type { TwitchChannelData } from '../data/index.js';
 import {
   TwitchChannelEvents,
@@ -7,65 +8,25 @@ import {
 } from '../events/index.js';
 import { normalizeTwitchChannelData } from '../functions/index.js';
 
-export class TwitchChannelDomain extends BaseDomain<
+export class TwitchChannelDomain extends ConnectedAccountDomain<
   TwitchChannelAnemic,
+  TwitchChannelData,
   TwitchChannelEventPayload
 > {
-  get isConnected(): boolean {
-    return this.state.connected;
+  protected readonly events = TwitchChannelEvents;
+  protected readonly messages = TWITCH_CHANNEL_MESSAGES;
+
+  protected normalize(data: TwitchChannelData): Result<TwitchChannelData> {
+    return normalizeTwitchChannelData(data);
   }
 
-  connect(): void {
-    this.raise(TwitchChannelEvents.CONNECTED);
+  protected isSameAccount(data: TwitchChannelData): boolean {
+    return data.twitch_id === this.state.twitch_id;
   }
 
-  reconnect(data: TwitchChannelData): Result<void> {
-    const normalized = normalizeTwitchChannelData(data);
-    if (normalized.isFailure) {
-      return Result.fail(normalized.error);
-    }
-    if (normalized.value.twitch_id !== this.state.twitch_id) {
-      return Result.fail(
-        new ConflictError(
-          'Authorization belongs to a different Twitch account',
-        ),
-      );
-    }
-
-    this.state.login = normalized.value.login;
-    this.state.display_name = normalized.value.display_name;
-    this.state.scopes = normalized.value.scopes;
-    this.state.connected = true;
-    this.touch();
-    this.raise(TwitchChannelEvents.CONNECTED);
-    return Result.ok();
-  }
-
-  disconnect(): Result<void> {
-    if (!this.state.connected) {
-      return Result.fail(new ConflictError('Channel is not connected'));
-    }
-
-    this.state.connected = false;
-    this.touch();
-    this.raise(TwitchChannelEvents.DISCONNECTED);
-    return Result.ok();
-  }
-
-  revoke(): Result<void> {
-    if (!this.state.connected) {
-      return Result.fail(new ConflictError('Channel is not connected'));
-    }
-
-    this.state.connected = false;
-    this.touch();
-    this.raise(TwitchChannelEvents.REVOKED);
-    return Result.ok();
-  }
-
-  missingScopes(required: ReadonlyArray<string>): Array<string> {
-    const granted = new Set(this.state.scopes);
-    return required.filter((scope) => !granted.has(scope));
+  protected apply(data: TwitchChannelData): void {
+    this.state.login = data.login;
+    this.state.display_name = data.display_name;
   }
 
   protected override toEventPayload(): TwitchChannelEventPayload {
