@@ -176,6 +176,21 @@
     },
     {
       "path": "./apps/publisher-service"
+    },
+    {
+      "path": "./libs/youtube/domain"
+    },
+    {
+      "path": "./libs/youtube/application"
+    },
+    {
+      "path": "./libs/youtube/infrastructure"
+    },
+    {
+      "path": "./libs/youtube/api"
+    },
+    {
+      "path": "./apps/youtube-integration"
     }
   ],
   "compilerOptions": {}
